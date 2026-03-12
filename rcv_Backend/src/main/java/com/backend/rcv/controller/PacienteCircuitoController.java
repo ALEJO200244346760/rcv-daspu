@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/circuito")
-@CrossOrigin(origins = "*") // Permite pruebas iniciales desde cualquier origen
+// Ya tenés la WebConfig para el CORS, pero esto refuerza por las dudas:
+@CrossOrigin(origins = "*")
 public class PacienteCircuitoController {
 
     @Autowired
@@ -18,17 +19,11 @@ public class PacienteCircuitoController {
     @PostMapping("/recibir")
     public ResponseEntity<?> recibirDatos(@RequestBody PacienteCircuito datos) {
         try {
-            // Guardamos el objeto completo que viene del sistema Amanda
+            // Sin service: guardamos directo usando el repository
             PacienteCircuito guardado = repository.save(datos);
-
-            // Log para que veas en la consola de Railway que entró la info
-            System.out.println("Datos de Amanda recibidos para: " + datos.getPatientInfo().getName());
-
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error al procesar los datos: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
