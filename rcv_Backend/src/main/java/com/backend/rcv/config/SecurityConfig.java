@@ -37,8 +37,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(csrf -> csrf.disable())
+        httpSecurity
+                .csrf(csrf -> csrf.disable()) // Crucial para permitir POST externos
                 .authorizeHttpRequests(authorize -> authorize
+                        // Permitimos explícitamente el endpoint de Amanda sin token
+                        .requestMatchers("/api/circuito/**").permitAll()
                         .requestMatchers("/administracion/**").hasRole("CARDIOLOGO")
                         .anyRequest().permitAll()
                 )
@@ -49,7 +52,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
+        // El filtro de JWT se ejecutará, pero como permitimos la ruta arriba, no debería bloquear
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
         return httpSecurity.build();
     }
 }
