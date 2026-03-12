@@ -2,10 +2,14 @@ package com.backend.rcv.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PacienteCircuito {
 
     @Id
@@ -26,6 +30,8 @@ public class PacienteCircuito {
 
     @Embeddable
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PatientInfo {
         private String document;
         private String birthdate;
@@ -36,6 +42,8 @@ public class PacienteCircuito {
 
     @Embeddable
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ClinicalHistory {
         private boolean isHypertensive;
         private boolean isDiabetic;
@@ -45,6 +53,8 @@ public class PacienteCircuito {
 
     @Embeddable
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class VitalsAndLabs {
         private String bloodPressure;
         private Integer totalCholesterol;
@@ -56,6 +66,8 @@ public class PacienteCircuito {
 
     @Embeddable
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Attachment {
         private String type;
         private String issueDate;
