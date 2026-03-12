@@ -61,7 +61,7 @@ function Estadisticas() {
   };
 
   // Configuración de la URL base para la API
-  const apiBaseURL = 'https://rcvpresent-production.up.railway.app';
+  const apiBaseURL = 'https://rcv-daspu-production.up.railway.app';
 
   // Hook useEffect para obtener datos de pacientes desde la API
   useEffect(() => {

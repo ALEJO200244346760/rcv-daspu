@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 // Agregamos la IP de tu compañero y permitimos localhost por si hace pruebas locales
                 .allowedOriginPatterns(
-                        "https://rcv-present.vercel.app",
+                        "https://rcv-daspu.vercel.app",
                         "http://181.96.178.138*",
                         "http://localhost:*",
                         "https://*.vercel.app"

@@ -7,7 +7,7 @@ const getToken = () => {
 
 // Crear una instancia de Axios con la configuración base
 const instance = axios.create({
-  baseURL: 'https://rcvpresent-production.up.railway.app', // URL base del backend de Spring Boot
+  baseURL: 'https://rcv-daspu-production.up.railway.app', // URL base del backend de Spring Boot
 });
 
 // Agregar un interceptor para las solicitudes
