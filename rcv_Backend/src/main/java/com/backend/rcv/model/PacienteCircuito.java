@@ -21,7 +21,6 @@ public class PacienteCircuito {
     @Embedded
     private VitalsAndLabs vitalsAndLabs;
 
-    // Guardamos los links de documentos como una colección de elementos
     @ElementCollection
     private List<Attachment> attachments;
 
