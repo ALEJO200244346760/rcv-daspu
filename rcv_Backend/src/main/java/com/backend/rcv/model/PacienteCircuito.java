@@ -59,11 +59,10 @@ public class PacienteCircuito {
     @AllArgsConstructor
     public static class ClinicalHistory {
 
-        // 🔥 SIN "is"
-        private boolean hypertensive;
-        private boolean diabetic;
-        private boolean hasDyslipidemia;
-        private boolean smoker;
+        private Boolean hypertensive;
+        private Boolean diabetic;
+        private Boolean hasDyslipidemia;
+        private Boolean smoker;
     }
 
     // =========================
