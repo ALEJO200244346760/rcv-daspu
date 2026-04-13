@@ -4,7 +4,7 @@ import axios from 'axios';
 function Circuito() {
   const [pacientes, setPacientes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mostrarDetalles, setMostrarDetalles] = useState({});
+  const [busqueda, setBusqueda] = useState('');
 
   const apiBaseURL = 'https://rcv-daspu-production.up.railway.app';
 
@@ -20,33 +20,42 @@ function Circuito() {
       });
   }, []);
 
-  const toggleDetalles = (id) => {
-    setMostrarDetalles(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
-  };
-
   const calcularEdad = (fecha) => {
     if (!fecha) return '';
     const hoy = new Date();
     const nacimiento = new Date(fecha);
     let edad = hoy.getFullYear() - nacimiento.getFullYear();
     const m = hoy.getMonth() - nacimiento.getMonth();
-    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
-      edad--;
-    }
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
     return edad;
   };
+
+  // 🔎 FILTRO POR DNI (DOCUMENTO)
+  const pacientesFiltrados = pacientes.filter(p =>
+    p.patientInfo?.document?.includes(busqueda)
+  );
 
   if (loading) return <p className="p-4">Cargando...</p>;
 
   return (
     <div className="max-w-6xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Circuito de Pacientes</h1>
 
+      {/* HEADER */}
+      <h1 className="text-3xl font-bold mb-4">Circuito de Pacientes</h1>
+
+      {/* BUSCADOR DNI */}
+      <input
+        type="text"
+        placeholder="Buscar por DNI..."
+        value={busqueda}
+        onChange={(e) => setBusqueda(e.target.value)}
+        className="w-full mb-6 p-2 border rounded shadow-sm"
+      />
+
+      {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {pacientes.map(paciente => {
+
+        {pacientesFiltrados.map(paciente => {
 
           const info = paciente.patientInfo || {};
           const history = paciente.clinicalHistory || {};
@@ -54,122 +63,67 @@ function Circuito() {
           const attachments = paciente.attachments || [];
 
           return (
-            <div key={paciente.id} className="bg-white shadow-md rounded-lg p-4">
+            <div key={paciente.id} className="bg-white shadow-md rounded-lg p-4 border">
 
-              {/* BASICO */}
-              <div className="flex justify-between mb-2">
-                <span className="font-medium">Nombre:</span>
-                <span>{info.name}</span>
+              {/* IDENTIDAD */}
+              <div className="font-bold text-lg mb-2">
+                {info.name}
               </div>
 
-              <div className="flex justify-between mb-2">
-                <span>DNI:</span>
-                <span>{info.document}</span>
+              <div className="text-sm mb-1">
+                <b>DNI:</b> {info.document}
               </div>
 
-              <div className="flex justify-between mb-2">
-                <span>Edad:</span>
-                <span>{calcularEdad(info.birthdate)}</span>
+              <div className="text-sm mb-1">
+                <b>Edad:</b> {calcularEdad(info.birthdate)}
               </div>
 
-              <div className="flex justify-between mb-2">
-                <span>Género:</span>
-                <span>{info.gender}</span>
+              <div className="text-sm mb-1">
+                <b>Género:</b> {info.gender}
               </div>
 
-              <div className="flex justify-between mb-2">
-                <span>Teléfono:</span>
-                <span>{info.phone}</span>
+              <div className="text-sm mb-2">
+                <b>Tel:</b> {info.phone}
               </div>
 
-              <div className="flex justify-between mb-2">
-                <span>TA:</span>
-                <span>{vitals.bloodPressure}</span>
+              {/* VITALES */}
+              <div className="bg-gray-50 p-2 rounded text-sm mb-2">
+                <div><b>TA:</b> {vitals.bloodPressure}</div>
+                <div><b>Col:</b> {vitals.totalCholesterol}</div>
+                <div><b>Peso:</b> {vitals.weightKg} kg</div>
+                <div><b>Altura:</b> {vitals.heightCm} cm</div>
+                <div><b>Cintura:</b> {vitals.waistCircumferenceCm} cm</div>
+                <div><b>TFG:</b> {vitals.estimatedGfr}</div>
               </div>
 
-              <div className="flex justify-between mb-2">
-                <span>Colesterol:</span>
-                <span>{vitals.totalCholesterol}</span>
+              {/* HISTORIA CLÍNICA */}
+              <div className="text-sm mb-2">
+                <div>🫀 HTA: {history.hypertensive ? 'Sí' : 'No'}</div>
+                <div>🩸 Diabetes: {history.diabetic ? 'Sí' : 'No'}</div>
+                <div>🧬 Dislipidemia: {history.hasDyslipidemia ? 'Sí' : 'No'}</div>
+                <div>🚬 Fumador: {history.smoker ? 'Sí' : 'No'}</div>
               </div>
 
-              {/* BOTON */}
-              <button
-                onClick={() => toggleDetalles(paciente.id)}
-                className="text-indigo-600 hover:text-indigo-900 mt-2"
-              >
-                {mostrarDetalles[paciente.id] ? 'Mostrar menos' : 'Mostrar más'}
-              </button>
+              {/* 📎 ADJUNTOS (ECG / ECO / PDF) */}
+              <div className="mt-2">
+                <div className="font-semibold text-sm mb-1">Adjuntos</div>
 
-              {/* DETALLES */}
-              {mostrarDetalles[paciente.id] && (
-                <div className="mt-4 border-t pt-3">
-
-                  <h3 className="font-semibold mb-2">Historia Clínica</h3>
-
-                  <div className="flex justify-between">
-                    <span>Hipertenso:</span>
-                    <span>{history.hypertensive ? 'Sí' : 'No'}</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Diabetes:</span>
-                    <span>{history.diabetic ? 'Sí' : 'No'}</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Dislipidemia:</span>
-                    <span>{history.hasDyslipidemia ? 'Sí' : 'No'}</span>
-                  </div>
-
-                  <div className="flex justify-between mb-3">
-                    <span>Fumador:</span>
-                    <span>{history.smoker ? 'Sí' : 'No'}</span>
-                  </div>
-
-                  <h3 className="font-semibold mb-2">Mediciones</h3>
-
-                  <div className="flex justify-between">
-                    <span>Peso:</span>
-                    <span>{vitals.weightKg} kg</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Altura:</span>
-                    <span>{vitals.heightCm} cm</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Cintura:</span>
-                    <span>{vitals.waistCircumferenceCm} cm</span>
-                  </div>
-
-                  <div className="flex justify-between mb-3">
-                    <span>TFG:</span>
-                    <span>{vitals.estimatedGfr}</span>
-                  </div>
-
-                  {attachments.length > 0 && (
-                    <>
-                      <h3 className="font-semibold mb-2">Adjuntos</h3>
-
-                      {attachments.map((att, i) => (
-                        <div key={i} className="mb-2 text-sm">
-                          <div><strong>{att.type}</strong></div>
-                          <div>{att.issueDate}</div>
-                          <a
-                            href={att.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            Ver archivo
-                          </a>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                </div>
-              )}
+                {attachments.length === 0 ? (
+                  <div className="text-xs text-gray-500">Sin estudios</div>
+                ) : (
+                  attachments.map((att, i) => (
+                    <a
+                      key={i}
+                      href={att.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-blue-600 text-sm hover:underline"
+                    >
+                      📄 {att.type} ({att.issueDate})
+                    </a>
+                  ))
+                )}
+              </div>
 
             </div>
           );
@@ -177,11 +131,10 @@ function Circuito() {
       </div>
 
       <div className="mt-6 font-semibold">
-        Total: {pacientes.length}
+        Total: {pacientesFiltrados.length}
       </div>
     </div>
   );
 }
 
 export default Circuito;
-
