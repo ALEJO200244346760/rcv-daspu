@@ -42,7 +42,66 @@ export const DatosPacienteInicial = {
     sop: '',
     // Campo para la función renal
     tfg: '', // Tasa de filtrado glomerular
+// --- NUEVO BLOQUE CLÍNICO ---
+    sintomaAlarma: [],
+    sintomaAlarmaOtro: '',
+
+    interconsulta: [],
+    interconsultaOtro: '',
+
+    solicitarEstudios: [],
+    solicitarEstudiosOtro: '',
+
+    cambioMedicacion: [],
+    cambioMedicacionOtro: '',
 };
+
+export const listaSintomaAlarma = [
+  "Dolor en el pecho o falta de aire al hacer esfuerzos",
+  "Hinchazón de piernas, manos o cara por la tarde",
+  "Micción frecuente nocturna",
+  "Despertar por falta de aire o palpitaciones",
+  "Mareos / desmayos / pérdidas de conocimiento",
+  "Otro",
+  "Ninguno"
+];
+
+export const listaInterconsulta = [
+  "Clínica médica",
+  "Endocrinología",
+  "Ginecología",
+  "Urología",
+  "Psiquiatría",
+  "Nutrición",
+  "Neumonología",
+  "Hematología",
+  "Oftalmología",
+  "Otro"
+];
+
+export const listaSolicitarEstudios = [
+  "Ecocardiograma",
+  "Ergometría",
+  "Holter",
+  "Mapeo",
+  "Eco Doppler de vasos de cuello",
+  "Eco Doppler de miembros inferiores",
+  "Ecografía abdominal",
+  "Telerradiografía de tórax",
+  "Perfusión miocárdica",
+  "Cateterismo cardíaco",
+  "Laboratorio ampliado",
+  "Fondo de ojos",
+  "Otro"
+];
+
+export const listaCambioMedicacion = [
+  "Agrego",
+  "Aumento",
+  "Suspendo",
+  "Reduzco",
+  "Otro"
+];
 
 export const Advertencia = {
             '<10% Bajo': `-Realizar el cálculo de riesgo cardiovascular cada 12 meses. -Mantener un estilo de vida más saludable. -Actividad física y recreativa que incluya ejercicios aeróbicos (como caminata bicicleta baile natación) y otros ejercicios anaeróbicos (como levantamiento de pesas en tren superior o brazos y espalda y tren inferior como piernas y muslos, comenzando con cargas de menor a mayor peso gradualmente). Realizarlos al menos tres veces por semana, o bien logrando 150 minutos semanales. -Vigilar el perfil del riesgo con el control de la presión arterial y un análisis de laboratorio de colesterol y glucemia. -Alimentación saludable recomendada en lo posible por un nutricionista o profesional de la salud. -Evitar hábitos tóxicos. -Revisión de su salud mental. -Hábitos de sueños saludables. -Controlar periódicamente su diámetro de cintura, intentando llegar a menos de 88cm en la mujer, y menos de 102cm en el hombre, para prevenir la diabetes. -Si es hipertenso el seguimiento es mensual hasta alcanzar el control y luego semestral o anual.

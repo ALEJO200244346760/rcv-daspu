@@ -253,7 +253,6 @@ function Estadisticas() {
       Aspirina: ${paciente.aspirina || 'N/A'}
       TFG: ${paciente.tfg ? String(paciente.tfg).substring(0, 5) : 'N/A'} ml/min/1.73m²
       ${paciente.numeroGestas ? `Número de Gestas: ${paciente.numeroGestas}` : ""} ${paciente.fum ? `FUM: ${paciente.fum}` : ""}
-      EXAMEN CARDIOVASCULAR R1 R2 NF Regular No soplos Rales Edemas ni Yugular PP + regular Simétricos. Dentro de lo normal sin signos de descompensación. NO SOPLOS NI ARRITMIAS
       ELECTROCARDIOGRAMA Ritmo sinusal, frecuencia cardíaca y eje normal, sin trastornos agudos del segmento ST y T sin alteraciones en el sistema de conducción, sin Arritmias, intervalo QT dentro de lo normal
       No refiere angor disnea palpitaciones mareos edemas entre otros
       RECOMENDACIONES:

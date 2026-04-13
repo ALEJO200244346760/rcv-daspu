@@ -34,6 +34,7 @@ const DatosPacienteInicial = {
   alergias: '', // ¿Alergias a medicamentos o antibióticos?
   tiroides: '', // ¿Toma remedios para la tiroides?
   sedentarismo: '', // ¿Considera tener sedentarismo?
+  sueño:'',
   doctor: '',
   // Campos específicos para género femenino
   numeroGestas: '',
