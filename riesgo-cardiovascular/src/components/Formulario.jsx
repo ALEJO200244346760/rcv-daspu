@@ -132,6 +132,11 @@ const Formulario = () => {
         sintomaAlarmaOtro: '',
         interconsultaOtro: '',
         solicitarEstudiosOtro: '',
+        cambioMedicacionOtro: '',
+        cambioAgrego: '',
+        cambioAumento: '',
+        cambioSuspendo: '',
+        cambioReduzco: '',
         cambioMedicacionOtro: ''
     });
 
@@ -396,7 +401,16 @@ const Formulario = () => {
     
     return filtrados.join('; ');
     };
-
+    const formatearCambioMedicacion = () => {
+    const cambios = [];
+    if (seleccionesClinicas.cambioMedicacion.includes("Agrego")) cambios.push(`Agregó: ${otrosClinicos.cambioAgrego}`);
+    if (seleccionesClinicas.cambioMedicacion.includes("Aumento")) cambios.push(`Aumentó: ${otrosClinicos.cambioAumento}`);
+    if (seleccionesClinicas.cambioMedicacion.includes("Suspendo")) cambios.push(`Suspendió: ${otrosClinicos.cambioSuspendo}`);
+    if (seleccionesClinicas.cambioMedicacion.includes("Reduzco")) cambios.push(`Redujo: ${otrosClinicos.cambioReduzco}`);
+    if (seleccionesClinicas.cambioMedicacion.includes("Otro")) cambios.push(`Otro: ${otrosClinicos.cambioMedicacionOtro}`);
+    
+    return cambios.join('; ');
+    };
     // 4. Función de guardado actualizada
     const guardarPaciente = async () => {
         try {
@@ -1251,7 +1265,7 @@ const Formulario = () => {
                                 </div>
 
                                 {/* Cambio de medicación */}
-                                <div className="flex flex-col">
+                                <div className="flex flex-col mt-4">
                                     <label className="text-sm font-medium text-gray-700 mb-2">Cambio de medicación</label>
                                     <div className="flex flex-wrap gap-2 mb-2">
                                         {["Agrego", "Aumento", "Suspendo", "Reduzco", "Otro"].map(option => (
@@ -1261,7 +1275,9 @@ const Formulario = () => {
                                                 onClick={() => {
                                                     setSeleccionesClinicas(prev => {
                                                         const exists = prev.cambioMedicacion.includes(option);
-                                                        const updated = exists ? prev.cambioMedicacion.filter(v => v !== option) : [...prev.cambioMedicacion, option];
+                                                        const updated = exists 
+                                                            ? prev.cambioMedicacion.filter(v => v !== option) 
+                                                            : [...prev.cambioMedicacion, option];
                                                         return { ...prev, cambioMedicacion: updated };
                                                     });
                                                 }}
@@ -1275,15 +1291,59 @@ const Formulario = () => {
                                             </button>
                                         ))}
                                     </div>
-                                    {seleccionesClinicas.cambioMedicacion.includes("Otro") && (
-                                        <input
-                                            type="text"
-                                            placeholder="Especifique el cambio"
-                                            value={otrosClinicos.cambioMedicacionOtro}
-                                            onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioMedicacionOtro: e.target.value})}
-                                            className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
-                                        />
-                                    )}
+
+                                    {/* Inputs condicionales según la selección */}
+                                    <div className="space-y-2 mt-2">
+                                        {seleccionesClinicas.cambioMedicacion.includes("Agrego") && (
+                                            <input
+                                                type="text"
+                                                placeholder="¿Qué medicamento agrega?"
+                                                value={otrosClinicos.cambioAgrego}
+                                                onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioAgrego: e.target.value})}
+                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                            />
+                                        )}
+
+                                        {seleccionesClinicas.cambioMedicacion.includes("Aumento") && (
+                                            <input
+                                                type="text"
+                                                placeholder="¿Qué aumentó y a cuánto?"
+                                                value={otrosClinicos.cambioAumento}
+                                                onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioAumento: e.target.value})}
+                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                            />
+                                        )}
+
+                                        {seleccionesClinicas.cambioMedicacion.includes("Suspendo") && (
+                                            <input
+                                                type="text"
+                                                placeholder="¿Qué medicamento suspendió?"
+                                                value={otrosClinicos.cambioSuspendo}
+                                                onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioSuspendo: e.target.value})}
+                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                            />
+                                        )}
+
+                                        {seleccionesClinicas.cambioMedicacion.includes("Reduzco") && (
+                                            <input
+                                                type="text"
+                                                placeholder="¿Qué redujo y a cuánto?"
+                                                value={otrosClinicos.cambioReduzco}
+                                                onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioReduzco: e.target.value})}
+                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                            />
+                                        )}
+
+                                        {seleccionesClinicas.cambioMedicacion.includes("Otro") && (
+                                            <input
+                                                type="text"
+                                                placeholder="Especifique otro cambio"
+                                                value={otrosClinicos.cambioMedicacionOtro}
+                                                onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioMedicacionOtro: e.target.value})}
+                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                            />
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
