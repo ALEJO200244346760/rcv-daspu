@@ -203,35 +203,6 @@ const Formulario = () => {
             medicamentosDiabetes: medicamentosDiabetesSeleccionados.join('; ')
         }));
     }, [medicamentosDiabetesSeleccionados]);
-    useEffect(() => {
-        setDatosPaciente(prev => ({
-            ...prev,
-
-            sintomaAlarma:
-            seleccionesClinicas.sintomaAlarma
-                .filter(v => v !== "Otro")
-                .concat(otrosClinicos?.sintomaAlarmaOtro ? [otrosClinicos.sintomaAlarmaOtro] : [])
-                .join('; '),
-
-            interconsulta:
-            seleccionesClinicas.interconsulta
-                .filter(v => v !== "Otro")
-                .concat(otrosClinicos?.interconsultaOtro ? [otrosClinicos.interconsultaOtro] : [])
-                .join('; '),
-
-            solicitarEstudios:
-            seleccionesClinicas.solicitarEstudios
-                .filter(v => v !== "Otro")
-                .concat(otrosClinicos?.solicitarEstudiosOtro ? [otrosClinicos.solicitarEstudiosOtro] : [])
-                .join('; '),
-
-            cambioMedicacion:
-            seleccionesClinicas.cambioMedicacion
-                .filter(v => v !== "Otro")
-                .concat(otrosClinicos?.cambioMedicacionOtro ? [otrosClinicos.cambioMedicacionOtro] : [])
-                .join('; '),
-        }));
-        }, [seleccionesClinicas, otrosClinicos]);
 
     useEffect(() => {
         setDatosPaciente(prev => ({
