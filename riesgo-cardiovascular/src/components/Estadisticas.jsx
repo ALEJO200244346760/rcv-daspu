@@ -248,19 +248,11 @@ const copiarDatos = (paciente) => {
   const recomendaciones = Advertencia[nivelRiesgoTexto] || "No hay recomendaciones disponibles.";
 
   const datos = `
-ID: ${paciente.id}
-FECHA DE REGISTRO: ${paciente.fechaRegistro}
-DNI: ${paciente.cuil}
-TELÉFONO: ${paciente.telefono}
-Edad: ${paciente.edad}
-Género: ${paciente.genero}
-
+ID: ${paciente.id} FECHA DE REGISTRO: ${paciente.fechaRegistro} DNI: ${paciente.cuil} TELÉFONO: ${paciente.telefono} Edad: ${paciente.edad} Género: ${paciente.genero}
 HIPERTENSO: ${paciente.hipertenso}
 Medicamentos Hipertensión: ${paciente.medicamentosHipertension || 'N/A'}
-
 Diabetes: ${paciente.diabetes}
 Medicamentos Diabetes: ${paciente.medicamentosDiabetes || 'N/A'}
-
 Fumador: ${paciente.fumador}
 ExFumador: ${paciente.exfumador}
 

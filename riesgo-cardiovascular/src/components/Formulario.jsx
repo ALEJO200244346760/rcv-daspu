@@ -413,27 +413,49 @@ const Formulario = () => {
     };
     // 4. Función de guardado actualizada
     const guardarPaciente = async () => {
-        try {
-            const payload = {
-                ...datosPaciente,
-                nivelRiesgo,
-                tfg,
-                // Aquí ocurre la magia: limpiamos los datos antes de enviar
-                sintomaAlarma: formatearDataClinica(seleccionesClinicas.sintomaAlarma, otrosClinicos.sintomaAlarmaOtro),
-                interconsulta: formatearDataClinica(seleccionesClinicas.interconsulta, otrosClinicos.interconsultaOtro),
-                solicitarEstudios: formatearDataClinica(seleccionesClinicas.solicitarEstudios, otrosClinicos.solicitarEstudiosOtro),
-                cambioMedicacion: formatearDataClinica(seleccionesClinicas.cambioMedicacion, otrosClinicos.cambioMedicacionOtro),
-            };
+    try {
+        // --- Lógica Especial para Cambio de Medicación ---
+        const listaCambios = [];
+        if (seleccionesClinicas.cambioMedicacion.includes("Agrego")) 
+            listaCambios.push(`Agregó: ${otrosClinicos.cambioAgrego || '(sin especificar)'}`);
+        
+        if (seleccionesClinicas.cambioMedicacion.includes("Aumento")) 
+            listaCambios.push(`Aumentó: ${otrosClinicos.cambioAumento || '(sin especificar)'}`);
+        
+        if (seleccionesClinicas.cambioMedicacion.includes("Suspendo")) 
+            listaCambios.push(`Suspendió: ${otrosClinicos.cambioSuspendo || '(sin especificar)'}`);
+        
+        if (seleccionesClinicas.cambioMedicacion.includes("Reduzco")) 
+            listaCambios.push(`Redujo: ${otrosClinicos.cambioReduzco || '(sin especificar)'}`);
+            
+        if (seleccionesClinicas.cambioMedicacion.includes("Otro")) 
+            listaCambios.push(`Otro cambio: ${otrosClinicos.cambioMedicacionOtro || '(sin especificar)'}`);
 
-            await axiosInstance.post('/api/pacientes', payload);
-            setMensajeExito('Paciente guardado con éxito');
-            setTimeout(() => window.location.reload(), 1500);
-        } catch (error) {
-            console.error('Error:', error);
-            setModalAdvertencia('Error al guardar datos.');
-            setMostrarModal(true);
-        }
-    };
+        const payload = {
+            ...datosPaciente,
+            nivelRiesgo,
+            tfg,
+            // Formateo normal para estos tres:
+            sintomaAlarma: formatearDataClinica(seleccionesClinicas.sintomaAlarma, otrosClinicos.sintomaAlarmaOtro),
+            interconsulta: formatearDataClinica(seleccionesClinicas.interconsulta, otrosClinicos.interconsultaOtro),
+            solicitarEstudios: formatearDataClinica(seleccionesClinicas.solicitarEstudios, otrosClinicos.solicitarEstudiosOtro),
+            
+            // Formateo especial para medicación:
+            cambioMedicacion: listaCambios.join('; ') 
+        };
+
+        console.log("Payload a enviar:", payload); // Para que verifiques en consola
+
+        await axiosInstance.post('/api/pacientes', payload);
+        setMensajeExito('Paciente guardado con éxito');
+        setTimeout(() => window.location.reload(), 1500);
+
+    } catch (error) {
+        console.error('Error al guardar:', error);
+        setModalAdvertencia('Error al guardar los datos.');
+        setMostrarModal(true);
+    }
+};
     
     const toggleModalMedicamentos = () => {
         setMostrarModalMedicamentos(!mostrarModalMedicamentos);
@@ -1267,6 +1289,8 @@ const Formulario = () => {
                                 {/* Cambio de medicación */}
                                 <div className="flex flex-col mt-4">
                                     <label className="text-sm font-medium text-gray-700 mb-2">Cambio de medicación</label>
+                                    
+                                    {/* Botones de selección múltiple */}
                                     <div className="flex flex-wrap gap-2 mb-2">
                                         {["Agrego", "Aumento", "Suspendo", "Reduzco", "Otro"].map(option => (
                                             <button
@@ -1292,7 +1316,7 @@ const Formulario = () => {
                                         ))}
                                     </div>
 
-                                    {/* Inputs condicionales según la selección */}
+                                    {/* Inputs condicionales que aparecen al marcar cada botón */}
                                     <div className="space-y-2 mt-2">
                                         {seleccionesClinicas.cambioMedicacion.includes("Agrego") && (
                                             <input
@@ -1300,17 +1324,17 @@ const Formulario = () => {
                                                 placeholder="¿Qué medicamento agrega?"
                                                 value={otrosClinicos.cambioAgrego}
                                                 onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioAgrego: e.target.value})}
-                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                                className="p-2 border border-green-200 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
                                             />
                                         )}
 
                                         {seleccionesClinicas.cambioMedicacion.includes("Aumento") && (
                                             <input
                                                 type="text"
-                                                placeholder="¿Qué aumentó y a cuánto?"
+                                                placeholder="¿Qué aumentó y a cuánto? (ej: Enalapril 20mg)"
                                                 value={otrosClinicos.cambioAumento}
                                                 onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioAumento: e.target.value})}
-                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                                className="p-2 border border-green-200 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
                                             />
                                         )}
 
@@ -1320,7 +1344,7 @@ const Formulario = () => {
                                                 placeholder="¿Qué medicamento suspendió?"
                                                 value={otrosClinicos.cambioSuspendo}
                                                 onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioSuspendo: e.target.value})}
-                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                                className="p-2 border border-green-200 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
                                             />
                                         )}
 
@@ -1330,7 +1354,7 @@ const Formulario = () => {
                                                 placeholder="¿Qué redujo y a cuánto?"
                                                 value={otrosClinicos.cambioReduzco}
                                                 onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioReduzco: e.target.value})}
-                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                                className="p-2 border border-green-200 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
                                             />
                                         )}
 
@@ -1340,7 +1364,7 @@ const Formulario = () => {
                                                 placeholder="Especifique otro cambio"
                                                 value={otrosClinicos.cambioMedicacionOtro}
                                                 onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioMedicacionOtro: e.target.value})}
-                                                className="p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                                className="p-2 border border-green-200 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
                                             />
                                         )}
                                     </div>
