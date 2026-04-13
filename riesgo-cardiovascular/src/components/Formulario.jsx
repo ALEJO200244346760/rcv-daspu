@@ -52,20 +52,6 @@ const listaCambioMedicacion = [
   "Otro"
 ];
 
-const handleClinicoChange = (categoria, value, checked) => {
-  setSeleccionesClinicas(prev => {
-    const actual = prev[categoria];
-
-    const updated = checked
-      ? [...actual, value]
-      : actual.filter(v => v !== value);
-
-    return {
-      ...prev,
-      [categoria]: updated,
-    };
-  });
-};
 // Lista de medicamentos para la hipertensión
 const listaMedicamentosHipertension = [
     "Enalapril 10 mg cada 12 Hs",
@@ -158,6 +144,20 @@ const Formulario = () => {
 
     // Variable para el máximo de la fecha (día actual)
     const today = new Date().toISOString().split('T')[0];
+    const handleClinicoChange = (categoria, value, checked) => {
+  setSeleccionesClinicas(prev => {
+    const actual = prev[categoria];
+
+    const updated = checked
+      ? [...actual, value]
+      : actual.filter(v => v !== value);
+
+    return {
+      ...prev,
+      [categoria]: updated,
+    };
+  });
+};
 
     useEffect(() => {
         if (!creatinina || isNaN(creatinina) || !datosPaciente.edad || !datosPaciente.genero) {
