@@ -12,7 +12,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import AdminPanel from './components/AdminPanel';
 import RoleProtectedRoute from './components/RoleProtectedRoute';
+import Circuito from './components/Circuito';
 import { useAuth } from './context/AuthContext';
+
 
 function App() {
 
@@ -30,6 +32,8 @@ function App() {
         <Route path="/estadistica-menor" element={<EstadisticaMenor />} />
 
         <Route path="/tomarPresion" element={<TomarPresion />} />
+
+        <Route path="/circuito" element={<Circuito />} />
 
         <Route 
           path="/estadisticas" 
