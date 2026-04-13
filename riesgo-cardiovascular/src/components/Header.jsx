@@ -53,7 +53,7 @@ const Header = () => {
         <Link to="/formulario" className="block lg:inline-block hover:text-gray-300">RCV</Link>
 
         {/* NUEVO LINK AGREGADO */}
-        <Link to="/circuito-components" className="block lg:inline-block hover:text-gray-300">
+        <Link to="/circuito" className="block lg:inline-block hover:text-gray-300">
           Circuito de components
         </Link>
 
