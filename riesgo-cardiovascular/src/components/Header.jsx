@@ -52,6 +52,11 @@ const Header = () => {
         <Link to="/tomarPresion" className="block lg:inline-block hover:text-gray-300">Diagnóstico</Link>
         <Link to="/formulario" className="block lg:inline-block hover:text-gray-300">RCV</Link>
 
+        {/* NUEVO LINK AGREGADO */}
+        <Link to="/circuito-components" className="block lg:inline-block hover:text-gray-300">
+          Circuito de components
+        </Link>
+
         {hasCardiologoRole && (
           <Link to="/estadisticas" className="block lg:inline-block hover:text-gray-300">Estadísticas</Link>
         )}
