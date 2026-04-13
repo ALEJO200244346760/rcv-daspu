@@ -30,9 +30,10 @@ public class PacienteCircuito {
     // 🔥 FIX IMPORTANTE
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "paciente_attachments",
+            name = "paciente_circuito_attachments",
             joinColumns = @JoinColumn(name = "paciente_id")
     )
+    @Column(name = "value") // evita problemas de mapping en algunos drivers
     private List<Attachment> attachments = new ArrayList<>();
 
     // =========================
@@ -88,8 +89,8 @@ public class PacienteCircuito {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Attachment {
-        private String type;
+    public class Attachment {
+        private String type;       // ECG / ECO / PDF / LAB
         private String issueDate;
         private String fileUrl;
     }

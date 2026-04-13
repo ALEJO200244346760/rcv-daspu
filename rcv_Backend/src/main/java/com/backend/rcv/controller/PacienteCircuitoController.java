@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,11 +19,12 @@ public class PacienteCircuitoController {
 
     @PostMapping("/recibir")
     public ResponseEntity<?> recibirDatos(@RequestBody PacienteCircuito datos) {
-        try {
-            return ResponseEntity.ok(repository.save(datos));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al guardar: " + e.getMessage());
+
+        if (datos.getAttachments() == null) {
+            datos.setAttachments(new ArrayList<>());
         }
+
+        return ResponseEntity.ok(repository.save(datos));
     }
 
     @GetMapping("/listar")
