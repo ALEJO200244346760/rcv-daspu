@@ -934,6 +934,23 @@ const Formulario = () => {
                     </div>
                 </div>
 
+                {/* Sueño */}
+                <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700">¿Duerme entre 6 a 8 horas por día?</label>
+                    <div className="flex space-x-2 mb-2">
+                        {['Sí', 'No'].map(option => (
+                        <button
+                        key={option}
+                        type="button"
+                        onClick={() => setDatosPaciente({ ...datosPaciente, sueño: option })}
+                        className={`p-2 border rounded-md ${datosPaciente.sueño === option ? 'bg-green-500 text-white' : 'border-gray-300'}`}
+                        >
+                        {option}
+                        </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Presión Arterial */}
                             <div className="flex flex-col">
                                 <label className="text-sm font-medium text-gray-700">TA Máx.:</label>

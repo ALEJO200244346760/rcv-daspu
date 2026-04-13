@@ -56,6 +56,8 @@ public class Paciente {
     @Column
     private String sedentarismo;
     @Column
+    private String sueño;
+    @Column
     private String aspirina; // ¿Toma aspirina?
     @Column
     private String enfermedad; // ¿Enfermedad cardiovascular documentada?

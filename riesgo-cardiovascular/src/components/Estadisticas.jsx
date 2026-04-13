@@ -248,7 +248,7 @@ function Estadisticas() {
     const recomendaciones = Advertencia[nivelRiesgoTexto] || "No hay recomendaciones disponibles.";
   
     const datos = `
-      ID: ${paciente.id}  FECHA DE REGISTRO: ${paciente.fechaRegistro}  DNI: ${paciente.cuil}  TELEFONO: ${paciente.telefono}  Edad: ${paciente.edad}  Género: ${paciente.genero}  HIPERTENSO: ${paciente.hipertenso}  Medicamentos Hipertensión: ${paciente.medicamentosHipertension || 'N/A'}  Diabetes: ${paciente.diabetes}  Medicamentos Diabetes: ${paciente.medicamentosDiabetes || 'N/A'}  Fumador: ${paciente.fumador}  exFumador: ${paciente.exfumador}  TA Máx.: ${paciente.presionArterial}  TA Mín.: ${paciente.taMin}  Colesterol: ${paciente.colesterol}  Medicamentos Colesterol: ${paciente.medicamentosColesterol || 'N/A'}  IMC: ${paciente.imc}  PESO: ${paciente.peso}  TALLA: ${paciente.talla}  CINTURA: ${paciente.cintura}  ACV: ${paciente.acv}  RENAL: ${paciente.renal}  PULMONAR: ${paciente.pulmonar}  ALERGIAS: ${paciente.alergias || 'N/A'}  TIROIDES: ${paciente.tiroides || 'N/A'}  SEDENTARISMO: ${paciente.sedentarismo || 'N/A'}  INFARTO: ${paciente.infarto}
+      ID: ${paciente.id}  FECHA DE REGISTRO: ${paciente.fechaRegistro}  DNI: ${paciente.cuil}  TELEFONO: ${paciente.telefono}  Edad: ${paciente.edad}  Género: ${paciente.genero}  HIPERTENSO: ${paciente.hipertenso}  Medicamentos Hipertensión: ${paciente.medicamentosHipertension || 'N/A'}  Diabetes: ${paciente.diabetes}  Medicamentos Diabetes: ${paciente.medicamentosDiabetes || 'N/A'}  Fumador: ${paciente.fumador}  exFumador: ${paciente.exfumador}  TA Máx.: ${paciente.presionArterial}  TA Mín.: ${paciente.taMin}  Colesterol: ${paciente.colesterol}  Medicamentos Colesterol: ${paciente.medicamentosColesterol || 'N/A'}  IMC: ${paciente.imc}  PESO: ${paciente.peso}  TALLA: ${paciente.talla}  CINTURA: ${paciente.cintura}  ACV: ${paciente.acv}  RENAL: ${paciente.renal}  PULMONAR: ${paciente.pulmonar}  ALERGIAS: ${paciente.alergias || 'N/A'}  TIROIDES: ${paciente.tiroides || 'N/A'}  SEDENTARISMO: ${paciente.sedentarismo || 'N/A'} SUEÑO: ${paciente.sueño || 'N/A'}  INFARTO: ${paciente.infarto}
       Nivel de Riesgo: ${nivelRiesgoTexto}
       Aspirina: ${paciente.aspirina || 'N/A'}
       TFG: ${paciente.tfg ? String(paciente.tfg).substring(0, 5) : 'N/A'} ml/min/1.73m²
@@ -818,6 +818,7 @@ function Estadisticas() {
                 { label: "Alergias", value: paciente.alergias },
                 { label: "Tiroides", value: paciente.tiroides },
                 { label: "Sedentarismo", value: paciente.sedentarismo },
+                { label: "Sueño", value: paciente.sueño },
                 { label: "Número de Gestas", value: paciente.numeroGestas },
                 { label: "FUM", value: paciente.fum },
                 { label: "Método Anticonceptivo", value: paciente.metodoAnticonceptivo },
