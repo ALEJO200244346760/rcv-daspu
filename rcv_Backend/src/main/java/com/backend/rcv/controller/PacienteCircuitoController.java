@@ -19,12 +19,23 @@ public class PacienteCircuitoController {
 
     @PostMapping("/recibir")
     public ResponseEntity<?> recibirDatos(@RequestBody PacienteCircuito datos) {
+        try {
 
-        if (datos.getAttachments() == null) {
-            datos.setAttachments(new ArrayList<>());
+            // 🔥 FIX IMPORTANTE: evitar null en attachments
+            if (datos.getAttachments() == null) {
+                datos.setAttachments(new ArrayList<>());
+            }
+
+            if (datos.getClinicalHistory() == null) {
+                datos.setClinicalHistory(new PacienteCircuito.ClinicalHistory());
+            }
+
+            return ResponseEntity.ok(repository.save(datos));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body("Error al guardar: " + e.getMessage());
         }
-
-        return ResponseEntity.ok(repository.save(datos));
     }
 
     @GetMapping("/listar")
@@ -33,7 +44,8 @@ public class PacienteCircuitoController {
             List<PacienteCircuito> lista = repository.findAll();
             return ResponseEntity.ok(lista);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al obtener datos: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .body("Error al obtener datos: " + e.getMessage());
         }
     }
 }

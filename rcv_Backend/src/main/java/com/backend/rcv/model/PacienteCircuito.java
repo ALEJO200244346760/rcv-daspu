@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Data
@@ -27,17 +27,12 @@ public class PacienteCircuito {
     @Embedded
     private VitalsAndLabs vitalsAndLabs;
 
-    // 🔥 FIX IMPORTANTE
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "paciente_circuito_attachments",
-            joinColumns = @JoinColumn(name = "paciente_id")
-    )
-    @Column(name = "value") // evita problemas de mapping en algunos drivers
+    // ✅ IMPORTANTE: versión SIMPLE (la que funcionaba)
+    @ElementCollection
     private List<Attachment> attachments = new ArrayList<>();
 
     // =========================
-    // 📌 INFO PACIENTE
+    // PATIENT INFO
     // =========================
     @Embeddable
     @Data
@@ -52,14 +47,13 @@ public class PacienteCircuito {
     }
 
     // =========================
-    // 📌 HISTORIA CLINICA
+    // CLINICAL HISTORY
     // =========================
     @Embeddable
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ClinicalHistory {
-
         private Boolean hypertensive = false;
         private Boolean diabetic = false;
         private Boolean hasDyslipidemia = false;
@@ -67,7 +61,7 @@ public class PacienteCircuito {
     }
 
     // =========================
-    // 📌 SIGNOS Y LABS
+    // VITALS
     // =========================
     @Embeddable
     @Data
@@ -83,14 +77,14 @@ public class PacienteCircuito {
     }
 
     // =========================
-    // 📌 ADJUNTOS
+    // ATTACHMENTS (ECG / ECO / PDF)
     // =========================
     @Embeddable
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public class Attachment {
-        private String type;       // ECG / ECO / PDF / LAB
+    public static class Attachment {
+        private String type;       // Electrocardiogram / Echocardiogram
         private String issueDate;
         private String fileUrl;
     }
