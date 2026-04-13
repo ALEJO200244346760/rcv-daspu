@@ -4,7 +4,19 @@ import { Advertencia, DatosPacienteInicial, obtenerColorRiesgo, obtenerTextoRies
 import { getLocations } from '../services/userService';
 import axiosInstance from '../axiosConfig';
 import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
+const [seleccionesClinicas, setSeleccionesClinicas] = useState({
+  sintomaAlarma: [],
+  interconsulta: [],
+  solicitarEstudios: [],
+  cambioMedicacion: [],
+});
 
+const [otrosClinicos, setOtrosClinicos] = useState({
+  sintomaAlarmaOtro: "",
+  interconsultaOtro: "",
+  solicitarEstudiosOtro: "",
+  cambioMedicacionOtro: "",
+});
 const listaSintomaAlarma = [
   "Dolor en el pecho o falta de aire al hacer esfuerzos",
   "Hinchazón de piernas, manos o cara por la tarde",
@@ -52,19 +64,6 @@ const listaCambioMedicacion = [
   "Otro"
 ];
 
-const [seleccionesClinicas, setSeleccionesClinicas] = useState({
-  sintomaAlarma: [],
-  interconsulta: [],
-  solicitarEstudios: [],
-  cambioMedicacion: [],
-});
-
-const [otrosClinicos, setOtrosClinicos] = useState({
-  sintomaAlarmaOtro: "",
-  interconsultaOtro: "",
-  solicitarEstudiosOtro: "",
-  cambioMedicacionOtro: "",
-});
 const handleClinicoChange = (categoria, value, checked) => {
   setSeleccionesClinicas(prev => {
     const actual = prev[categoria];
