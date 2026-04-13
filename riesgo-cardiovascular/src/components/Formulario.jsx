@@ -135,13 +135,6 @@ const Formulario = () => {
         cambioMedicacion: [],
         });
 
-        const [otrosClinicos, setOtrosClinicos] = useState({
-        sintomaAlarmaOtro: "",
-        interconsultaOtro: "",
-        solicitarEstudiosOtro: "",
-        cambioMedicacionOtro: "",
-        });
-
     // Variable para el máximo de la fecha (día actual)
     const today = new Date().toISOString().split('T')[0];
     const handleClinicoChange = (categoria, value, checked) => {
@@ -213,12 +206,32 @@ const Formulario = () => {
     useEffect(() => {
         setDatosPaciente(prev => ({
             ...prev,
-            sintomaAlarma: seleccionesClinicas.sintomaAlarma.join('; '),
-            interconsulta: seleccionesClinicas.interconsulta.join('; '),
-            solicitarEstudios: seleccionesClinicas.solicitarEstudios.join('; '),
-            cambioMedicacion: seleccionesClinicas.cambioMedicacion.join('; '),
+
+            sintomaAlarma:
+            seleccionesClinicas.sintomaAlarma
+                .filter(v => v !== "Otro")
+                .concat(otrosClinicos?.sintomaAlarmaOtro ? [otrosClinicos.sintomaAlarmaOtro] : [])
+                .join('; '),
+
+            interconsulta:
+            seleccionesClinicas.interconsulta
+                .filter(v => v !== "Otro")
+                .concat(otrosClinicos?.interconsultaOtro ? [otrosClinicos.interconsultaOtro] : [])
+                .join('; '),
+
+            solicitarEstudios:
+            seleccionesClinicas.solicitarEstudios
+                .filter(v => v !== "Otro")
+                .concat(otrosClinicos?.solicitarEstudiosOtro ? [otrosClinicos.solicitarEstudiosOtro] : [])
+                .join('; '),
+
+            cambioMedicacion:
+            seleccionesClinicas.cambioMedicacion
+                .filter(v => v !== "Otro")
+                .concat(otrosClinicos?.cambioMedicacionOtro ? [otrosClinicos.cambioMedicacionOtro] : [])
+                .join('; '),
         }));
-        }, [seleccionesClinicas]);
+        }, [seleccionesClinicas, otrosClinicos]);
 
     useEffect(() => {
         setDatosPaciente(prev => ({
@@ -397,18 +410,63 @@ const Formulario = () => {
 
     const guardarPaciente = async () => {
         try {
-            await axiosInstance.post('/api/pacientes', {
+            const payload = {
                 ...datosPaciente,
                 nivelRiesgo,
-                tfg: tfg,
-            });
-    
+                tfg,
+
+                // 🧠 SÍNTOMAS DE ALARMA
+                sintomaAlarma: seleccionesClinicas.sintomaAlarma
+                    .filter(v => v !== "Otro")
+                    .concat(
+                        otrosClinicos.sintomaAlarmaOtro
+                            ? [otrosClinicos.sintomaAlarmaOtro]
+                            : []
+                    )
+                    .join('; '),
+
+                // 🧠 INTERCONSULTA
+                interconsulta: seleccionesClinicas.interconsulta
+                    .filter(v => v !== "Otro")
+                    .concat(
+                        otrosClinicos.interconsultaOtro
+                            ? [otrosClinicos.interconsultaOtro]
+                            : []
+                    )
+                    .join('; '),
+
+                // 🧠 SOLICITAR ESTUDIOS
+                solicitarEstudios: seleccionesClinicas.solicitarEstudios
+                    .filter(v => v !== "Otro")
+                    .concat(
+                        otrosClinicos.solicitarEstudiosOtro
+                            ? [otrosClinicos.solicitarEstudiosOtro]
+                            : []
+                    )
+                    .join('; '),
+
+                // 🧠 CAMBIO DE MEDICACIÓN
+                cambioMedicacion: seleccionesClinicas.cambioMedicacion
+                    .filter(v => v !== "Otro")
+                    .concat(
+                        otrosClinicos.cambioMedicacionOtro
+                            ? [otrosClinicos.cambioMedicacionOtro]
+                            : []
+                    )
+                    .join('; ')
+            };
+
+            await axiosInstance.post('/api/pacientes', payload);
+
             console.log('Datos guardados exitosamente');
             setMensajeExito('Paciente guardado con éxito');
+
             setTimeout(() => setMensajeExito(''), 3000);
+
             setTimeout(() => {
-                window.location.reload(); // Recargar la página para un nuevo formulario
+                window.location.reload();
             }, 1000);
+
         } catch (error) {
             console.error('Error al guardar los datos:', error);
             setModalAdvertencia('Ocurrió un error al guardar los datos. Por favor, vuelva a cargar la página.');
