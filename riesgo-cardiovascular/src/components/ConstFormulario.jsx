@@ -43,17 +43,10 @@ export const DatosPacienteInicial = {
     // Campo para la función renal
     tfg: '', // Tasa de filtrado glomerular
 // --- NUEVO BLOQUE CLÍNICO ---
-    sintomaAlarma: [],
-    sintomaAlarmaOtro: '',
-
-    interconsulta: [],
-    interconsultaOtro: '',
-
-    solicitarEstudios: [],
-    solicitarEstudiosOtro: '',
-
-    cambioMedicacion: [],
-    cambioMedicacionOtro: '',
+    sintomaAlarma: '',
+    interconsulta: '',
+    solicitarEstudios: '',
+    cambioMedicacion: '',
 };
 
 export const Advertencia = {
