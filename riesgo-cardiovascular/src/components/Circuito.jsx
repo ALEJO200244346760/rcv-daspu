@@ -46,7 +46,6 @@ function Circuito() {
       <h1 className="text-3xl font-bold mb-6">Circuito de Pacientes</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
         {pacientes.map(paciente => {
 
           const info = paciente.patientInfo || {};
@@ -55,88 +54,55 @@ function Circuito() {
           const attachments = paciente.attachments || [];
 
           return (
-            <div key={paciente.id} className="bg-white shadow-md rounded-lg p-4 border">
+            <div key={paciente.id} className="bg-white shadow-md rounded-lg p-4">
 
-              {/* =========================
-                  👤 DATOS BÁSICOS
-              ========================= */}
-              <div className="mb-2">
-                <div className="flex justify-between">
-                  <span className="font-semibold">Nombre:</span>
-                  <span>{info.name}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>DNI:</span>
-                  <span>{info.document}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Edad:</span>
-                  <span>{calcularEdad(info.birthdate)}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Género:</span>
-                  <span>{info.gender}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Teléfono:</span>
-                  <span>{info.phone}</span>
-                </div>
+              {/* BASICO */}
+              <div className="flex justify-between mb-2">
+                <span className="font-medium">Nombre:</span>
+                <span>{info.name}</span>
               </div>
 
-              {/* =========================
-                  ❤️ VITALES
-              ========================= */}
-              <div className="border-t pt-2 mb-2">
-                <div className="flex justify-between">
-                  <span>TA:</span>
-                  <span>{vitals.bloodPressure}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Colesterol:</span>
-                  <span>{vitals.totalCholesterol}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Peso:</span>
-                  <span>{vitals.weightKg} kg</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Altura:</span>
-                  <span>{vitals.heightCm} cm</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Cintura:</span>
-                  <span>{vitals.waistCircumferenceCm} cm</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>TFG:</span>
-                  <span>{vitals.estimatedGfr}</span>
-                </div>
+              <div className="flex justify-between mb-2">
+                <span>DNI:</span>
+                <span>{info.document}</span>
               </div>
 
-              {/* =========================
-                  🔘 BOTÓN DETALLES
-              ========================= */}
+              <div className="flex justify-between mb-2">
+                <span>Edad:</span>
+                <span>{calcularEdad(info.birthdate)}</span>
+              </div>
+
+              <div className="flex justify-between mb-2">
+                <span>Género:</span>
+                <span>{info.gender}</span>
+              </div>
+
+              <div className="flex justify-between mb-2">
+                <span>Teléfono:</span>
+                <span>{info.phone}</span>
+              </div>
+
+              <div className="flex justify-between mb-2">
+                <span>TA:</span>
+                <span>{vitals.bloodPressure}</span>
+              </div>
+
+              <div className="flex justify-between mb-2">
+                <span>Colesterol:</span>
+                <span>{vitals.totalCholesterol}</span>
+              </div>
+
+              {/* BOTON */}
               <button
                 onClick={() => toggleDetalles(paciente.id)}
                 className="text-indigo-600 hover:text-indigo-900 mt-2"
               >
-                {mostrarDetalles[paciente.id] ? 'Ocultar historia' : 'Ver historia completa'}
+                {mostrarDetalles[paciente.id] ? 'Mostrar menos' : 'Mostrar más'}
               </button>
 
-              {/* =========================
-                  📋 HISTORIA COMPLETA
-              ========================= */}
+              {/* DETALLES */}
               {mostrarDetalles[paciente.id] && (
-                <div className="mt-3 border-t pt-3 text-sm">
+                <div className="mt-4 border-t pt-3">
 
                   <h3 className="font-semibold mb-2">Historia Clínica</h3>
 
@@ -155,54 +121,53 @@ function Circuito() {
                     <span>{history.hasDyslipidemia ? 'Sí' : 'No'}</span>
                   </div>
 
-                  <div className="flex justify-between mb-2">
+                  <div className="flex justify-between mb-3">
                     <span>Fumador:</span>
                     <span>{history.smoker ? 'Sí' : 'No'}</span>
                   </div>
 
-                  {/* =========================
-                      📎 ECG / ECO / ADJUNTOS
-                  ========================= */}
+                  <h3 className="font-semibold mb-2">Mediciones</h3>
+
+                  <div className="flex justify-between">
+                    <span>Peso:</span>
+                    <span>{vitals.weightKg} kg</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Altura:</span>
+                    <span>{vitals.heightCm} cm</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Cintura:</span>
+                    <span>{vitals.waistCircumferenceCm} cm</span>
+                  </div>
+
+                  <div className="flex justify-between mb-3">
+                    <span>TFG:</span>
+                    <span>{vitals.estimatedGfr}</span>
+                  </div>
+
                   {attachments.length > 0 && (
                     <>
-                      <h3 className="font-semibold mt-3 mb-2">Estudios</h3>
+                      <h3 className="font-semibold mb-2">Adjuntos</h3>
 
                       {attachments.map((att, i) => (
-                        <div key={i} className="mb-2 p-2 bg-gray-50 rounded">
-
-                          <div className="font-semibold text-xs">
-                            {att.type}
-                          </div>
-
-                          <div className="text-xs text-gray-500">
-                            {att.issueDate}
-                          </div>
-
-                          {/* 🔥 LINK DIRECTO PDF / ECO / ECG */}
+                        <div key={i} className="mb-2 text-sm">
+                          <div><strong>{att.type}</strong></div>
+                          <div>{att.issueDate}</div>
                           <a
                             href={att.fileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 text-xs hover:underline"
+                            className="text-blue-600 hover:underline"
                           >
-                            Ver {att.type === 'Electrocardiogram' ? 'ECG' :
-                                  att.type === 'Echocardiogram' ? 'ECO' : 'Archivo'}
+                            Ver archivo
                           </a>
-
-                          {/* 🔥 PREVIEW VISUAL OPCIONAL */}
-                          {att.fileUrl?.includes('.pdf') && (
-                            <iframe
-                              src={att.fileUrl}
-                              className="w-full h-40 mt-2 border rounded"
-                              title={att.type}
-                            />
-                          )}
-
                         </div>
                       ))}
                     </>
                   )}
-
                 </div>
               )}
 
@@ -211,14 +176,12 @@ function Circuito() {
         })}
       </div>
 
-      {/* =========================
-          TOTAL
-      ========================= */}
       <div className="mt-6 font-semibold">
-        Total de pacientes: {pacientes.length}
+        Total: {pacientes.length}
       </div>
     </div>
   );
 }
 
 export default Circuito;
+
