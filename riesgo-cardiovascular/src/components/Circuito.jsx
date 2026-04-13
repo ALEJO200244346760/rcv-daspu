@@ -27,6 +27,18 @@ function Circuito() {
     }));
   };
 
+  const calcularEdad = (fecha) => {
+    if (!fecha) return '';
+    const hoy = new Date();
+    const nacimiento = new Date(fecha);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    return edad;
+  };
+
   if (loading) return <p className="p-4">Cargando...</p>;
 
   return (
@@ -44,49 +56,43 @@ function Circuito() {
           return (
             <div key={paciente.id} className="bg-white shadow-md rounded-lg p-4">
 
-              {/* INFO BASICA */}
-              <div className="flex justify-between mb-2">
-                <span className="font-medium text-gray-900">ID:</span>
-                <span className="text-gray-500">{paciente.id}</span>
-              </div>
-
+              {/* BASICO */}
               <div className="flex justify-between mb-2">
                 <span className="font-medium">Nombre:</span>
                 <span>{info.name}</span>
               </div>
 
               <div className="flex justify-between mb-2">
-                <span className="font-medium">DNI:</span>
+                <span>DNI:</span>
                 <span>{info.document}</span>
               </div>
 
               <div className="flex justify-between mb-2">
-                <span className="font-medium">Edad:</span>
-                <span>{info.birthdate}</span>
+                <span>Edad:</span>
+                <span>{calcularEdad(info.birthdate)}</span>
               </div>
 
               <div className="flex justify-between mb-2">
-                <span className="font-medium">Género:</span>
+                <span>Género:</span>
                 <span>{info.gender}</span>
               </div>
 
               <div className="flex justify-between mb-2">
-                <span className="font-medium">Teléfono:</span>
+                <span>Teléfono:</span>
                 <span>{info.phone}</span>
               </div>
 
-              {/* VITALES */}
               <div className="flex justify-between mb-2">
-                <span className="font-medium">TA:</span>
+                <span>TA:</span>
                 <span>{vitals.bloodPressure}</span>
               </div>
 
               <div className="flex justify-between mb-2">
-                <span className="font-medium">Colesterol:</span>
+                <span>Colesterol:</span>
                 <span>{vitals.totalCholesterol}</span>
               </div>
 
-              {/* BOTON DETALLES */}
+              {/* BOTON */}
               <button
                 onClick={() => toggleDetalles(paciente.id)}
                 className="text-indigo-600 hover:text-indigo-900 mt-2"
@@ -98,43 +104,41 @@ function Circuito() {
               {mostrarDetalles[paciente.id] && (
                 <div className="mt-4 border-t pt-3">
 
-                  {/* HISTORIA CLINICA */}
-                  <h3 className="font-semibold text-gray-700 mb-2">Historia Clínica</h3>
+                  <h3 className="font-semibold mb-2">Historia Clínica</h3>
 
-                  <div className="flex justify-between mb-1">
+                  <div className="flex justify-between">
                     <span>Hipertenso:</span>
-                    <span>{history.isHypertensive ? 'Sí' : 'No'}</span>
+                    <span>{history.hypertensive ? 'Sí' : 'No'}</span>
                   </div>
 
-                  <div className="flex justify-between mb-1">
-                    <span>Diabético:</span>
-                    <span>{history.isDiabetic ? 'Sí' : 'No'}</span>
+                  <div className="flex justify-between">
+                    <span>Diabetes:</span>
+                    <span>{history.diabetic ? 'Sí' : 'No'}</span>
                   </div>
 
-                  <div className="flex justify-between mb-1">
+                  <div className="flex justify-between">
                     <span>Dislipidemia:</span>
                     <span>{history.hasDyslipidemia ? 'Sí' : 'No'}</span>
                   </div>
 
                   <div className="flex justify-between mb-3">
                     <span>Fumador:</span>
-                    <span>{history.isSmoker ? 'Sí' : 'No'}</span>
+                    <span>{history.smoker ? 'Sí' : 'No'}</span>
                   </div>
 
-                  {/* VITALES COMPLETOS */}
-                  <h3 className="font-semibold text-gray-700 mb-2">Estudios</h3>
+                  <h3 className="font-semibold mb-2">Mediciones</h3>
 
-                  <div className="flex justify-between mb-1">
+                  <div className="flex justify-between">
                     <span>Peso:</span>
                     <span>{vitals.weightKg} kg</span>
                   </div>
 
-                  <div className="flex justify-between mb-1">
+                  <div className="flex justify-between">
                     <span>Altura:</span>
                     <span>{vitals.heightCm} cm</span>
                   </div>
 
-                  <div className="flex justify-between mb-1">
+                  <div className="flex justify-between">
                     <span>Cintura:</span>
                     <span>{vitals.waistCircumferenceCm} cm</span>
                   </div>
@@ -144,15 +148,14 @@ function Circuito() {
                     <span>{vitals.estimatedGfr}</span>
                   </div>
 
-                  {/* ADJUNTOS */}
                   {attachments.length > 0 && (
                     <>
-                      <h3 className="font-semibold text-gray-700 mb-2">Adjuntos</h3>
+                      <h3 className="font-semibold mb-2">Adjuntos</h3>
 
-                      {attachments.map((att, index) => (
-                        <div key={index} className="mb-2 text-sm">
-                          <div><strong>Tipo:</strong> {att.type}</div>
-                          <div><strong>Fecha:</strong> {att.issueDate}</div>
+                      {attachments.map((att, i) => (
+                        <div key={i} className="mb-2 text-sm">
+                          <div><strong>{att.type}</strong></div>
+                          <div>{att.issueDate}</div>
                           <a
                             href={att.fileUrl}
                             target="_blank"
@@ -165,7 +168,6 @@ function Circuito() {
                       ))}
                     </>
                   )}
-
                 </div>
               )}
 
@@ -174,8 +176,8 @@ function Circuito() {
         })}
       </div>
 
-      <div className="mt-6 text-lg font-semibold">
-        Total registros: {pacientes.length}
+      <div className="mt-6 font-semibold">
+        Total: {pacientes.length}
       </div>
     </div>
   );

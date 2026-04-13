@@ -45,10 +45,10 @@ public class PacienteCircuito {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ClinicalHistory {
-        private boolean isHypertensive;
-        private boolean isDiabetic;
+        private boolean hypertensive;
+        private boolean diabetic;
         private boolean hasDyslipidemia;
-        private boolean isSmoker;
+        private boolean smoker;
     }
 
     @Embeddable
