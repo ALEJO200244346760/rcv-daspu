@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,9 +27,17 @@ public class PacienteCircuito {
     @Embedded
     private VitalsAndLabs vitalsAndLabs;
 
-    @ElementCollection
-    private List<Attachment> attachments;
+    // 🔥 FIX IMPORTANTE
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "paciente_attachments",
+            joinColumns = @JoinColumn(name = "paciente_id")
+    )
+    private List<Attachment> attachments = new ArrayList<>();
 
+    // =========================
+    // 📌 INFO PACIENTE
+    // =========================
     @Embeddable
     @Data
     @NoArgsConstructor
@@ -40,17 +50,25 @@ public class PacienteCircuito {
         private String name;
     }
 
+    // =========================
+    // 📌 HISTORIA CLINICA
+    // =========================
     @Embeddable
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ClinicalHistory {
+
+        // 🔥 SIN "is"
         private boolean hypertensive;
         private boolean diabetic;
         private boolean hasDyslipidemia;
         private boolean smoker;
     }
 
+    // =========================
+    // 📌 SIGNOS Y LABS
+    // =========================
     @Embeddable
     @Data
     @NoArgsConstructor
@@ -64,6 +82,9 @@ public class PacienteCircuito {
         private Integer estimatedGfr;
     }
 
+    // =========================
+    // 📌 ADJUNTOS
+    // =========================
     @Embeddable
     @Data
     @NoArgsConstructor
