@@ -128,13 +128,19 @@ const Formulario = () => {
     const [mostrarRenal, setMostrarRenal] = useState(false);
     const [creatinina, setCreatinina] = useState('');
     const [tfg, setTfg] = useState(null);
+    const [otrosClinicos, setOtrosClinicos] = useState({
+        sintomaAlarmaOtro: '',
+        interconsultaOtro: '',
+        solicitarEstudiosOtro: '',
+        cambioMedicacionOtro: ''
+    });
+
     const [seleccionesClinicas, setSeleccionesClinicas] = useState({
         sintomaAlarma: [],
         interconsulta: [],
         solicitarEstudios: [],
-        cambioMedicacion: [],
-        });
-
+        cambioMedicacion: []
+    });
     // Variable para el máximo de la fecha (día actual)
     const today = new Date().toISOString().split('T')[0];
     const handleClinicoChange = (categoria, value, checked) => {
@@ -379,57 +385,38 @@ const Formulario = () => {
         setMostrarModal(true);
     };    
 
-    const formatearSeleccion = (seleccion, textoOtro) => {
-        return seleccion
-            .filter(v => v !== "Otro") // Quitamos la palabra "Otro"
-            .concat(textoOtro ? [textoOtro] : []) // Agregamos el texto si existe
-            .join('; '); // Unimos todo con un punto y coma
+    const formatearDataClinica = (listaBotones, textoManual) => {
+    // Filtramos "Otro" y "Ninguno" para que no aparezcan como texto
+    const filtrados = listaBotones.filter(v => v !== "Otro" && v !== "Ninguno");
+    
+    // Si hay texto escrito en el input manual, lo agregamos a la lista
+    if (textoManual && textoManual.trim() !== "") {
+        filtrados.push(textoManual.trim());
+    }
+    
+    return filtrados.join('; ');
     };
 
+    // 4. Función de guardado actualizada
     const guardarPaciente = async () => {
         try {
-            // Armamos el payload usando la función auxiliar
             const payload = {
                 ...datosPaciente,
                 nivelRiesgo,
                 tfg,
-
-                // 🧠 BLOQUE CLÍNICO FORMATEADO
-                sintomaAlarma: formatearSeleccion(
-                    seleccionesClinicas.sintomaAlarma, 
-                    otrosClinicos.sintomaAlarmaOtro
-                ),
-                
-                interconsulta: formatearSeleccion(
-                    seleccionesClinicas.interconsulta, 
-                    otrosClinicos.interconsultaOtro
-                ),
-                
-                solicitarEstudios: formatearSeleccion(
-                    seleccionesClinicas.solicitarEstudios, 
-                    otrosClinicos.solicitarEstudiosOtro
-                ),
-                
-                cambioMedicacion: formatearSeleccion(
-                    seleccionesClinicas.cambioMedicacion, 
-                    otrosClinicos.cambioMedicacionOtro
-                )
+                // Aquí ocurre la magia: limpiamos los datos antes de enviar
+                sintomaAlarma: formatearDataClinica(seleccionesClinicas.sintomaAlarma, otrosClinicos.sintomaAlarmaOtro),
+                interconsulta: formatearDataClinica(seleccionesClinicas.interconsulta, otrosClinicos.interconsultaOtro),
+                solicitarEstudios: formatearDataClinica(seleccionesClinicas.solicitarEstudios, otrosClinicos.solicitarEstudiosOtro),
+                cambioMedicacion: formatearDataClinica(seleccionesClinicas.cambioMedicacion, otrosClinicos.cambioMedicacionOtro),
             };
 
             await axiosInstance.post('/api/pacientes', payload);
-
-            console.log('Datos guardados exitosamente');
             setMensajeExito('Paciente guardado con éxito');
-
-            setTimeout(() => setMensajeExito(''), 3000);
-
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-
+            setTimeout(() => window.location.reload(), 1500);
         } catch (error) {
-            console.error('Error al guardar los datos:', error);
-            setModalAdvertencia('Ocurrió un error al guardar los datos. Por favor, vuelva a cargar la página.');
+            console.error('Error:', error);
+            setModalAdvertencia('Error al guardar datos.');
             setMostrarModal(true);
         }
     };
@@ -1143,223 +1130,161 @@ const Formulario = () => {
                                 />
                             </div>
 
-                            {/* Síntomas de alarma */}
-                            <div className="flex flex-col">
-                                <label className="text-sm font-medium text-gray-700 mb-2">
-                                    Síntomas de alarma
-                                </label>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                    {[
-                                        "Dolor en el pecho o falta de aire al hacer esfuerzos",
-                                        "Hinchazón de piernas, manos o cara por la tarde",
-                                        "Micción frecuente nocturna",
-                                        "Despertar por falta de aire o palpitaciones",
-                                        "Mareos / desmayos / pérdidas de conocimiento",
-                                        "Otro",
-                                        "Ninguno"
-                                    ].map(option => (
-                                        <button
-                                            key={option}
-                                            type="button"
-                                            onClick={() => {
-                                                setSeleccionesClinicas(prev => {
-                                                    const exists = prev.sintomaAlarma.includes(option);
-                                                    const updated = exists
-                                                        ? prev.sintomaAlarma.filter(v => v !== option)
-                                                        : [...prev.sintomaAlarma, option];
-                                                    return { ...prev, sintomaAlarma: updated };
-                                                });
-                                            }}
-                                            className={`p-2 text-sm border rounded-md transition-colors ${
-                                                seleccionesClinicas.sintomaAlarma.includes(option)
-                                                    ? 'bg-red-500 text-white border-red-500'
-                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
+                            {/* SECCIÓN CLÍNICA */}
+                            <div className="space-y-6">
+                                {/* Síntomas de alarma */}
+                                <div className="flex flex-col">
+                                    <label className="text-sm font-medium text-gray-700 mb-2">Síntomas de alarma</label>
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {[
+                                            "Dolor en el pecho o falta de aire al hacer esfuerzos",
+                                            "Hinchazón de piernas, manos o cara por la tarde",
+                                            "Micción frecuente nocturna",
+                                            "Despertar por falta de aire o palpitaciones",
+                                            "Mareos / desmayos / pérdidas de conocimiento",
+                                            "Otro",
+                                            "Ninguno"
+                                        ].map(option => (
+                                            <button
+                                                key={option}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSeleccionesClinicas(prev => {
+                                                        const exists = prev.sintomaAlarma.includes(option);
+                                                        const updated = exists
+                                                            ? prev.sintomaAlarma.filter(v => v !== option)
+                                                            : [...prev.sintomaAlarma, option];
+                                                        return { ...prev, sintomaAlarma: updated };
+                                                    });
+                                                }}
+                                                className={`p-2 text-sm border rounded-md transition-all ${
+                                                    seleccionesClinicas.sintomaAlarma.includes(option)
+                                                        ? 'bg-red-500 text-white border-red-500 shadow-sm'
+                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {seleccionesClinicas.sintomaAlarma.includes("Otro") && (
+                                        <input
+                                            type="text"
+                                            placeholder="Especifique el síntoma"
+                                            value={otrosClinicos.sintomaAlarmaOtro}
+                                            onChange={(e) => setOtrosClinicos({...otrosClinicos, sintomaAlarmaOtro: e.target.value})}
+                                            className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-red-500 outline-none"
+                                        />
+                                    )}
                                 </div>
-                                {seleccionesClinicas.sintomaAlarma.includes("Otro") && (
-                                    <input
-                                        type="text"
-                                        placeholder="Especifique el síntoma"
-                                        value={otrosClinicos.sintomaAlarmaOtro}
-                                        onChange={(e) =>
-                                            setOtrosClinicos(prev => ({
-                                                ...prev,
-                                                sintomaAlarmaOtro: e.target.value
-                                            }))
-                                        }
-                                        className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full"
-                                    />
-                                )}
-                            </div>
 
-                            {/* Interconsulta */}
-                            <div className="flex flex-col mt-4">
-                                <label className="text-sm font-medium text-gray-700 mb-2">
-                                    Interconsulta
-                                </label>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                    {[
-                                        "Clínica médica",
-                                        "Endocrinología",
-                                        "Ginecología",
-                                        "Urología",
-                                        "Psiquiatría",
-                                        "Nutrición",
-                                        "Neumonología",
-                                        "Hematología",
-                                        "Oftalmología",
-                                        "Otro"
-                                    ].map(option => (
-                                        <button
-                                            key={option}
-                                            type="button"
-                                            onClick={() => {
-                                                setSeleccionesClinicas(prev => {
-                                                    const exists = prev.interconsulta.includes(option);
-                                                    const updated = exists
-                                                        ? prev.interconsulta.filter(v => v !== option)
-                                                        : [...prev.interconsulta, option];
-                                                    return { ...prev, interconsulta: updated };
-                                                });
-                                            }}
-                                            className={`p-2 text-sm border rounded-md transition-colors ${
-                                                seleccionesClinicas.interconsulta.includes(option)
-                                                    ? 'bg-blue-500 text-white border-blue-500'
-                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
+                                {/* Interconsulta */}
+                                <div className="flex flex-col">
+                                    <label className="text-sm font-medium text-gray-700 mb-2">Interconsulta</label>
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {["Clínica médica", "Endocrinología", "Ginecología", "Urología", "Psiquiatría", "Nutrición", "Neumonología", "Hematología", "Oftalmología", "Otro"].map(option => (
+                                            <button
+                                                key={option}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSeleccionesClinicas(prev => {
+                                                        const exists = prev.interconsulta.includes(option);
+                                                        const updated = exists ? prev.interconsulta.filter(v => v !== option) : [...prev.interconsulta, option];
+                                                        return { ...prev, interconsulta: updated };
+                                                    });
+                                                }}
+                                                className={`p-2 text-sm border rounded-md transition-all ${
+                                                    seleccionesClinicas.interconsulta.includes(option)
+                                                        ? 'bg-blue-500 text-white border-blue-500 shadow-sm'
+                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {seleccionesClinicas.interconsulta.includes("Otro") && (
+                                        <input
+                                            type="text"
+                                            placeholder="Especifique la especialidad"
+                                            value={otrosClinicos.interconsultaOtro}
+                                            onChange={(e) => setOtrosClinicos({...otrosClinicos, interconsultaOtro: e.target.value})}
+                                            className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-blue-500 outline-none"
+                                        />
+                                    )}
                                 </div>
-                                {seleccionesClinicas.interconsulta.includes("Otro") && (
-                                    <input
-                                        type="text"
-                                        placeholder="Especifique la especialidad"
-                                        value={otrosClinicos.interconsultaOtro}
-                                        onChange={(e) =>
-                                            setOtrosClinicos(prev => ({
-                                                ...prev,
-                                                interconsultaOtro: e.target.value
-                                            }))
-                                        }
-                                        className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full"
-                                    />
-                                )}
-                            </div>
 
-                            {/* Solicitar estudios */}
-                            <div className="flex flex-col mt-4">
-                                <label className="text-sm font-medium text-gray-700 mb-2">
-                                    Solicitar estudios complementarios
-                                </label>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                    {[
-                                        "Ecocardiograma",
-                                        "Ergometría",
-                                        "Holter",
-                                        "Mapeo",
-                                        "Eco Doppler de vasos de cuello",
-                                        "Eco Doppler de miembros inferiores",
-                                        "Ecografía abdominal",
-                                        "Telerradiografía de tórax",
-                                        "Perfusión miocárdica",
-                                        "Cateterismo cardíaco",
-                                        "Laboratorio ampliado",
-                                        "Fondo de ojos",
-                                        "Otro"
-                                    ].map(option => (
-                                        <button
-                                            key={option}
-                                            type="button"
-                                            onClick={() => {
-                                                setSeleccionesClinicas(prev => {
-                                                    const exists = prev.solicitarEstudios.includes(option);
-                                                    const updated = exists
-                                                        ? prev.solicitarEstudios.filter(v => v !== option)
-                                                        : [...prev.solicitarEstudios, option];
-                                                    return { ...prev, solicitarEstudios: updated };
-                                                });
-                                            }}
-                                            className={`p-2 text-sm border rounded-md transition-colors ${
-                                                seleccionesClinicas.solicitarEstudios.includes(option)
-                                                    ? 'bg-purple-500 text-white border-purple-500'
-                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
+                                {/* Solicitar estudios */}
+                                <div className="flex flex-col">
+                                    <label className="text-sm font-medium text-gray-700 mb-2">Solicitar estudios complementarios</label>
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {["Ecocardiograma", "Ergometría", "Holter", "Mapeo", "Vasos de cuello", "Doppler MMII", "Ecografía abdominal", "Rayos X Tórax", "Otro"].map(option => (
+                                            <button
+                                                key={option}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSeleccionesClinicas(prev => {
+                                                        const exists = prev.solicitarEstudios.includes(option);
+                                                        const updated = exists ? prev.solicitarEstudios.filter(v => v !== option) : [...prev.solicitarEstudios, option];
+                                                        return { ...prev, solicitarEstudios: updated };
+                                                    });
+                                                }}
+                                                className={`p-2 text-sm border rounded-md transition-all ${
+                                                    seleccionesClinicas.solicitarEstudios.includes(option)
+                                                        ? 'bg-purple-500 text-white border-purple-500 shadow-sm'
+                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {seleccionesClinicas.solicitarEstudios.includes("Otro") && (
+                                        <input
+                                            type="text"
+                                            placeholder="Especifique el estudio"
+                                            value={otrosClinicos.solicitarEstudiosOtro}
+                                            onChange={(e) => setOtrosClinicos({...otrosClinicos, solicitarEstudiosOtro: e.target.value})}
+                                            className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-purple-500 outline-none"
+                                        />
+                                    )}
                                 </div>
-                                {seleccionesClinicas.solicitarEstudios.includes("Otro") && (
-                                    <input
-                                        type="text"
-                                        placeholder="Especifique el estudio"
-                                        value={otrosClinicos.solicitarEstudiosOtro}
-                                        onChange={(e) =>
-                                            setOtrosClinicos(prev => ({
-                                                ...prev,
-                                                solicitarEstudiosOtro: e.target.value
-                                            }))
-                                        }
-                                        className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full"
-                                    />
-                                )}
-                            </div>
 
-                            {/* Cambio de medicación */}
-                            <div className="flex flex-col mt-4">
-                                <label className="text-sm font-medium text-gray-700 mb-2">
-                                    Cambio de medicación
-                                </label>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                    {[
-                                        "Agrego",
-                                        "Aumento",
-                                        "Suspendo",
-                                        "Reduzco",
-                                        "Otro"
-                                    ].map(option => (
-                                        <button
-                                            key={option}
-                                            type="button"
-                                            onClick={() => {
-                                                setSeleccionesClinicas(prev => {
-                                                    const exists = prev.cambioMedicacion.includes(option);
-                                                    const updated = exists
-                                                        ? prev.cambioMedicacion.filter(v => v !== option)
-                                                        : [...prev.cambioMedicacion, option];
-                                                    return { ...prev, cambioMedicacion: updated };
-                                                });
-                                            }}
-                                            className={`p-2 text-sm border rounded-md transition-colors ${
-                                                seleccionesClinicas.cambioMedicacion.includes(option)
-                                                    ? 'bg-green-600 text-white border-green-600'
-                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
+                                {/* Cambio de medicación */}
+                                <div className="flex flex-col">
+                                    <label className="text-sm font-medium text-gray-700 mb-2">Cambio de medicación</label>
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {["Agrego", "Aumento", "Suspendo", "Reduzco", "Otro"].map(option => (
+                                            <button
+                                                key={option}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSeleccionesClinicas(prev => {
+                                                        const exists = prev.cambioMedicacion.includes(option);
+                                                        const updated = exists ? prev.cambioMedicacion.filter(v => v !== option) : [...prev.cambioMedicacion, option];
+                                                        return { ...prev, cambioMedicacion: updated };
+                                                    });
+                                                }}
+                                                className={`p-2 text-sm border rounded-md transition-all ${
+                                                    seleccionesClinicas.cambioMedicacion.includes(option)
+                                                        ? 'bg-green-600 text-white border-green-600 shadow-sm'
+                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {seleccionesClinicas.cambioMedicacion.includes("Otro") && (
+                                        <input
+                                            type="text"
+                                            placeholder="Especifique el cambio"
+                                            value={otrosClinicos.cambioMedicacionOtro}
+                                            onChange={(e) => setOtrosClinicos({...otrosClinicos, cambioMedicacionOtro: e.target.value})}
+                                            className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-green-600 outline-none"
+                                        />
+                                    )}
                                 </div>
-                                {seleccionesClinicas.cambioMedicacion.includes("Otro") && (
-                                    <input
-                                        type="text"
-                                        placeholder="Especifique el cambio"
-                                        value={otrosClinicos.cambioMedicacionOtro}
-                                        onChange={(e) =>
-                                            setOtrosClinicos(prev => ({
-                                                ...prev,
-                                                cambioMedicacionOtro: e.target.value
-                                            }))
-                                        }
-                                        className="mt-1 p-2 border border-gray-300 rounded-md text-sm w-full"
-                                    />
-                                )}
                             </div>
 
                 {/* Doctor */}
