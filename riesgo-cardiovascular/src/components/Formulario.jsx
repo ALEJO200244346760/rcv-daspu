@@ -5,6 +5,53 @@ import { getLocations } from '../services/userService';
 import axiosInstance from '../axiosConfig';
 import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
 
+const listaSintomaAlarma = [
+  "Dolor en el pecho o falta de aire al hacer esfuerzos",
+  "Hinchazón de piernas, manos o cara por la tarde",
+  "Micción frecuente nocturna",
+  "Despertar por falta de aire o palpitaciones",
+  "Mareos / desmayos / pérdidas de conocimiento",
+  "Otro",
+  "Ninguno"
+];
+
+const listaInterconsulta = [
+  "Clínica médica",
+  "Endocrinología",
+  "Ginecología",
+  "Urología",
+  "Psiquiatría",
+  "Nutrición",
+  "Neumonología",
+  "Hematología",
+  "Oftalmología",
+  "Otro"
+];
+
+const listaSolicitarEstudios = [
+  "Ecocardiograma",
+  "Ergometría",
+  "Holter",
+  "Mapeo",
+  "Eco Doppler de vasos de cuello",
+  "Eco Doppler de miembros inferiores",
+  "Ecografía abdominal",
+  "Telerradiografía de tórax",
+  "Perfusión miocárdica",
+  "Cateterismo cardíaco",
+  "Laboratorio ampliado",
+  "Fondo de ojos",
+  "Otro"
+];
+
+const listaCambioMedicacion = [
+  "Agrego",
+  "Aumento",
+  "Suspendo",
+  "Reduzco",
+  "Otro"
+];
+
 const [seleccionesClinicas, setSeleccionesClinicas] = useState({
   sintomaAlarma: [],
   interconsulta: [],
