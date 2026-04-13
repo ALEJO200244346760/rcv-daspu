@@ -54,7 +54,7 @@ const Header = () => {
 
         {/* NUEVO LINK AGREGADO */}
         <Link to="/circuito" className="block lg:inline-block hover:text-gray-300">
-          Circuito de components
+          Circuito
         </Link>
 
         {hasCardiologoRole && (
