@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 function Circuito() {
   const [pacientes, setPacientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mostrarDetalles, setMostrarDetalles] = useState({});
+  const [archivoActivo, setArchivoActivo] = useState(null);
 
   const apiBaseURL = 'https://rcv-daspu-production.up.railway.app';
 
@@ -39,6 +42,22 @@ function Circuito() {
     return edad;
   };
 
+  // 📄 EXPORTAR PDF
+  const exportarPDF = async (id) => {
+    const input = document.getElementById(`paciente-${id}`);
+    if (!input) return;
+
+    const canvas = await html2canvas(input);
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const width = pdf.internal.pageSize.getWidth();
+    const height = (canvas.height * width) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    pdf.save(`paciente-${id}.pdf`);
+  };
+
   if (loading) return <p className="p-4">Cargando...</p>;
 
   return (
@@ -54,9 +73,13 @@ function Circuito() {
           const attachments = paciente.attachments || [];
 
           return (
-            <div key={paciente.id} className="bg-white shadow-md rounded-lg p-4">
+            <div
+              key={paciente.id}
+              id={`paciente-${paciente.id}`}
+              className="bg-white shadow-md rounded-lg p-4"
+            >
 
-              {/* BASICO */}
+              {/* 🧑 DATOS BÁSICOS */}
               <div className="flex justify-between mb-2">
                 <span className="font-medium">Nombre:</span>
                 <span>{info.name}</span>
@@ -92,78 +115,64 @@ function Circuito() {
                 <span>{vitals.totalCholesterol}</span>
               </div>
 
-              {/* BOTON */}
-              <button
-                onClick={() => toggleDetalles(paciente.id)}
-                className="text-indigo-600 hover:text-indigo-900 mt-2"
-              >
-                {mostrarDetalles[paciente.id] ? 'Mostrar menos' : 'Mostrar más'}
-              </button>
+              {/* BOTONES */}
+              <div className="flex justify-between mt-2">
+                <button
+                  onClick={() => toggleDetalles(paciente.id)}
+                  className="text-indigo-600 hover:text-indigo-900"
+                >
+                  {mostrarDetalles[paciente.id] ? 'Ocultar' : 'Ver más'}
+                </button>
 
-              {/* DETALLES */}
+                <button
+                  onClick={() => exportarPDF(paciente.id)}
+                  className="text-green-600 hover:text-green-900"
+                >
+                  PDF
+                </button>
+              </div>
+
+              {/* 🏥 HISTORIA CLÍNICA */}
               {mostrarDetalles[paciente.id] && (
-                <div className="mt-4 border-t pt-3">
+                <div className="mt-4 border-t pt-3 text-sm">
 
-                  <h3 className="font-semibold mb-2">Historia Clínica</h3>
+                  <h2 className="font-bold text-lg mb-2">Historia Clínica</h2>
 
-                  <div className="flex justify-between">
-                    <span>Hipertenso:</span>
-                    <span>{history.hypertensive ? 'Sí' : 'No'}</span>
-                  </div>
+                  <p><strong>Paciente:</strong> {info.name}</p>
+                  <p><strong>DNI:</strong> {info.document}</p>
+                  <p><strong>Edad:</strong> {calcularEdad(info.birthdate)}</p>
 
-                  <div className="flex justify-between">
-                    <span>Diabetes:</span>
-                    <span>{history.diabetic ? 'Sí' : 'No'}</span>
-                  </div>
+                  <h3 className="font-semibold mt-3">Antecedentes</h3>
+                  <p>Hipertensión: {history.hypertensive ? 'Sí' : 'No'}</p>
+                  <p>Diabetes: {history.diabetic ? 'Sí' : 'No'}</p>
+                  <p>Dislipidemia: {history.hasDyslipidemia ? 'Sí' : 'No'}</p>
+                  <p>Tabaquismo: {history.smoker ? 'Sí' : 'No'}</p>
 
-                  <div className="flex justify-between">
-                    <span>Dislipidemia:</span>
-                    <span>{history.hasDyslipidemia ? 'Sí' : 'No'}</span>
-                  </div>
+                  <h3 className="font-semibold mt-3">Examen Físico</h3>
+                  <p>TA: {vitals.bloodPressure}</p>
+                  <p>Peso: {vitals.weightKg} kg</p>
+                  <p>Altura: {vitals.heightCm} cm</p>
+                  <p>Cintura: {vitals.waistCircumferenceCm} cm</p>
 
-                  <div className="flex justify-between mb-3">
-                    <span>Fumador:</span>
-                    <span>{history.smoker ? 'Sí' : 'No'}</span>
-                  </div>
+                  <h3 className="font-semibold mt-3">Laboratorio</h3>
+                  <p>Colesterol: {vitals.totalCholesterol}</p>
+                  <p>TFG: {vitals.estimatedGfr}</p>
 
-                  <h3 className="font-semibold mb-2">Mediciones</h3>
-
-                  <div className="flex justify-between">
-                    <span>Peso:</span>
-                    <span>{vitals.weightKg} kg</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Altura:</span>
-                    <span>{vitals.heightCm} cm</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Cintura:</span>
-                    <span>{vitals.waistCircumferenceCm} cm</span>
-                  </div>
-
-                  <div className="flex justify-between mb-3">
-                    <span>TFG:</span>
-                    <span>{vitals.estimatedGfr}</span>
-                  </div>
-
+                  {/* 📎 ADJUNTOS */}
                   {attachments.length > 0 && (
                     <>
-                      <h3 className="font-semibold mb-2">Adjuntos</h3>
+                      <h3 className="font-semibold mt-3">Estudios</h3>
 
                       {attachments.map((att, i) => (
-                        <div key={i} className="mb-2 text-sm">
-                          <div><strong>{att.type}</strong></div>
-                          <div>{att.issueDate}</div>
-                          <a
-                            href={att.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <div key={i} className="mb-2">
+                          <p><strong>{att.type}</strong> - {att.issueDate}</p>
+
+                          <button
+                            onClick={() => setArchivoActivo(att.fileUrl)}
                             className="text-blue-600 hover:underline"
                           >
-                            Ver archivo
-                          </a>
+                            Ver estudio
+                          </button>
                         </div>
                       ))}
                     </>
@@ -176,9 +185,32 @@ function Circuito() {
         })}
       </div>
 
+      {/* 📊 TOTAL */}
       <div className="mt-6 font-semibold">
         Total: {pacientes.length}
       </div>
+
+      {/* 🧾 MODAL VISOR */}
+      {archivoActivo && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white w-11/12 h-5/6 p-4 relative rounded shadow-lg">
+
+            <button
+              onClick={() => setArchivoActivo(null)}
+              className="absolute top-2 right-3 text-red-600 text-xl"
+            >
+              ✕
+            </button>
+
+            <iframe
+              src={archivoActivo}
+              title="Documento"
+              className="w-full h-full border"
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
