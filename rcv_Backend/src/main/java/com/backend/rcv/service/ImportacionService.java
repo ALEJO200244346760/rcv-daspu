@@ -1,20 +1,13 @@
 package com.backend.rcv.service;
 
-// 1. Modelos y Repositorio
 import com.backend.rcv.model.PacienteCircuito;
 import com.backend.rcv.repository.PacienteCircuitoRepository;
-import com.backend.rcv.repository.PacienteRepository;
-
-// 2. Spring Framework
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-// 3. Apache Commons CSV (Asegurate de tener la dependencia en el pom.xml)
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-// 4. Utilidades de Java (IO y Collections)
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,8 +19,8 @@ import java.util.List;
 public class ImportacionService {
 
     @Autowired
-    private PacienteCircuitoRepository repository; // Asegurate que el nombre coincida con la interfaz que acabas de crear
-    
+    private PacienteCircuitoRepository repository;
+
     public void importarDesdeCSV(InputStream inputStream) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
@@ -39,39 +32,31 @@ public class ImportacionService {
 
         for (CSVRecord record : csvParser) {
             PacienteCircuito p = new PacienteCircuito();
-            
-            // 1. Info Personal
-            PacienteCircuito.PatientInfo info = new PacienteCircuito.PatientInfo();
-            info.setNombreApellido(record.get("NOMBRE Y APELLIDO"));
-            info.setDni(record.get("DNI"));
-            info.setTelefono(record.get("TELEFONO"));
-            info.setSexo(record.get("SEXO"));
-            info.setFechaNacimiento(record.get("FECHA NACIMIENTO"));
-            p.setPatientInfo(info);
 
-            // 2. Examen Físico
-            PacienteCircuito.ExamenFisico fisico = new PacienteCircuito.ExamenFisico();
-            fisico.setPeso(parseSafeDouble(record.get("PESO")));
-            fisico.setTalla(parseSafeDouble(record.get("TALLA")));
-            fisico.setTensionArterial(record.get("TENSION ARTERIAL"));
-            fisico.setImc(parseSafeDouble(record.get("IMC")));
-            p.setExamenFisico(fisico);
+            // Info Personal
+            p.getPatientInfo().setNombreApellido(record.get("NOMBRE Y APELLIDO"));
+            p.getPatientInfo().setDni(record.get("DNI"));
+            p.getPatientInfo().setTelefono(record.get("TELEFONO"));
+            p.getPatientInfo().setSexo(record.get("SEXO"));
+            p.getPatientInfo().setFechaNacimiento(record.get("FECHA NACIMIENTO"));
 
-            // 3. Laboratorio (Hemograma)
-            PacienteCircuito.LaboratorioDetallado lab = new PacienteCircuito.LaboratorioDetallado();
-            lab.setHemoglobina(parseSafeDouble(record.get("HEMO GLOBINA")));
-            lab.setGlucemia(parseSafeDouble(record.get("GLUCEMIA")));
-            lab.setColesterolTotal(parseSafeDouble(record.get("COLESTROL TOTAL")));
-            lab.setLdl(parseSafeDouble(record.get("LDL")));
-            lab.setHdl(parseSafeDouble(record.get("HDL")));
-            lab.setTrigliceridos(parseSafeDouble(record.get("TRIGLI CERIDOS")));
-            p.setLaboratorio(lab);
+            // Examen Físico
+            p.getExamenFisico().setPeso(parseSafeDouble(record.get("PESO")));
+            p.getExamenFisico().setTalla(parseSafeDouble(record.get("TALLA")));
+            p.getExamenFisico().setTensionArterial(record.get("TENSION ARTERIAL"));
+            p.getExamenFisico().setImc(parseSafeDouble(record.get("IMC")));
 
-            // 4. Antecedentes (Booleanos)
-            PacienteCircuito.AntecedentesPersonales ant = new PacienteCircuito.AntecedentesPersonales();
-            ant.setDiabetes(parseBoolean(record.get("DIABETES")));
-            ant.setHipertension(parseBoolean(record.get("HIPERTENSIÓN")));
-            p.setAntecedentesPersonales(ant);
+            // Laboratorio
+            p.getLaboratorio().setHemoglobina(parseSafeDouble(record.get("HEMO GLOBINA")));
+            p.getLaboratorio().setGlucemia(parseSafeDouble(record.get("GLUCEMIA")));
+            p.getLaboratorio().setColesterolTotal(parseSafeDouble(record.get("COLESTROL TOTAL")));
+            p.getLaboratorio().setLdl(parseSafeDouble(record.get("LDL")));
+            p.getLaboratorio().setHdl(parseSafeDouble(record.get("HDL")));
+            p.getLaboratorio().setTrigliceridos(parseSafeDouble(record.get("TRIGLI CERIDOS")));
+
+            // Antecedentes
+            p.getAntecedentesPersonales().setDiabetes(parseBoolean(record.get("DIABETES")));
+            p.getAntecedentesPersonales().setHipertension(parseBoolean(record.get("HIPERTENSIÓN")));
 
             pacientes.add(p);
         }
@@ -80,7 +65,6 @@ public class ImportacionService {
         csvParser.close();
     }
 
-    // Métodos auxiliares para evitar errores si el CSV tiene campos vacíos
     private Double parseSafeDouble(String val) {
         try { return (val == null || val.isEmpty()) ? 0.0 : Double.parseDouble(val.replace(",", ".")); }
         catch (Exception e) { return 0.0; }

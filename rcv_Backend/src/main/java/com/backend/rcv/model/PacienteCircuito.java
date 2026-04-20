@@ -18,39 +18,35 @@ public class PacienteCircuito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // --- DATOS DE GESTIÓN (ORIGEN, TURNO, ASISTENCIA) ---
     private String origenTurno;
     private Boolean asistio = false;
     private String fechaConsulta;
     private String ultimaConsulta;
 
     @Embedded
-    private PatientInfo patientInfo;
+    private PatientInfo patientInfo = new PatientInfo();
 
     @Embedded
-    private AntecedentesPersonales antecedentesPersonales;
+    private AntecedentesPersonales antecedentesPersonales = new AntecedentesPersonales();
 
     @Embedded
-    private AntecedentesFamiliares antecedentesFamiliares;
+    private AntecedentesFamiliares antecedentesFamiliares = new AntecedentesFamiliares();
 
     @Embedded
-    private ExamenFisico examenFisico;
+    private ExamenFisico examenFisico = new ExamenFisico();
 
     @Embedded
-    private LaboratorioDetallado laboratorio;
+    private LaboratorioDetallado laboratorio = new LaboratorioDetallado();
 
     @Embedded
-    private ExamenOrina orina;
+    private ExamenOrina orina = new ExamenOrina();
 
     @Embedded
-    private EvaluacionClinica evaluacion;
+    private EvaluacionClinica evaluacion = new EvaluacionClinica();
 
     @ElementCollection
     private List<Medication> medicacionActual = new ArrayList<>();
 
-    // =========================
-    // 1. INFO PERSONAL (NOMBRE, DNI, TEL, SEXO)
-    // =========================
     @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
     public static class PatientInfo {
         private String nombreApellido;
@@ -60,35 +56,27 @@ public class PacienteCircuito {
         private String sexo;
     }
 
-    // =========================
-    // 2. ANTECEDENTES PERSONALES (DIABETES, HTA, CANCER, etc.)
-    // =========================
     @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
     public static class AntecedentesPersonales {
         private Boolean diabetes = false;
         private Boolean hipertension = false;
         private Boolean dislipidemia = false;
-        private Boolean ecv = false; // Enfermedad Cardiovascular
+        private Boolean ecv = false;
         private Boolean epoc = false;
-        private Boolean icc = false; // Insuficiencia Cardíaca
+        private Boolean icc = false;
         private Boolean asma = false;
         private Boolean artritis = false;
         private Boolean enfermedadRenal = false;
         private Boolean ataqueCardiaco = false;
         private Boolean anginaPecho = false;
         private Boolean ictus = false;
-        
-        // CÁNCER Y PREVENCIÓN
         private Boolean cancer = false;
         private String cancerTipoAnio;
         private String mamografiaFecha;
-        private String papSomfFecha; // PAP / SOMF (Sangre oculta en materia fecal)
+        private String papSomfFecha;
         private String albuminuria;
     }
 
-    // =========================
-    // 3. ANTECEDENTES FAMILIARES (AF1... CDA... AL...)
-    // =========================
     @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
     public static class AntecedentesFamiliares {
         private Boolean afDiabetes = false;
@@ -97,19 +85,14 @@ public class PacienteCircuito {
         private Boolean afAcv = false;
         private Boolean afCancer = false;
         private String afCancerTipoAnio;
-        
-        // Campos de codificación (AF1-4, CDT, CDA, AL, TA, FAT, RES, DEA, PDP)
-        private String afCodigos; // Para agrupar AF1, AF2, AF3, AF4
-        private String cdtCodigos; // CDT 1, 2, 3, 4
-        private String cdaCodigos; // CDA 1, 2, 3
-        private String alCodigos;  // AL 1, 2, 3 + Descripciones
-        private String taCodigos;  // TA 1 al 10
-        private String fatResDeaPdp; // FAT1, FAT2, RES1, RES2, DEA1, DEA2, PDP1
+        private String afCodigos;
+        private String cdtCodigos;
+        private String cdaCodigos;
+        private String alCodigos;
+        private String taCodigos;
+        private String fatResDeaPdp;
     }
 
-    // =========================
-    // 4. EXAMEN FÍSICO (PESO, TALLA, TA, FREC)
-    // =========================
     @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
     public static class ExamenFisico {
         private Double peso;
@@ -120,12 +103,8 @@ public class PacienteCircuito {
         private Integer frecuenciaCardiaca;
     }
 
-    // =========================
-    // 5. LABORATORIO (HEMOGRAMA Y QUÍMICA)
-    // =========================
     @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
     public static class LaboratorioDetallado {
-        // Hemograma
         private Double eritrocitos;
         private Double hemoglobina;
         private Double hematocrito;
@@ -141,8 +120,6 @@ public class PacienteCircuito {
         private Double monocitos;
         private Double neutrofilosAbsoluto;
         private Double linfocitosAbsoluto;
-        
-        // Química
         private Double glucemia;
         private Double creatinina;
         private Double filtradoGlomerular;
@@ -155,9 +132,6 @@ public class PacienteCircuito {
         private Double trigliceridos;
     }
 
-    // =========================
-    // 6. ORINA COMPLETA
-    // =========================
     @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
     public static class ExamenOrina {
         private Double proteinuria;
@@ -171,7 +145,7 @@ public class PacienteCircuito {
         private String glucosa;
         private String cetonas;
         private String bilirrubina;
-        private String hemoglobina2; // Hemoglobina en orina
+        private String hemoglobina2;
         private String urobilinogeno;
         private String nitritos;
         private String celulasEpitPlanas;
@@ -179,18 +153,12 @@ public class PacienteCircuito {
         private String hematiesOrina;
     }
 
-    // =========================
-    // 7. ALERTAS Y RCV
-    // =========================
     @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
     public static class EvaluacionClinica {
-        private String rcvNivel; // Riesgo Cardiovascular
-        private String alertasClinicas; // Texto largo para observaciones
+        private String rcvNivel;
+        private String alertasClinicas;
     }
 
-    // =========================
-    // MEDICACIÓN (LISTA)
-    // =========================
     @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
     public static class Medication {
         private String descripcion;
