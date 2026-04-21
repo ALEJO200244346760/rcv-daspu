@@ -218,6 +218,10 @@ const Formulario = () => {
              console.log("No patient data found in location.state.");
         }
     }, [location.state]);
+    
+    useEffect(() => {
+        alert("Contenido de state: " + JSON.stringify(location.state));
+    }, [location]);
 
     useEffect(() => {
         if (!creatinina || isNaN(creatinina) || !datosPaciente.edad || !datosPaciente.genero) {
