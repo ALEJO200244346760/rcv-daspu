@@ -23,15 +23,8 @@ function Circuito() {
       });
   }, []);
 
-  // Función para navegar al formulario pasando el estado del paciente
   const irAFormularioRCV = (paciente) => {
-    console.log("Enviando paciente:", paciente); // Agrega este log para ver si el objeto existe antes de salir
-    navigate('/formulario', { 
-        state: { 
-            pacienteSeleccionado: paciente 
-        },
-        replace: true // Prueba agregando replace para evitar historial sucio
-    });
+    navigate('/', { state: { pacienteSeleccionado: paciente } }); // Navega a / en lugar de /formulario
   };
 
   const pacientesFiltrados = pacientes.filter(p =>
