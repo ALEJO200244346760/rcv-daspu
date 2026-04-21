@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ImportacionService {
@@ -20,27 +21,48 @@ public class ImportacionService {
 
     public void importarDesdeExcel(InputStream inputStream) throws Exception {
         Workbook workbook = new XSSFWorkbook(inputStream);
-        Sheet sheet = workbook.getSheetAt(0); // Lee la primera hoja
-        Iterator<Row> rows = sheet.iterator();
+        Sheet sheet = workbook.getSheetAt(0); // Primera hoja
+
+        // Buscamos la fila de encabezados (usualmente la 1 o 2 dependiendo de tu Excel)
+        // En tu archivo parece ser la fila 1 (índice 1) porque la 0 tiene grupos (HEMATOLOGIA, etc)
+        Row headerRow = sheet.getRow(1);
+        Map<String, Integer> headers = new HashMap<>();
+        for (Cell cell : headerRow) {
+            headers.put(cell.getStringCellValue().trim().toUpperCase(), cell.getColumnIndex());
+        }
 
         List<PacienteCircuito> pacientes = new ArrayList<>();
 
-        // Saltar encabezado si existe
-        if (rows.hasNext()) rows.next();
+        for (int i = 2; i <= sheet.getLastRowNum(); i++) { // Empezamos después de los encabezados
+            Row row = sheet.getRow(i);
+            if (row == null || isRowEmpty(row)) continue;
 
-        while (rows.hasNext()) {
-            Row currentRow = rows.next();
             PacienteCircuito p = new PacienteCircuito();
 
-            // Mapeo por índice de columna (Ajustar según tu Excel)
-            // 0=Fecha, 1=Nombre, 2=DNI, 3=Eritrocitos...
+            // 1. Info Personal
+            p.getPatientInfo().setNombreApellido(getVal(row, headers, "NOMBRE Y APELLIDO"));
+            p.getPatientInfo().setDni(getVal(row, headers, "DNI"));
+            p.getPatientInfo().setTelefono(getVal(row, headers, "TELEFONO"));
+            p.getPatientInfo().setSexo(getVal(row, headers, "SEXO"));
+            p.getPatientInfo().setFechaNacimiento(getVal(row, headers, "FECHA NACIMIENTO"));
 
-            p.getPatientInfo().setNombreApellido(getCellValue(currentRow.getCell(1)));
-            p.getPatientInfo().setDni(getCellValue(currentRow.getCell(2)));
+            // 2. Examen Físico
+            p.getExamenFisico().setPeso(parseSafeDouble(getVal(row, headers, "PESO")));
+            p.getExamenFisico().setTalla(parseSafeDouble(getVal(row, headers, "TALLA")));
+            p.getExamenFisico().setImc(parseSafeDouble(getVal(row, headers, "IMC")));
+            p.getExamenFisico().setTensionArterial(getVal(row, headers, "TENSION ARTERIAL"));
 
-            // Ejemplo para valores numéricos
-            p.getLaboratorio().setHemoglobina(parseSafeDouble(getCellValue(currentRow.getCell(4))));
-            p.getLaboratorio().setGlucemia(parseSafeDouble(getCellValue(currentRow.getCell(21))));
+            // 3. Laboratorio
+            p.getLaboratorio().setHemoglobina(parseSafeDouble(getVal(row, headers, "HEMO GLOBINA")));
+            p.getLaboratorio().setGlucemia(parseSafeDouble(getVal(row, headers, "GLUCEMIA")));
+            p.getLaboratorio().setColesterolTotal(parseSafeDouble(getVal(row, headers, "COLESTROL TOTAL")));
+            p.getLaboratorio().setLdl(parseSafeDouble(getVal(row, headers, "LDL")));
+            p.getLaboratorio().setHdl(parseSafeDouble(getVal(row, headers, "HDL")));
+            p.getLaboratorio().setTrigliceridos(parseSafeDouble(getVal(row, headers, "TRIGLI CERIDOS")));
+
+            // 4. Antecedentes
+            p.getAntecedentesPersonales().setDiabetes(parseBoolean(getVal(row, headers, "DIABETES")));
+            p.getAntecedentesPersonales().setHipertension(parseBoolean(getVal(row, headers, "HIPERTENSIÓN")));
 
             pacientes.add(p);
         }
@@ -49,18 +71,32 @@ public class ImportacionService {
         workbook.close();
     }
 
-    private String getCellValue(Cell cell) {
+    private String getVal(Row row, Map<String, Integer> headers, String columnName) {
+        Integer columnIndex = headers.get(columnName.toUpperCase());
+        if (columnIndex == null) return "";
+        Cell cell = row.getCell(columnIndex);
         if (cell == null) return "";
-        switch (cell.getCellType()) {
-            case STRING: return cell.getStringCellValue();
-            case NUMERIC: return String.valueOf(cell.getNumericCellValue());
-            case BOOLEAN: return String.valueOf(cell.getBooleanCellValue());
-            default: return "";
-        }
+
+        DataFormatter formatter = new DataFormatter();
+        return formatter.formatCellValue(cell);
     }
 
     private Double parseSafeDouble(String val) {
-        try { return (val == null || val.isEmpty()) ? 0.0 : Double.parseDouble(val); }
-        catch (Exception e) { return 0.0; }
+        try {
+            if (val == null || val.isEmpty()) return 0.0;
+            return Double.parseDouble(val.replace(",", "."));
+        } catch (Exception e) { return 0.0; }
+    }
+
+    private Boolean parseBoolean(String val) {
+        return val != null && (val.equalsIgnoreCase("SI") || val.equalsIgnoreCase("1") || val.equalsIgnoreCase("TRUE"));
+    }
+
+    private boolean isRowEmpty(Row row) {
+        for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
+            Cell cell = row.getCell(c);
+            if (cell != null && cell.getCellType() != CellType.BLANK) return false;
+        }
+        return true;
     }
 }
