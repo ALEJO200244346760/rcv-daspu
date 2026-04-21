@@ -53,4 +53,20 @@ public class PacienteCircuitoController {
                     .body("Error al obtener datos: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminarPaciente(@PathVariable Long id) {
+        try {
+            if (repository.existsById(id)) {
+                repository.deleteById(id);
+                return ResponseEntity.ok("Paciente eliminado correctamente.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("El paciente con ID " + id + " no existe.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el paciente: " + e.getMessage());
+        }
+    }
 }
