@@ -313,23 +313,6 @@ ${paciente.trastornosHipertensivos ? `Trastornos Hipertensivos: ${paciente.trast
 ${paciente.diabetesGestacional ? `Diabetes Gestacional: ${paciente.diabetesGestacional}` : ""}
 ${paciente.sop ? `SOP: ${paciente.sop}` : ""}
 
---- CONDUCTA CLÍNICA ---
-
-${paciente.sintomaAlarma ? `SÍNTOMAS DE ALARMA: ${paciente.sintomaAlarma}` : ""}
-${paciente.interconsulta ? `INTERCONSULTA: ${paciente.interconsulta}` : ""}
-${paciente.solicitarEstudios ? `SOLICITUD DE ESTUDIOS: ${paciente.solicitarEstudios}` : ""}
-${paciente.cambioMedicacion ? `CAMBIO DE MEDICACIÓN: ${paciente.cambioMedicacion}` : ""}
-
---- OTROS ---
-
-${paciente.consulta ? `CONSULTA: ${paciente.consulta}` : ""}
-${paciente.practica ? `PRÁCTICA: ${paciente.practica}` : ""}
-${paciente.hipertensionArterial ? `HIPERTENSIÓN ARTERIAL: ${paciente.hipertensionArterial}` : ""}
-${paciente.medicacionPrescripcion ? `MEDICACIÓN PRESCRIPCIÓN: ${paciente.medicacionPrescripcion}` : ""}
-${paciente.medicacionDispensa ? `MEDICACIÓN DISPENSA: ${paciente.medicacionDispensa}` : ""}
-${paciente.tabaquismo ? `TABAQUISMO: ${paciente.tabaquismo}` : ""}
-${paciente.laboratorio ? `LABORATORIO: ${paciente.laboratorio}` : ""}
-
 --- COMPLEMENTO CIRCUITO (DATOS TÉCNICOS ADICIONALES) ---
 
 ORIGEN TURNO: ${c.origenTurno || '--'} | ASISTIÓ: ${c.asistio ? 'SÍ' : 'NO'}
@@ -372,6 +355,22 @@ ALERTAS CLÍNICAS CIRCUITO: ${c.evaluacion?.alertasClinicas || 'Ninguna'}
 
 RECOMENDACIONES:
 ${recomendaciones}
+--- CONDUCTA CLÍNICA ---
+
+${paciente.sintomaAlarma ? `SÍNTOMAS DE ALARMA: ${paciente.sintomaAlarma}` : ""}
+${paciente.interconsulta ? `INTERCONSULTA: ${paciente.interconsulta}` : ""}
+${paciente.solicitarEstudios ? `SOLICITUD DE ESTUDIOS: ${paciente.solicitarEstudios}` : ""}
+${paciente.cambioMedicacion ? `CAMBIO DE MEDICACIÓN: ${paciente.cambioMedicacion}` : ""}
+
+--- OTROS ---
+
+${paciente.consulta ? `CONSULTA: ${paciente.consulta}` : ""}
+${paciente.practica ? `PRÁCTICA: ${paciente.practica}` : ""}
+${paciente.hipertensionArterial ? `HIPERTENSIÓN ARTERIAL: ${paciente.hipertensionArterial}` : ""}
+${paciente.medicacionPrescripcion ? `MEDICACIÓN PRESCRIPCIÓN: ${paciente.medicacionPrescripcion}` : ""}
+${paciente.medicacionDispensa ? `MEDICACIÓN DISPENSA: ${paciente.medicacionDispensa}` : ""}
+${paciente.tabaquismo ? `TABAQUISMO: ${paciente.tabaquismo}` : ""}
+${paciente.laboratorio ? `LABORATORIO: ${paciente.laboratorio}` : ""}
   `;
 
   // 3. Copiar al portapapeles
