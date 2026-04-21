@@ -308,9 +308,6 @@ Ritmo sinusal, frecuencia cardíaca y eje normal, sin trastornos agudos del segm
 
 No refiere angor, disnea, palpitaciones, mareos ni edemas.
 
-RECOMENDACIONES:
-${recomendaciones}
-
 ${paciente.metodoAnticonceptivo ? `Método Anticonceptivo: ${paciente.metodoAnticonceptivo}` : ""}
 ${paciente.trastornosHipertensivos ? `Trastornos Hipertensivos: ${paciente.trastornosHipertensivos}` : ""}
 ${paciente.diabetesGestacional ? `Diabetes Gestacional: ${paciente.diabetesGestacional}` : ""}
@@ -372,6 +369,9 @@ ${c.medicacionActual?.length > 0
   : 'No hay medicación cargada en el circuito.'}
 
 ALERTAS CLÍNICAS CIRCUITO: ${c.evaluacion?.alertasClinicas || 'Ninguna'}
+
+RECOMENDACIONES:
+${recomendaciones}
   `;
 
   // 3. Copiar al portapapeles
