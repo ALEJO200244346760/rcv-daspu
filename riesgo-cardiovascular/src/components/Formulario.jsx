@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { calcularRiesgoCardiovascular } from './Calculadora';
 import { Advertencia, DatosPacienteInicial, obtenerColorRiesgo, obtenerTextoRiesgo,listaNotificacionRiesgo, listaConsulta, listaPractica, listaHipertensionArterial, listaMedicacionPrescripcion, listaMedicacionDispensa, listaTabaquismo, listaLaboratorio } from './ConstFormulario';
 import { getLocations } from '../services/userService';
@@ -86,7 +87,7 @@ const listaMedicamentosColesterol = [
 ];
 
 const Formulario = () => {
-    // Añadimos los nuevos campos al estado inicial del paciente
+    const location = useLocation();
     const [datosPaciente, setDatosPaciente] = useState({
         ...DatosPacienteInicial,
         numeroGestas: '',
@@ -162,6 +163,85 @@ const Formulario = () => {
     };
   });
 };
+    useEffect(() => {
+        // Verificamos si venimos de "Circuito"
+        if (location.state && location.state.pacienteSeleccionado) {
+            const p = location.state.pacienteSeleccionado;
+            
+            const info = p.patientInfo || {};
+            const fisico = p.examenFisico || {};
+            const lab = p.laboratorio || {};
+            const ant = p.antecedentesPersonales || {};
+            const medLista = p.medicacionActual || [];
+
+            // 1. Cálculo de Edad
+            let edadCalculada = "";
+            if (info.fechaNacimiento) {
+                const birthDate = new Date(info.fechaNacimiento);
+                const hoy = new Date();
+                edadCalculada = hoy.getFullYear() - birthDate.getFullYear();
+                const m = hoy.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && hoy.getDate() < birthDate.getDate())) {
+                    edadCalculada--;
+                }
+            }
+
+            // 2. Procesamiento de Presión Arterial
+            let sistolica = "";
+            let diastolica = "";
+            if (fisico.tensionArterial && fisico.tensionArterial.includes('/')) {
+                const partes = fisico.tensionArterial.split('/');
+                sistolica = partes[0].trim();
+                diastolica = partes[1].trim();
+            }
+
+            // 3. Mapeo de strings de medicamentos (si existen en el objeto de Circuito)
+            // Esto junta los nombres de los medicamentos para los campos de texto del formulario
+            const medsMapeados = medLista.map(m => `${m.descripcion} ${m.dosis}`).join(', ');
+
+            setDatosPaciente(prev => ({
+                ...prev,
+                // Datos Identificatorios
+                cuil: info.dni || prev.cuil,
+                telefono: info.telefono || prev.telefono,
+                genero: info.sexo === 'M' ? 'Masculino' : (info.sexo === 'F' ? 'Femenino' : ''),
+                edad: edadCalculada.toString() || prev.edad,
+                
+                // Examen Físico
+                peso: fisico.peso ? fisico.peso.toString() : prev.peso,
+                talla: fisico.talla ? fisico.talla.toString() : prev.talla,
+                cintura: fisico.contornoAbdominal ? fisico.contornoAbdominal.toString() : prev.cintura,
+                imc: fisico.imc ? fisico.imc.toString() : prev.imc,
+                presionArterial: sistolica || prev.presionArterial,
+                taMin: diastolica || prev.taMin,
+
+                // Lógica de Hipertensión
+                hipertenso: ant.hipertension ? 'SI' : 'NO',
+                medicamentosHipertension: ant.hipertension ? medsMapeados : '',
+
+                // Lógica de Diabetes
+                diabetes: ant.diabetes ? 'SI' : 'NO',
+                medicamentosDiabetes: ant.diabetes ? medsMapeados : '',
+
+                // Lógica de Colesterol (Si tiene dislipidemia o hay valores de lab)
+                medicolesterol: (ant.dislipidemia || lab.colesterolTotal > 0) ? 'SI' : 'NO',
+                colesterol: lab.colesterolTotal ? lab.colesterolTotal.toString() : prev.colesterol,
+                medicamentosColesterol: ant.dislipidemia ? medsMapeados : '',
+
+                // Antecedentes Clínicos
+                infarto: ant.ataqueCardiaco ? 'SI' : 'NO',
+                acv: ant.ictus ? 'SI' : 'NO',
+                renal: ant.enfermedadRenal ? 'SI' : 'NO',
+                tfg: lab.filtradoGlomerular ? lab.filtradoGlomerular.toString() : prev.tfg,
+                
+                // Otros
+                alergias: ant.artritis ? 'Revisar antecedentes' : prev.alergias, // Ejemplo de mapeo por si acaso
+                
+                // Datos Femeninos (Auto-relleno si es mujer)
+                metodoAnticonceptivo: info.sexo === 'F' ? (ant.mamografiaFecha || '') : '',
+            }));
+        }
+    }, [location.state]);
 
     useEffect(() => {
         if (!creatinina || isNaN(creatinina) || !datosPaciente.edad || !datosPaciente.genero) {
