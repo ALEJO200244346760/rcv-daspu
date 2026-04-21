@@ -243,10 +243,29 @@ function Estadisticas() {
     setMostrarGraficos(prev => !prev);
   };
 
-const copiarDatos = (paciente) => {
+const copiarDatos = async (paciente) => {
+  const apiBaseURL = 'https://rcv-daspu-production.up.railway.app';
+  let datosCircuito = null;
+
+  // 1. Buscamos al paciente en el circuito para obtener los datos técnicos
+  try {
+    const res = await axios.get(`${apiBaseURL}/api/circuito/listar`);
+    datosCircuito = res.data.find(p => p.patientInfo?.dni === paciente.cuil);
+  } catch (err) {
+    console.error("No se pudieron recuperar datos de Circuito para el DNI:", paciente.cuil);
+  }
+
   const nivelRiesgoTexto = paciente.nivelRiesgo;
   const recomendaciones = Advertencia[nivelRiesgoTexto] || "No hay recomendaciones disponibles.";
+  
+  // Referencias rápidas para los datos de Circuito
+  const c = datosCircuito || {};
+  const lb = c.laboratorio || {};
+  const or = c.orina || {};
+  const ap = c.antecedentesPersonales || {};
+  const af = c.antecedentesFamiliares || {};
 
+  // 2. Generamos el bloque de texto (Tus datos de Formulario + Los nuevos de Circuito)
   const datos = `
 ID: ${paciente.id} FECHA DE REGISTRO: ${paciente.fechaRegistro} DNI: ${paciente.cuil} TELÉFONO: ${paciente.telefono} Edad: ${paciente.edad} Género: ${paciente.genero}
 HIPERTENSO: ${paciente.hipertenso}
@@ -313,10 +332,51 @@ ${paciente.medicacionPrescripcion ? `MEDICACIÓN PRESCRIPCIÓN: ${paciente.medic
 ${paciente.medicacionDispensa ? `MEDICACIÓN DISPENSA: ${paciente.medicacionDispensa}` : ""}
 ${paciente.tabaquismo ? `TABAQUISMO: ${paciente.tabaquismo}` : ""}
 ${paciente.laboratorio ? `LABORATORIO: ${paciente.laboratorio}` : ""}
+
+--- COMPLEMENTO CIRCUITO (DATOS TÉCNICOS ADICIONALES) ---
+
+ORIGEN TURNO: ${c.origenTurno || '--'} | ASISTIÓ: ${c.asistio ? 'SÍ' : 'NO'}
+ÚLT. CONSULTA: ${c.ultimaConsulta || '--'}
+
+A. PERSONALES EXTRA:
+EPOC: ${ap.epoc ? 'SÍ' : 'NO'} | ICC: ${ap.icc ? 'SÍ' : 'NO'} | ASMA: ${ap.asma ? 'SÍ' : 'NO'}
+ARTRITIS: ${ap.artritis ? 'SÍ' : 'NO'} | ANGINA: ${ap.anginaPecho ? 'SÍ' : 'NO'} | ICTUS: ${ap.ictus ? 'SÍ' : 'NO'}
+MAMOGRAFÍA: ${ap.mamografiaFecha || '--'} | PAP/SOMF: ${ap.papSomfFecha || '--'} | ALBUMINURIA: ${ap.albuminuria || '--'}
+
+A. FAMILIARES:
+AF Diabetes: ${af.afDiabetes ? 'SÍ' : 'NO'} | AF HTA: ${af.afHipertension ? 'SÍ' : 'NO'}
+AF Cardiopatía: ${af.afCardiopatia ? 'SÍ' : 'NO'} | AF ACV: ${af.afAcv ? 'SÍ' : 'NO'}
+CÓDIGOS: ${af.afCodigos || '--'} | FAT/RES/DEA: ${af.fatResDeaPdp || '--'}
+
+LABORATORIO HEMOGRAMA:
+ERITROCITOS: ${lb.eritrocitos || '--'} | HEMOGLOBINA: ${lb.hemoglobina || '--'} | HEMATOCRITO: ${lb.hematocrito || '--'}
+VCM: ${lb.vcm || '--'} | HCM: ${lb.hcm || '--'} | CHCM: ${lb.chcm || '--'} | RDW: ${lb.rdw || '--'}
+LEUCOCITOS: ${lb.leucocitos || '--'} | NEUTRÓFILOS SEGM: ${lb.neutrofilosSegm || '--'}%
+EOSINÓFILOS: ${lb.eosinofilos || '--'}% | BASÓFILOS: ${lb.basofilos || '--'}% | LINFOCITOS: ${lb.linfocitos || '--'}% | MONOCITOS: ${lb.monocitos || '--'}%
+NEUTRÓFILOS ABS: ${lb.neutrofilosAbsoluto || '--'} | LINFOCITOS ABS: ${lb.linfocitosAbsoluto || '--'}
+
+QUÍMICA Y ELECTROLITOS:
+CREATININA: ${lb.creatinina || '--'} | TFG (CIRCUITO): ${lb.filtradoGlomerular || '--'}
+SODIO: ${lb.sodio || '--'} | POTASIO: ${lb.potasio || '--'} | CLORO: ${lb.cloro || '--'}
+HDL: ${lb.hdl || '--'} | LDL: ${lb.ldl || '--'} | TRIGLICÉRIDOS: ${lb.trigliceridos || '--'}
+
+EXAMEN DE ORINA TÉCNICO:
+COLOR: ${or.color || '--'} | ASPECTO: ${or.aspecto || '--'} | PH: ${or.ph || '--'} | DENSIDAD: ${or.densidad || '--'}
+PROTEINURIA: ${or.proteinuria || '--'} | CREATININURIA: ${or.creatininuira || '--'} | REL. PROT/CREA: ${or.relacionProteinaCreatinina || '--'}
+GLUCOSA: ${or.glucosa || '--'} | CETONAS: ${or.cetonas || '--'} | NITRITOS: ${or.nitritos || '--'}
+LEUCOCITOS ORINA: ${or.leucocitosOrina || '--'} | HEMATÍES ORINA: ${or.hematiesOrina || '--'}
+
+MEDICACIÓN CIRCUITO:
+${c.medicacionActual?.length > 0 
+  ? c.medicacionActual.map(m => `- ${m.descripcion}: ${m.dosis} (${m.posologia})`).join('\n')
+  : 'No hay medicación cargada en el circuito.'}
+
+ALERTAS CLÍNICAS CIRCUITO: ${c.evaluacion?.alertasClinicas || 'Ninguna'}
   `;
 
-  navigator.clipboard.writeText(datos)
-    .then(() => alert('Datos copiados al portapapeles'))
+  // 3. Copiar al portapapeles
+  navigator.clipboard.writeText(datos.trim())
+    .then(() => alert('Datos de Formulario + Circuito copiados correctamente.'))
     .catch(err => console.error('Error al copiar los datos:', err));
 };
 
