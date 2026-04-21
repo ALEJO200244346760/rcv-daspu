@@ -164,72 +164,76 @@ const Formulario = () => {
   });
 };
     useEffect(() => {
-    if (location.state && location.state.pacienteSeleccionado) {
-        const p = location.state.pacienteSeleccionado;
-        const info = p.patientInfo || {};
-        const fisico = p.examenFisico || {};
-        const lab = p.laboratorio || {};
-        const ant = p.antecedentesPersonales || {};
-        const medLista = p.medicacionActual || [];
+        // Verificamos si venimos de "Circuito"
+        if (location.state && location.state.pacienteSeleccionado) {
+            const p = location.state.pacienteSeleccionado;
+            
+            const info = p.patientInfo || {};
+            const fisico = p.examenFisico || {};
+            const lab = p.laboratorio || {};
+            const ant = p.antecedentesPersonales || {};
+            const medLista = p.medicacionActual || [];
 
-        // --- CÁLCULOS PREVIOS ---
-        let edadCalculada = "";
-        if (info.fechaNacimiento) {
-            const birthDate = new Date(info.fechaNacimiento);
-            const hoy = new Date();
-            edadCalculada = hoy.getFullYear() - birthDate.getFullYear();
-            if (hoy.getMonth() < birthDate.getMonth() || (hoy.getMonth() === birthDate.getMonth() && hoy.getDate() < birthDate.getDate())) {
-                edadCalculada--;
+            // 1. Cálculo de Edad
+            let edadCalculada = "";
+            if (info.fechaNacimiento) {
+                const birthDate = new Date(info.fechaNacimiento);
+                const hoy = new Date();
+                edadCalculada = hoy.getFullYear() - birthDate.getFullYear();
+                if (hoy.getMonth() < birthDate.getMonth() || (hoy.getMonth() === birthDate.getMonth() && hoy.getDate() < birthDate.getDate())) {
+                    edadCalculada--;
+                }
+            }
+
+            // 2. Procesamiento de Presión Arterial
+            let sistolica = "";
+            let diastolica = "";
+            if (fisico.tensionArterial && fisico.tensionArterial.includes('/')) {
+                const partes = fisico.tensionArterial.split('/');
+                sistolica = partes[0].trim();
+                diastolica = partes[1].trim();
+            }
+
+            // 3. Extraemos los nombres para los Checkboxes
+            const nombresMeds = medLista.map(m => `${m.descripcion} ${m.dosis}`);
+            
+            // Actualizamos los estados de los checkboxes
+            if (ant.hipertension) setMedicamentosHipertensionSeleccionados(nombresMeds);
+            if (ant.diabetes) setMedicamentosDiabetesSeleccionados(nombresMeds);
+            if (ant.dislipidemia) setMedicamentosColesterolSeleccionados(nombresMeds);
+
+            // --- SETEO DE DATOS DEL PACIENTE ---
+            // NOTA: Cambiamos 'SI'/'NO' por 'Sí'/'No' para que coincida con los botones del formulario.
+            setDatosPaciente(prev => ({
+                ...prev,
+                cuil: info.dni || prev.cuil,
+                telefono: info.telefono || prev.telefono,
+                genero: info.sexo === 'M' ? 'masculino' : info.sexo === 'F' ? 'femenino' : '', // Cambiado a minúsculas porque tus botones dicen "masculino" y "femenino"
+                edad: edadCalculada.toString() || prev.edad,
+                peso: fisico.peso ? fisico.peso.toString() : prev.peso,
+                talla: fisico.talla ? (fisico.talla * 100).toString() : prev.talla,
+                cintura: fisico.contornoAbdominal ? fisico.contornoAbdominal.toString() : prev.cintura,
+                imc: fisico.imc ? fisico.imc.toString() : prev.imc,
+                presionArterial: sistolica || prev.presionArterial,
+                taMin: diastolica || prev.taMin,
+                hipertenso: ant.hipertension ? 'Sí' : 'No', 
+                diabetes: ant.diabetes ? 'Sí' : 'No',
+                medicolesterol: (ant.dislipidemia || lab.colesterolTotal > 0) ? 'Sí' : 'No',
+                colesterol: lab.colesterolTotal ? lab.colesterolTotal.toString() : prev.colesterol,
+                infarto: ant.ataqueCardiaco ? 'Sí' : 'No',
+                acv: ant.ictus ? 'Sí' : 'No',
+                renal: ant.enfermedadRenal ? 'Sí' : 'No',
+                enfermedad: ant.ecv ? 'Sí' : 'No', // Agregado porque lo tenías en DatosIniciales
+                tfg: lab.filtradoGlomerular ? lab.filtradoGlomerular.toString() : prev.tfg,
+                metodoAnticonceptivo: info.sexo === 'F' ? (ant.mamografiaFecha || '') : '',
+            }));
+
+            // Si hay colesterol, activamos el input de número automáticamente
+            if (lab.colesterolTotal > 0) {
+                setNivelColesterolConocido(true);
             }
         }
-
-        let sistolica = "";
-        let diastolica = "";
-        if (fisico.tensionArterial && fisico.tensionArterial.includes('/')) {
-            const partes = fisico.tensionArterial.split('/');
-            sistolica = partes[0].trim();
-            diastolica = partes[1].trim();
-        }
-
-        // --- SOLUCIÓN AL PROBLEMA DE LOS MEDICAMENTOS ---
-        // Extraemos los nombres para los Checkboxes
-        const nombresMeds = medLista.map(m => `${m.descripcion} ${m.dosis}`);
-        
-        // Actualizamos los estados de los checkboxes para que los otros useEffect no los borren
-        if (ant.hipertension) setMedicamentosHipertensionSeleccionados(nombresMeds);
-        if (ant.diabetes) setMedicamentosDiabetesSeleccionados(nombresMeds);
-        if (ant.dislipidemia) setMedicamentosColesterolSeleccionados(nombresMeds);
-
-        // --- SETEO DE DATOS DEL PACIENTE ---
-        setDatosPaciente(prev => ({
-            ...prev,
-            cuil: info.dni || prev.cuil,
-            telefono: info.telefono || prev.telefono,
-            genero: info.sexo === 'M' ? 'Masculino' : info.sexo === 'F' ? 'Femenino' : '',
-            edad: edadCalculada.toString() || prev.edad,
-            peso: fisico.peso ? fisico.peso.toString() : prev.peso,
-            talla: (fisico.talla * 100).toString() || prev.talla, // Convertimos a cm si en circuito está en metros
-            cintura: fisico.contornoAbdominal ? fisico.contornoAbdominal.toString() : prev.cintura,
-            imc: fisico.imc ? fisico.imc.toString() : prev.imc,
-            presionArterial: sistolica || prev.presionArterial,
-            taMin: diastolica || prev.taMin,
-            hipertenso: ant.hipertension ? 'SI' : 'NO',
-            diabetes: ant.diabetes ? 'SI' : 'NO',
-            medicolesterol: (ant.dislipidemia || lab.colesterolTotal > 0) ? 'SI' : 'NO',
-            colesterol: lab.colesterolTotal ? lab.colesterolTotal.toString() : prev.colesterol,
-            infarto: ant.ataqueCardiaco ? 'SI' : 'NO',
-            acv: ant.ictus ? 'SI' : 'NO',
-            renal: ant.enfermedadRenal ? 'SI' : 'NO',
-            tfg: lab.filtradoGlomerular ? lab.filtradoGlomerular.toString() : prev.tfg,
-            metodoAnticonceptivo: info.sexo === 'F' ? (ant.mamografiaFecha || '') : '',
-        }));
-
-        // Si hay colesterol, activamos el input de número automáticamente
-        if (lab.colesterolTotal > 0) {
-            setNivelColesterolConocido(true);
-        }
-    }
-}, [location.state]);
+    }, [location.state]);
 
     useEffect(() => {
         if (!creatinina || isNaN(creatinina) || !datosPaciente.edad || !datosPaciente.genero) {
@@ -1173,7 +1177,7 @@ const Formulario = () => {
                                 <label className="text-sm font-medium text-gray-700">TA Min.:</label>
                                 <input
                                     type="number"
-                                    name="presionArterial"
+                                    name="taMin"
                                     value={datosPaciente.taMin}
                                     onChange={manejarCambio}
                                     className="mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
