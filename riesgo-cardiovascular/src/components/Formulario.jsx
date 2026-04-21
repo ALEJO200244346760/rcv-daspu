@@ -4,7 +4,7 @@ import { calcularRiesgoCardiovascular } from './Calculadora';
 import { Advertencia, DatosPacienteInicial, obtenerColorRiesgo, obtenerTextoRiesgo,listaNotificacionRiesgo, listaConsulta, listaPractica, listaHipertensionArterial, listaMedicacionPrescripcion, listaMedicacionDispensa, listaTabaquismo, listaLaboratorio } from './ConstFormulario';
 import { getLocations } from '../services/userService';
 import axiosInstance from '../axiosConfig';
-import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from '../context/AuthContext';
 
 const listaSintomaAlarma = [
   "Dolor en el pecho o falta de aire al hacer esfuerzos",
@@ -88,6 +88,8 @@ const listaMedicamentosColesterol = [
 
 const Formulario = () => {
     const location = useLocation();
+    
+    // 1. Initialize state. We don't overwrite it immediately.
     const [datosPaciente, setDatosPaciente] = useState({
         ...DatosPacienteInicial,
         numeroGestas: '',
@@ -95,11 +97,12 @@ const Formulario = () => {
         metodoAnticonceptivo: '',
         trastornosHipertensivos: '',
         diabetesGestacional: '',
-        sop: '', // Síndrome de Ovario Poliquístico
-        medicamentosHipertension: '', // Para almacenar la lista de medicamentos seleccionados
+        sop: '', 
+        medicamentosHipertension: '', 
         medicamentosDiabetes: '',
         medicamentosColesterol: '',
     });
+
     const [nivelColesterolConocido, setNivelColesterolConocido] = useState(null);
     const [nivelRiesgo, setNivelRiesgo] = useState(null);
     const [error, setError] = useState('');
@@ -107,74 +110,55 @@ const Formulario = () => {
     const [modalAdvertencia, setModalAdvertencia] = useState(null);
     const [mostrarModalMedicamentos, setMostrarModalMedicamentos] = useState(false);
     const [medicamentosSeleccionados, setMedicamentosSeleccionados] = useState({
-        notificacionRiesgo: [],
-        consulta: [],
-        practica: [],
-        hipertensionArterial: [],
-        medicacionPrescripcion: [],
-        medicacionDispensa: [],
-        tabaquismo: [],
-        laboratorio: [],
+        notificacionRiesgo: [], consulta: [], practica: [], hipertensionArterial: [],
+        medicacionPrescripcion: [], medicacionDispensa: [], tabaquismo: [], laboratorio: [],
     });
     const [otroMedicamentoHipertension, setOtroMedicamentoHipertension] = useState("");
     const [otroMedicamentoDiabetes, setOtroMedicamentoDiabetes] = useState("");
     const [otroMedicamentoColesterol, setOtroMedicamentoColesterol] = useState("");
-    // Nuevo estado para la selección de medicamentos de hipertensión
     const [medicamentosHipertensionSeleccionados, setMedicamentosHipertensionSeleccionados] = useState([]);
     const [medicamentosDiabetesSeleccionados, setMedicamentosDiabetesSeleccionados] = useState([]);
     const [medicamentosColesterolSeleccionados, setMedicamentosColesterolSeleccionados] = useState([]);
     const [mensajeExito, setMensajeExito] = useState('');
     const [ubicaciones, setUbicaciones] = useState([]);
-    const { user, roles } = useAuth(); // Obtiene el usuario y roles del contexto
+    const { user, roles } = useAuth(); 
     const [mostrarRenal, setMostrarRenal] = useState(false);
     const [creatinina, setCreatinina] = useState('');
     const [tfg, setTfg] = useState(null);
     const [otrosClinicos, setOtrosClinicos] = useState({
-        sintomaAlarmaOtro: '',
-        interconsultaOtro: '',
-        solicitarEstudiosOtro: '',
-        cambioMedicacionOtro: '',
-        cambioAgrego: '',
-        cambioAumento: '',
-        cambioSuspendo: '',
-        cambioReduzco: '',
-        cambioMedicacionOtro: ''
+        sintomaAlarmaOtro: '', interconsultaOtro: '', solicitarEstudiosOtro: '',
+        cambioMedicacionOtro: '', cambioAgrego: '', cambioAumento: '',
+        cambioSuspendo: '', cambioReduzco: ''
     });
 
     const [seleccionesClinicas, setSeleccionesClinicas] = useState({
-        sintomaAlarma: [],
-        interconsulta: [],
-        solicitarEstudios: [],
-        cambioMedicacion: []
+        sintomaAlarma: [], interconsulta: [], solicitarEstudios: [], cambioMedicacion: []
     });
-    // Variable para el máximo de la fecha (día actual)
+
     const today = new Date().toISOString().split('T')[0];
+
     const handleClinicoChange = (categoria, value, checked) => {
-  setSeleccionesClinicas(prev => {
-    const actual = prev[categoria];
-
-    const updated = checked
-      ? [...actual, value]
-      : actual.filter(v => v !== value);
-
-    return {
-      ...prev,
-      [categoria]: updated,
+      setSeleccionesClinicas(prev => {
+        const actual = prev[categoria];
+        const updated = checked ? [...actual, value] : actual.filter(v => v !== value);
+        return { ...prev, [categoria]: updated };
+      });
     };
-  });
-};
+
     useEffect(() => {
-        // Verificamos si venimos de "Circuito"
+        // Debugging: Log what location.state contains
+        console.log("Incoming Location State:", location.state);
+
         if (location.state && location.state.pacienteSeleccionado) {
             const p = location.state.pacienteSeleccionado;
-            
+            console.log("Patient Data Detected:", p); // Debugging
+
             const info = p.patientInfo || {};
             const fisico = p.examenFisico || {};
             const lab = p.laboratorio || {};
             const ant = p.antecedentesPersonales || {};
             const medLista = p.medicacionActual || [];
 
-            // 1. Cálculo de Edad
             let edadCalculada = "";
             if (info.fechaNacimiento) {
                 const birthDate = new Date(info.fechaNacimiento);
@@ -185,7 +169,6 @@ const Formulario = () => {
                 }
             }
 
-            // 2. Procesamiento de Presión Arterial
             let sistolica = "";
             let diastolica = "";
             if (fisico.tensionArterial && fisico.tensionArterial.includes('/')) {
@@ -194,44 +177,45 @@ const Formulario = () => {
                 diastolica = partes[1].trim();
             }
 
-            // 3. Extraemos los nombres para los Checkboxes
             const nombresMeds = medLista.map(m => `${m.descripcion} ${m.dosis}`);
             
-            // Actualizamos los estados de los checkboxes
             if (ant.hipertension) setMedicamentosHipertensionSeleccionados(nombresMeds);
             if (ant.diabetes) setMedicamentosDiabetesSeleccionados(nombresMeds);
             if (ant.dislipidemia) setMedicamentosColesterolSeleccionados(nombresMeds);
 
-            // --- SETEO DE DATOS DEL PACIENTE ---
-            // NOTA: Cambiamos 'SI'/'NO' por 'Sí'/'No' para que coincida con los botones del formulario.
-            setDatosPaciente(prev => ({
-                ...prev,
-                cuil: info.dni || prev.cuil,
-                telefono: info.telefono || prev.telefono,
-                genero: info.sexo === 'M' ? 'masculino' : info.sexo === 'F' ? 'femenino' : '', // Cambiado a minúsculas porque tus botones dicen "masculino" y "femenino"
-                edad: edadCalculada.toString() || prev.edad,
-                peso: fisico.peso ? fisico.peso.toString() : prev.peso,
-                talla: fisico.talla ? (fisico.talla * 100).toString() : prev.talla,
-                cintura: fisico.contornoAbdominal ? fisico.contornoAbdominal.toString() : prev.cintura,
-                imc: fisico.imc ? fisico.imc.toString() : prev.imc,
-                presionArterial: sistolica || prev.presionArterial,
-                taMin: diastolica || prev.taMin,
+            // Construct the updated object FIRST
+            const updatedData = {
+                ...datosPaciente, // Keep defaults
+                cuil: info.dni || '',
+                telefono: info.telefono || '',
+                genero: info.sexo === 'M' ? 'masculino' : info.sexo === 'F' ? 'femenino' : '', 
+                edad: edadCalculada.toString() || '',
+                peso: fisico.peso ? fisico.peso.toString() : '',
+                talla: fisico.talla ? (fisico.talla * 100).toString() : '',
+                cintura: fisico.contornoAbdominal ? fisico.contornoAbdominal.toString() : '',
+                imc: fisico.imc ? fisico.imc.toString() : '',
+                presionArterial: sistolica || '',
+                taMin: diastolica || '',
                 hipertenso: ant.hipertension ? 'Sí' : 'No', 
                 diabetes: ant.diabetes ? 'Sí' : 'No',
                 medicolesterol: (ant.dislipidemia || lab.colesterolTotal > 0) ? 'Sí' : 'No',
-                colesterol: lab.colesterolTotal ? lab.colesterolTotal.toString() : prev.colesterol,
+                colesterol: lab.colesterolTotal ? lab.colesterolTotal.toString() : '',
                 infarto: ant.ataqueCardiaco ? 'Sí' : 'No',
                 acv: ant.ictus ? 'Sí' : 'No',
                 renal: ant.enfermedadRenal ? 'Sí' : 'No',
-                enfermedad: ant.ecv ? 'Sí' : 'No', // Agregado porque lo tenías en DatosIniciales
-                tfg: lab.filtradoGlomerular ? lab.filtradoGlomerular.toString() : prev.tfg,
+                enfermedad: ant.ecv ? 'Sí' : 'No', 
+                tfg: lab.filtradoGlomerular ? lab.filtradoGlomerular.toString() : '',
                 metodoAnticonceptivo: info.sexo === 'F' ? (ant.mamografiaFecha || '') : '',
-            }));
+            };
 
-            // Si hay colesterol, activamos el input de número automáticamente
+            console.log("Setting datosPaciente to:", updatedData); // Debugging
+            setDatosPaciente(updatedData);
+
             if (lab.colesterolTotal > 0) {
                 setNivelColesterolConocido(true);
             }
+        } else {
+             console.log("No patient data found in location.state.");
         }
     }, [location.state]);
 
