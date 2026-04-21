@@ -32,14 +32,14 @@ public class PacienteCircuitoController {
         }
     }
 
-    @PostMapping("/importar-csv")
-    public ResponseEntity<String> importarCSV(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/importar-excel")
+    public ResponseEntity<String> importarExcel(@RequestParam("file") MultipartFile file) {
         try {
-            importacionService.importarDesdeCSV(file.getInputStream());
-            return ResponseEntity.ok("Importación exitosa.");
+            importacionService.importarDesdeExcel(file.getInputStream());
+            return ResponseEntity.ok("Importación desde Excel exitosa.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al procesar CSV: " + e.getMessage());
+                    .body("Error al procesar el archivo Excel: " + e.getMessage());
         }
     }
 
