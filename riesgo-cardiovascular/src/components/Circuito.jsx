@@ -12,6 +12,11 @@ function Circuito() {
   const apiBaseURL = 'https://rcv-daspu-production.up.railway.app';
 
   useEffect(() => {
+    fetchPacientes();
+  }, []);
+
+  const fetchPacientes = () => {
+    setLoading(true);
     axios.get(`${apiBaseURL}/api/circuito/listar`)
       .then(res => {
         setPacientes(res.data);
@@ -21,10 +26,23 @@ function Circuito() {
         console.error('Error al obtener circuito:', err);
         setLoading(false);
       });
-  }, []);
+  };
+
+  const eliminarPaciente = async (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este paciente del circuito?')) {
+      try {
+        await axios.delete(`${apiBaseURL}/api/circuito/eliminar/${id}`);
+        // Actualizamos la lista localmente para no recargar toda la página
+        setPacientes(pacientes.filter(p => p.id !== id));
+      } catch (err) {
+        console.error('Error al eliminar:', err);
+        alert('No se pudo eliminar el paciente.');
+      }
+    }
+  };
 
   const irAFormularioRCV = (paciente) => {
-    navigate('/', { state: { pacienteSeleccionado: paciente } }); // Navega a / en lugar de /formulario
+    navigate('/', { state: { pacienteSeleccionado: paciente } });
   };
 
   const pacientesFiltrados = pacientes.filter(p =>
@@ -68,12 +86,12 @@ function Circuito() {
           const antecedentes = paciente.antecedentesPersonales || {};
 
           return (
-            <div key={paciente.id} className="bg-white shadow-lg rounded-xl p-5 border border-gray-100 flex flex-col justify-between hover:shadow-xl transition-shadow">
+            <div key={paciente.id} className="bg-white shadow-lg rounded-xl p-5 border border-gray-100 flex flex-col justify-between hover:shadow-xl transition-shadow relative overflow-hidden">
               
               <div>
                 {/* IDENTIDAD */}
                 <div className="border-b pb-3 mb-3">
-                  <div className="font-bold text-xl text-blue-900 uppercase">
+                  <div className="font-bold text-xl text-blue-900 uppercase truncate">
                     {info.nombreApellido || 'Sin Nombre'}
                   </div>
                   <div className="flex justify-between text-sm text-gray-600 mt-1">
@@ -110,7 +128,18 @@ function Circuito() {
               </div>
 
               {/* ACCIONES */}
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
+                {/* BOTÓN ELIMINAR IZQUIERDA ABAJO */}
+                <button 
+                  onClick={() => eliminarPaciente(paciente.id)}
+                  className="p-2 bg-red-50 text-red-600 rounded-md hover:bg-red-600 hover:text-white transition-all border border-red-100"
+                  title="Eliminar Paciente"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+
                 <button 
                   onClick={() => setPacienteSeleccionado(paciente)}
                   className="flex-1 bg-gray-100 text-gray-800 py-2 rounded-md text-sm font-semibold hover:bg-gray-200 transition-colors"
@@ -119,7 +148,7 @@ function Circuito() {
                 </button>
                 <button 
                   onClick={() => irAFormularioRCV(paciente)}
-                  className="flex-1 bg-red-600 text-white py-2 rounded-md text-sm font-bold hover:bg-red-700 shadow-md transition-colors"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-md text-sm font-bold hover:bg-blue-700 shadow-md transition-colors"
                 >
                   Calcular RCV
                 </button>
@@ -135,79 +164,123 @@ function Circuito() {
         </div>
       )}
 
-      {/* MODAL DETALLADO */}
+      {/* MODAL DETALLADO COMPLETO */}
       {pacienteSeleccionado && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto relative">
             <button 
               onClick={cerrarModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
+              className="absolute top-4 right-4 text-white hover:text-red-400 text-3xl font-bold z-10"
             >
               &times;
             </button>
 
-            <div className="bg-blue-900 text-white p-6 rounded-t-xl">
+            <div className="bg-blue-900 text-white p-6 sticky top-0 shadow-lg">
               <h2 className="text-2xl font-bold uppercase">{pacienteSeleccionado.patientInfo?.nombreApellido}</h2>
               <div className="flex gap-4 mt-2 text-blue-100 text-sm flex-wrap">
                 <span>DNI: {pacienteSeleccionado.patientInfo?.dni}</span>
-                <span>Nacimiento: {pacienteSeleccionado.patientInfo?.fechaNacimiento || 'N/A'}</span>
+                <span>Nacimiento: {pacienteSeleccionado.patientInfo?.fechaNacimiento}</span>
                 <span>Tel: {pacienteSeleccionado.patientInfo?.telefono}</span>
                 <span>Origen: {pacienteSeleccionado.origenTurno}</span>
               </div>
             </div>
 
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Columna 1: Antecedentes y Físico */}
+            <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              {/* SECCIÓN 1: ANTECEDENTES PERSONALES Y FAMILIARES */}
               <div className="space-y-6">
                 <div className="bg-gray-50 p-4 rounded-lg border">
-                  <h3 className="font-bold text-gray-800 mb-3 border-b pb-1 uppercase text-xs">Antecedentes Personales</h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <p>HTA: <b>{pacienteSeleccionado.antecedentesPersonales?.hipertension ? 'Sí' : 'No'}</b></p>
-                    <p>Diabetes: <b>{pacienteSeleccionado.antecedentesPersonales?.diabetes ? 'Sí' : 'No'}</b></p>
-                    <p>Dislipidemia: <b>{pacienteSeleccionado.antecedentesPersonales?.dislipidemia ? 'Sí' : 'No'}</b></p>
-                    <p>Cáncer: <b>{pacienteSeleccionado.antecedentesPersonales?.cancer ? 'Sí' : 'No'}</b></p>
+                  <h3 className="font-bold text-blue-800 mb-3 border-b pb-1 uppercase text-xs">A. Personales</h3>
+                  <div className="grid grid-cols-1 gap-1 text-sm">
+                    <p className="flex justify-between">HTA: <b>{pacienteSeleccionado.antecedentesPersonales?.hipertension ? 'SI' : 'NO'}</b></p>
+                    <p className="flex justify-between">Diabetes: <b>{pacienteSeleccionado.antecedentesPersonales?.diabetes ? 'SI' : 'NO'}</b></p>
+                    <p className="flex justify-between">Dislipidemia: <b>{pacienteSeleccionado.antecedentesPersonales?.dislipidemia ? 'SI' : 'NO'}</b></p>
+                    <p className="flex justify-between">ECV: <b>{pacienteSeleccionado.antecedentesPersonales?.ecv ? 'SI' : 'NO'}</b></p>
+                    <p className="flex justify-between">Cáncer: <b>{pacienteSeleccionado.antecedentesPersonales?.cancer ? 'SI' : 'NO'}</b></p>
                     {pacienteSeleccionado.antecedentesPersonales?.cancerTipoAnio && (
-                      <p className="col-span-2 text-xs italic text-blue-600">{pacienteSeleccionado.antecedentesPersonales.cancerTipoAnio}</p>
+                      <p className="mt-1 text-xs text-red-600 bg-red-50 p-1 px-2 rounded">Tipo/Año: {pacienteSeleccionado.antecedentesPersonales.cancerTipoAnio}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg border">
-                  <h3 className="font-bold text-gray-800 mb-3 border-b pb-1 uppercase text-xs">Examen Físico</h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <p>Peso: <b>{pacienteSeleccionado.examenFisico?.peso} kg</b></p>
-                    <p>Talla: <b>{pacienteSeleccionado.examenFisico?.talla} m</b></p>
-                    <p>C. Abd: <b>{pacienteSeleccionado.examenFisico?.contornoAbdominal} cm</b></p>
-                    <p>TA: <b>{pacienteSeleccionado.examenFisico?.tensionArterial}</b></p>
-                    <p>IMC: <b>{pacienteSeleccionado.examenFisico?.imc}</b></p>
-                    <p>FC: <b>{pacienteSeleccionado.examenFisico?.frecuenciaCardiaca} bpm</b></p>
+                  <h3 className="font-bold text-blue-800 mb-3 border-b pb-1 uppercase text-xs">A. Familiares</h3>
+                  <div className="grid grid-cols-1 gap-1 text-sm">
+                    <p className="flex justify-between">Diabetes AF: <b>{pacienteSeleccionado.antecedentesFamiliares?.afDiabetes ? 'SI' : 'NO'}</b></p>
+                    <p className="flex justify-between">HTA AF: <b>{pacienteSeleccionado.antecedentesFamiliares?.afHipertension ? 'SI' : 'NO'}</b></p>
+                    <p className="flex justify-between">Cardiopatía AF: <b>{pacienteSeleccionado.antecedentesFamiliares?.afCardiopatia ? 'SI' : 'NO'}</b></p>
+                    <p className="flex justify-between">ACV AF: <b>{pacienteSeleccionado.antecedentesFamiliares?.afAcv ? 'SI' : 'NO'}</b></p>
                   </div>
                 </div>
               </div>
 
-              {/* Columna 2: Laboratorio y Orina */}
+              {/* SECCIÓN 2: EXAMEN FÍSICO Y ORINA */}
               <div className="space-y-6">
                 <div className="bg-gray-50 p-4 rounded-lg border">
-                  <h3 className="font-bold text-gray-800 mb-3 border-b pb-1 uppercase text-xs">Laboratorio Completo</h3>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                    <p className="flex justify-between"><span>Glucemia:</span> <b>{pacienteSeleccionado.laboratorio?.glucemia}</b></p>
-                    <p className="flex justify-between"><span>Col. Total:</span> <b>{pacienteSeleccionado.laboratorio?.colesterolTotal}</b></p>
-                    <p className="flex justify-between"><span>HDL:</span> <b>{pacienteSeleccionado.laboratorio?.hdl}</b></p>
-                    <p className="flex justify-between"><span>LDL:</span> <b>{pacienteSeleccionado.laboratorio?.ldl}</b></p>
-                    <p className="flex justify-between"><span>Triglic.:</span> <b>{pacienteSeleccionado.laboratorio?.trigliceridos}</b></p>
-                    <p className="flex justify-between"><span>Creatinina:</span> <b>{pacienteSeleccionado.laboratorio?.creatinina}</b></p>
-                    <p className="flex justify-between"><span>TFG:</span> <b>{pacienteSeleccionado.laboratorio?.filtradoGlomerular}</b></p>
+                  <h3 className="font-bold text-blue-800 mb-3 border-b pb-1 uppercase text-xs">Examen Físico</h3>
+                  <div className="grid grid-cols-1 gap-1 text-sm">
+                    <p className="flex justify-between">Peso: <b>{pacienteSeleccionado.examenFisico?.peso} kg</b></p>
+                    <p className="flex justify-between">Talla: <b>{pacienteSeleccionado.examenFisico?.talla} m</b></p>
+                    <p className="flex justify-between">IMC: <b>{pacienteSeleccionado.examenFisico?.imc?.toFixed(2)}</b></p>
+                    <p className="flex justify-between">C. Abd: <b>{pacienteSeleccionado.examenFisico?.contornoAbdominal} cm</b></p>
+                    <p className="flex justify-between">TA: <b className="text-blue-700">{pacienteSeleccionado.examenFisico?.tensionArterial}</b></p>
+                    <p className="flex justify-between">FC: <b>{pacienteSeleccionado.examenFisico?.frecuenciaCardiaca} lpm</b></p>
                   </div>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <h3 className="font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1 uppercase text-xs">Evaluación RCV</h3>
-                  <p className="text-sm">Nivel Sugerido: <b className="text-red-600">{pacienteSeleccionado.evaluacionClinica?.rcvNivel || 'Sin Evaluar'}</b></p>
+                <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                  <h3 className="font-bold text-orange-800 mb-3 border-b border-orange-200 pb-1 uppercase text-xs">Examen Orina</h3>
+                  <div className="grid grid-cols-1 gap-1 text-sm">
+                    <p className="flex justify-between">Color: <b>{pacienteSeleccionado.orina?.color || '--'}</b></p>
+                    <p className="flex justify-between">Aspecto: <b>{pacienteSeleccionado.orina?.aspecto || '--'}</b></p>
+                    <p className="flex justify-between">Albuminuria: <b>{pacienteSeleccionado.antecedentesPersonales?.albuminuria || '--'}</b></p>
+                    <p className="flex justify-between">Rel. Prot/Crea: <b>{pacienteSeleccionado.orina?.relacionProteinaCreatinina || '--'}</b></p>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECCIÓN 3: LABORATORIO DETALLADO Y RCV */}
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-4 rounded-lg border">
+                  <h3 className="font-bold text-blue-800 mb-3 border-b pb-1 uppercase text-xs">Laboratorio</h3>
+                  <div className="grid grid-cols-1 gap-1 text-sm">
+                    <p className="flex justify-between">Glucemia: <b>{pacienteSeleccionado.laboratorio?.glucemia}</b></p>
+                    <p className="flex justify-between">Creatinina: <b>{pacienteSeleccionado.laboratorio?.creatinina}</b></p>
+                    <p className="flex justify-between">TFG (Filtrado): <b>{pacienteSeleccionado.laboratorio?.filtradoGlomerular}</b></p>
+                    <p className="flex justify-between">Col. Total: <b>{pacienteSeleccionado.laboratorio?.colesterolTotal}</b></p>
+                    <p className="flex justify-between">HDL: <b>{pacienteSeleccionado.laboratorio?.hdl}</b></p>
+                    <p className="flex justify-between">LDL: <b>{pacienteSeleccionado.laboratorio?.ldl}</b></p>
+                    <p className="flex justify-between">Triglicéridos: <b>{pacienteSeleccionado.laboratorio?.trigliceridos}</b></p>
+                  </div>
+                </div>
+
+                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <h3 className="font-bold text-red-900 mb-2 border-b border-red-200 pb-1 uppercase text-xs">Resultado RCV</h3>
+                  <p className="text-lg text-center font-black text-red-600 bg-white border border-red-200 rounded py-2 mt-2">
+                    {pacienteSeleccionado.evaluacionClinica?.rcvNivel || 'SIN EVALUAR'}
+                  </p>
                   {pacienteSeleccionado.evaluacionClinica?.alertasClinicas && (
-                    <p className="text-xs mt-2 text-red-500 font-semibold italic">⚠ {pacienteSeleccionado.evaluacionClinica.alertasClinicas}</p>
+                    <div className="text-xs mt-3 text-red-700 font-bold p-2 bg-white rounded-md shadow-sm">
+                      ⚠ {pacienteSeleccionado.evaluacionClinica.alertasClinicas}
+                    </div>
                   )}
                 </div>
               </div>
+
+              {/* SECCIÓN MEDICACIÓN (FULL WIDTH) */}
+              {pacienteSeleccionado.medicacionActual?.length > 0 && (
+                <div className="col-span-full bg-blue-50 p-4 rounded-lg border border-blue-100">
+                  <h3 className="font-bold text-blue-800 mb-3 border-b pb-1 uppercase text-xs">Medicación Actual</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {pacienteSeleccionado.medicacionActual.map((med, idx) => (
+                      <div key={idx} className="bg-white p-2 rounded shadow-sm text-sm border-l-4 border-blue-500">
+                        <b>{med.descripcion}</b> <span className="text-gray-500">|</span> {med.dosis} <span className="text-gray-500">|</span> {med.posologia}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
         </div>
