@@ -129,6 +129,16 @@ function Estadisticas() {
       </span>
     </div>
   );
+  const nivelRiesgoTexto = (() => {
+      switch (paciente.nivelRiesgo) {
+          case '<10% Bajo': return 'Bajo';
+          case '>10% <20% Moderado': return 'Moderado';
+          case '>20% <30% Alto': return 'Alto';
+          case '>30% <40% Muy Alto': return 'Muy Alto';
+          case '>40% Crítico': return 'Crítico';
+          default: return 'Desconocido';
+      }
+  })();
 
   // Función para manejar cambios en los filtros
   const manejarCambio = (e) => {
@@ -293,6 +303,7 @@ const copiarDatos = async (paciente) => {
 
   // 2. Generamos el bloque de texto (Tus datos de Formulario + Los nuevos de Circuito)
   const datos = `
+Circuito Cardiovascular Daspu más vos
 ID: ${paciente.id} FECHA DE REGISTRO: ${paciente.fechaRegistro} DNI: ${paciente.cuil} TELÉFONO: ${paciente.telefono} Edad: ${paciente.edad} Género: ${paciente.genero}
 HIPERTENSO: ${paciente.hipertenso}
 Medicamentos Hipertensión: ${paciente.medicamentosHipertension || 'N/A'}
