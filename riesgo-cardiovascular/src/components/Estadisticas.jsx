@@ -50,12 +50,31 @@ function Estadisticas() {
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
   // Estado para el paciente que se está visualizando en el modal
-  const [pacienteParaModal, setPacienteParaModal] = useState(null);
-  const [isModalDetalleOpen, setIsModalDetalleOpen] = useState(false);
+const [pacienteParaModal, setPacienteParaModal] = useState(null);
+const [isModalDetalleOpen, setIsModalDetalleOpen] = useState(false);
 
-  // Función para abrir el modal inyectando los datos procesados
+// Función para abrir el modal inyectando los datos procesados
+// --- LÓGICA DE DATOS ---
+  useEffect(() => {
+    axios.get(`${apiBaseURL}/api/pacientes`)
+      .then(response => {
+        if (Array.isArray(response.data)) {
+          setPacientes(response.data);
+          setPacientesFiltrados(response.data);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    aplicarFiltros();
+  }, [filtros, nivelColesterolConocido, pacientes]);
+
   const manejarAperturaModal = (paciente) => {
-    // Aseguramos que las sub-estructuras existan para evitar errores de renderizado
     const datosIntegrados = {
       ...paciente,
       c: paciente.circuito || {},
@@ -913,193 +932,123 @@ ${paciente.laboratorio ? `LABORATORIO: ${paciente.laboratorio}` : ""}
             </div>
           </div>
 
-          {isModalDetalleOpen && pacienteParaModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 bg-slate-900/80 backdrop-blur-md animate-in fade-in duration-300">
-              <div className="bg-white w-full max-w-7xl max-h-[98vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-white/20">
-                
-                {/* HEADER DINÁMICO SEGÚN RIESGO */}
-                <div className={`p-6 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${
-                  pacienteParaModal.nivelRiesgo === 'Muy Alto' ? 'bg-red-600' : 
-                  pacienteParaModal.nivelRiesgo === 'Alto' ? 'bg-orange-500' : 'bg-blue-600'
+          {/* --- MODAL DASHBOARD INTEGRADO --- */}
+          {isModalDetalleOpen && pacienteParaModal && (() => {
+            // Sub-componentes definidos aquí para evitar errores de Scope en el build de producción
+            const InfoItem = ({ label, value }) => (
+              <div className="flex justify-between py-1.5 border-b border-slate-100 text-sm">
+                <span className="text-slate-500 font-medium">{label}:</span>
+                <span className="text-slate-900 font-bold">{value || '--'}</span>
+              </div>
+            );
+
+            const LabRow = ({ label, value }) => (
+              <div className="flex justify-between py-1 border-b border-white/10">
+                <span className="opacity-60 text-xs">{label}</span>
+                <span className="font-bold text-white">{value || '--'}</span>
+              </div>
+            );
+
+            const Badge = ({ label, value }) => {
+              const activo = value === "SÍ" || value === "SI" || value === true;
+              return (
+                <div className={`px-2 py-1.5 rounded-lg border text-[10px] font-black uppercase flex justify-between items-center ${
+                  activo ? 'bg-red-50 border-red-200 text-red-700' : 'bg-slate-50 border-slate-100 text-slate-400'
                 }`}>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <h2 className="text-2xl md:text-4xl font-black tracking-tighter uppercase leading-none">
-                        {pacienteParaModal.nombre}
-                      </h2>
-                      <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
-                        {pacienteParaModal.genero === 'M' ? 'Masculino' : 'Femenino'}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-sm font-medium opacity-90">
-                      <span><strong>DNI/CUIL:</strong> {pacienteParaModal.cuil}</span>
-                      <span><strong>ID:</strong> #{pacienteParaModal.id}</span>
-                      <span><strong>FECHA:</strong> {pacienteParaModal.fechaRegistro}</span>
-                      <span><strong>EDAD:</strong> {pacienteParaModal.edad} AÑOS</span>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-black/20 p-4 rounded-2xl backdrop-blur-sm text-center min-w-[180px] border border-white/10">
-                    <div className="text-[10px] uppercase font-black opacity-70 tracking-widest">Riesgo Cardiovascular</div>
-                    <div className="text-3xl font-black italic uppercase leading-none">{pacienteParaModal.nivelRiesgo}</div>
-                  </div>
-
-                  <button 
-                    onClick={() => setIsModalDetalleOpen(false)} 
-                    className="p-2 hover:bg-white/20 rounded-xl transition-all active:scale-90"
-                  >
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
+                  <span>{label}</span>
+                  <span>{activo ? '●' : '○'}</span>
                 </div>
+              );
+            };
 
-                {/* CUERPO DEL DASHBOARD (Scrollable) */}
-                <div className="overflow-y-auto bg-slate-50 p-4 md:p-8 flex-1">
+            return (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 bg-slate-900/90 backdrop-blur-md overflow-y-auto">
+                <div className="bg-white w-full max-w-6xl rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-white/20 animate-in zoom-in duration-200 my-auto">
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    
-                    {/* COLUMNA 1: CLÍNICA Y HÁBITOS (FORMULARIO) */}
-                    <div className="space-y-6">
-                      <section className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                        <h4 className="flex items-center gap-2 text-blue-700 font-black text-xs uppercase tracking-widest mb-4 border-b pb-2">
-                          <span className="w-2 h-2 bg-blue-600 rounded-full"></span> Hábitos y Físico
-                        </h4>
-                        <div className="space-y-1.5">
-                          <InfoItem label="IMC / Cintura" value={pacienteParaModal.imc ? `${pacienteParaModal.imc} / ${pacienteParaModal.cintura} cm` : '--'} />
-                          <InfoItem label="TFG (MDRD)" value={pacienteParaModal.tfg} />
-                          <InfoItem label="Tensión Art." value={`${pacienteParaModal.presionArterial} / ${pacienteParaModal.taMin} mmHg`} />
-                          <InfoItem label="Alergias" value={pacienteParaModal.alergias} />
-                          <InfoItem label="Sueño" value={pacienteParaModal.sueño} />
-                          <InfoItem label="Fumador" value={pacienteParaModal.fumador} />
-                          <InfoItem label="Sedentarismo" value={pacienteParaModal.sedentarismo} />
-                        </div>
-                      </section>
+                  {/* HEADER */}
+                  <div className={`p-6 text-white flex justify-between items-center ${
+                    pacienteParaModal.nivelRiesgo === 'Muy Alto' ? 'bg-red-600' : 
+                    pacienteParaModal.nivelRiesgo === 'Alto' ? 'bg-orange-500' : 'bg-blue-600'
+                  }`}>
+                    <div>
+                      <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter">
+                        {pacienteParaModal.nombre || 'Paciente'}
+                      </h2>
+                      <div className="text-xs font-bold opacity-80 mt-1">
+                        DNI: {pacienteParaModal.cuil} | EDAD: {pacienteParaModal.edad} AÑOS | GÉNERO: {pacienteParaModal.genero}
+                      </div>
+                    </div>
+                    <button onClick={() => setIsModalDetalleOpen(false)} className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition-all">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
 
-                      <section className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                        <h4 className="flex items-center gap-2 text-red-700 font-black text-xs uppercase tracking-widest mb-4 border-b pb-2">
-                          <span className="w-2 h-2 bg-red-600 rounded-full"></span> Antecedentes Patológicos
-                        </h4>
+                  {/* CONTENIDO SCROLLABLE */}
+                  <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50">
+                    
+                    {/* CLÍNICA */}
+                    <div className="space-y-4">
+                      <div className="bg-white p-5 rounded-2xl border shadow-sm">
+                        <h4 className="text-blue-600 font-black text-[10px] uppercase tracking-[0.2em] mb-4 border-b pb-2">Datos Clínicos</h4>
+                        <InfoItem label="Presión" value={`${pacienteParaModal.presionArterial}/${pacienteParaModal.taMin}`} />
+                        <InfoItem label="IMC" value={pacienteParaModal.imc} />
+                        <InfoItem label="Cintura" value={`${pacienteParaModal.cintura} cm`} />
+                        <InfoItem label="TFG" value={pacienteParaModal.tfg} />
+                      </div>
+                      <div className="bg-white p-5 rounded-2xl border shadow-sm">
+                        <h4 className="text-red-600 font-black text-[10px] uppercase tracking-[0.2em] mb-4 border-b pb-2">Antecedentes</h4>
                         <div className="grid grid-cols-2 gap-2">
                           <Badge label="HTA" value={pacienteParaModal.hipertenso} />
                           <Badge label="Diabetes" value={pacienteParaModal.diabetes} />
                           <Badge label="ACV" value={pacienteParaModal.acv} />
                           <Badge label="Infarto" value={pacienteParaModal.infarto} />
-                          <Badge label="Renal" value={pacienteParaModal.renal} />
-                          <Badge label="EPOC" value={pacienteParaModal.ap.epoc} />
-                          <Badge label="Asma" value={pacienteParaModal.ap.asma} />
-                          <Badge label="Ictus" value={pacienteParaModal.ap.ictus} />
                         </div>
-                      </section>
-                    </div>
-
-                    {/* COLUMNA 2: LABORATORIO TÉCNICO (CIRCUITO) */}
-                    <div className="space-y-6">
-                      <section className="bg-emerald-900 text-emerald-50 p-5 rounded-2xl shadow-xl">
-                        <h4 className="font-black text-xs uppercase tracking-[0.2em] mb-4 text-emerald-400 border-b border-emerald-800 pb-2">
-                          Laboratorio Completo
-                        </h4>
-                        <div className="space-y-4">
-                          <div>
-                            <span className="text-[10px] font-bold opacity-50 uppercase block mb-2">Hemograma</span>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                              <LabRow label="Eritrocitos" value={pacienteParaModal.lb.eritrocitos} />
-                              <LabRow label="Hemoglobina" value={pacienteParaModal.lb.hemoglobina} />
-                              <LabRow label="Hematocrito" value={pacienteParaModal.lb.hematocrito} />
-                              <LabRow label="Leucocitos" value={pacienteParaModal.lb.leucocitos} />
-                            </div>
-                          </div>
-                          <div className="pt-3 border-t border-emerald-800">
-                            <span className="text-[10px] font-bold opacity-50 uppercase block mb-2">Química Especializada</span>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                              <LabRow label="Glucemia" value={pacienteParaModal.lb.glucemia} />
-                              <LabRow label="Creatinina" value={pacienteParaModal.lb.creatinina} />
-                              <LabRow label="TFG Circuito" value={pacienteParaModal.lb.filtradoGlomerular} />
-                              <LabRow label="Col. Total" value={pacienteParaModal.colesterol || pacienteParaModal.lb.colesterolTotal} />
-                            </div>
-                          </div>
-                        </div>
-                      </section>
-
-                      <section className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                        <h4 className="font-black text-xs uppercase tracking-widest mb-4 text-orange-600 border-b pb-2">Examen de Orina</h4>
-                        <div className="grid grid-cols-1 gap-1">
-                          <InfoItem label="Proteinuria" value={pacienteParaModal.or.proteinuria} />
-                          <InfoItem label="Relación P/C" value={pacienteParaModal.or.relacionProteinaCreatinina} />
-                          <InfoItem label="Sedimento" value={pacienteParaModal.or.aspecto} />
-                        </div>
-                      </section>
-                    </div>
-
-                    {/* COLUMNA 3: MEDICACIÓN Y SEGUIMIENTO */}
-                    <div className="space-y-6">
-                      <section className="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl">
-                        <h4 className="font-black text-xs uppercase tracking-widest mb-4 text-indigo-700 border-b border-indigo-200 pb-2">Medicación Actual</h4>
-                        {pacienteParaModal.c.medicacionActual?.length > 0 ? (
-                          <div className="space-y-2">
-                            {pacienteParaModal.c.medicacionActual.map((m, i) => (
-                              <div key={i} className="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
-                                <div className="font-bold text-slate-800 text-sm">{m.descripcion}</div>
-                                <div className="text-xs text-indigo-600 font-medium">{m.dosis} - {m.posologia}</div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-4 text-slate-400 italic text-sm">Sin fármacos registrados.</div>
-                        )}
-                      </section>
-
-                      <section className="bg-slate-800 text-white p-5 rounded-2xl shadow-lg">
-                        <h4 className="font-black text-xs uppercase tracking-widest mb-4 text-slate-400 border-b border-slate-700 pb-2">Conducta Clínica</h4>
-                        <div className="space-y-4">
-                          <div>
-                            <div className="text-[10px] font-bold uppercase text-slate-500 mb-1">Evolución/Consulta:</div>
-                            <p className="text-sm italic leading-relaxed text-slate-300">"{pacienteParaModal.consulta || 'Sin notas.'}"</p>
-                          </div>
-                          <div className="space-y-2">
-                            <BadgeMini label="Solicitar Estudios" value={pacienteParaModal.solicitarEstudios} />
-                            <BadgeMini label="Interconsulta" value={pacienteParaModal.interconsulta} />
-                            <BadgeMini label="Cambio Med." value={pacienteParaModal.cambioMedicacion} />
-                          </div>
-                        </div>
-                      </section>
-                    </div>
-
-                  </div>
-
-                  {/* ALERTAS CRÍTICAS (SI EXISTEN) */}
-                  {pacienteParaModal.c.evaluacion?.alertasClinicas && (
-                    <div className="mt-8 bg-red-50 border-2 border-red-200 p-6 rounded-3xl flex items-center gap-6 animate-pulse">
-                      <div className="bg-red-600 text-white p-4 rounded-2xl text-2xl">⚠️</div>
-                      <div>
-                        <h5 className="font-black text-red-800 uppercase tracking-tighter">Alerta Médica Detectada</h5>
-                        <p className="text-red-700 font-bold">{pacienteParaModal.c.evaluacion.alertasClinicas}</p>
                       </div>
                     </div>
-                  )}
-                </div>
 
-                {/* FOOTER ACCIONES */}
-                <div className="p-6 bg-white border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                  <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-                    Auth: {pacienteParaModal.doctor} // Daspu RCV System v2.6
+                    {/* LABORATORIO */}
+                    <div className="bg-slate-900 p-6 rounded-2xl shadow-xl text-white">
+                      <h4 className="text-emerald-400 font-black text-[10px] uppercase tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Resultados Lab</h4>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 gap-1">
+                            <LabRow label="Hemoglobina" value={pacienteParaModal.lb?.hemoglobina} />
+                            <LabRow label="Glucemia" value={pacienteParaModal.lb?.glucemia} />
+                            <LabRow label="Creatinina" value={pacienteParaModal.lb?.creatinina} />
+                            <LabRow label="TFG Lab" value={pacienteParaModal.lb?.filtradoGlomerular} />
+                        </div>
+                        <div className="pt-4 border-t border-white/10">
+                            <LabRow label="Proteinuria" value={pacienteParaModal.or?.proteinuria} />
+                            <LabRow label="Relación P/C" value={pacienteParaModal.or?.relacionProteinaCreatinina} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CONDUCTA */}
+                    <div className="space-y-4">
+                      <div className="bg-indigo-50 p-5 rounded-2xl border border-indigo-100">
+                        <h4 className="text-indigo-700 font-black text-[10px] uppercase tracking-[0.2em] mb-3">Conducta Clínica</h4>
+                        <div className="text-xs space-y-3 font-medium text-slate-700">
+                          <p><b>Estudios:</b> {pacienteParaModal.solicitarEstudios || '--'}</p>
+                          <p><b>Interconsulta:</b> {pacienteParaModal.interconsulta || '--'}</p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-5 rounded-2xl border shadow-sm italic text-xs text-slate-500 leading-relaxed">
+                        "{Advertencia[pacienteParaModal.nivelRiesgo] || "Seguir protocolo estándar."}"
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-3 w-full md:w-auto">
-                    <button 
-                      onClick={() => window.print()}
-                      className="flex-1 md:flex-none px-8 py-3 bg-slate-100 text-slate-700 rounded-2xl font-bold hover:bg-slate-200 transition-all"
-                    >
-                      PDF Reporte
-                    </button>
-                    <button 
-                      onClick={() => setIsModalDetalleOpen(false)}
-                      className="flex-1 md:flex-none px-8 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
-                    >
-                      Cerrar Dashboard
+
+                  {/* FOOTER */}
+                  <div className="p-6 bg-slate-100 flex justify-between items-center border-t">
+                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Daspu RCV System // Mateo Berra</span>
+                    <button onClick={() => setIsModalDetalleOpen(false)} className="px-8 py-2 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg hover:bg-indigo-700 transition-all">
+                      Cerrar Vista
                     </button>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Botón "Mostrar más" o "Mostrar menos" */}
           <button onClick={() => toggleDetalles(paciente.id)} className="text-indigo-600 hover:text-indigo-900 mt-2">
