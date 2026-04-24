@@ -895,243 +895,216 @@ ${paciente.laboratorio ? `LABORATORIO: ${paciente.laboratorio}` : ""}
           </div>
 
           {/* Mostrar detalles adicionales super completos (Formulario + Circuito) */}
-{mostrarDetalles[paciente.id] && (() => {
-  // NOTA: Para que los datos del circuito se vean aquí, debes tenerlos vinculados al paciente en tu estado.
-  // Si los trajiste en el useEffect general, asumo que están en paciente.circuito o algo similar.
-  // Si no están, el código no fallará (mostrará lo del form), pero para ver todo usa:
-  const c = paciente.circuito || {}; 
-  const ap = c.antecedentesPersonales || {};
-  const af = c.antecedentesFamiliares || {};
-  const lb = c.laboratorio || {};
-  const or = c.orina || {};
+          {mostrarDetalles[paciente.id] && (() => {
+            // NOTA: Para que los datos del circuito se vean aquí, debes tenerlos vinculados al paciente en tu estado.
+            // Si los trajiste en el useEffect general, asumo que están en paciente.circuito o algo similar.
+            // Si no están, el código no fallará (mostrará lo del form), pero para ver todo usa:
+            const ModalDetallesPaciente = ({ paciente, circuito, onClose }) => {
+              if (!paciente) return null;
 
-  // Componente reutilizable para las filas. Solo renderiza si hay un valor válido.
-  const InfoItem = ({ label, value }) => {
-    if (value === null || value === undefined || value === '' || value === 'N/A' || value === false) return null;
-    return (
-      <div className="flex justify-between py-1 border-b border-gray-200/50 text-xs hover:bg-black/5 transition-colors px-1 rounded">
-        <span className="font-semibold text-gray-600 w-1/2">{label}:</span>
-        <span className="text-gray-900 font-bold text-right w-1/2 break-words">
-          {typeof value === 'boolean' ? (value ? 'SÍ' : 'NO') : value}
-        </span>
-      </div>
-    );
-  };
+              // Referencias rápidas
+              const c = circuito || {};
+              const ap = c.antecedentesPersonales || {};
+              const af = c.antecedentesFamiliares || {};
+              const lb = c.laboratorio || {};
+              const or = c.orina || {};
 
-  return (
-    <div className="mt-5 pt-5 border-t-2 border-dashed border-gray-200 animate-fade-in">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              const SectionTitle = ({ children, icon }) => (
+                <h3 className="flex items-center gap-2 text-sm font-black text-slate-800 uppercase tracking-wider mb-4 border-b-2 border-indigo-500 pb-1 w-fit">
+                  <span className="text-indigo-600">{icon}</span>
+                  {children}
+                </h3>
+              );
 
-        {/* ================= COLUMNA 1: FORMULARIO RCV Y CLÍNICA ================= */}
-        <div className="space-y-4">
-          
-          {/* Hábitos y Físico (Formulario) */}
-          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm">
-            <h4 className="text-[11px] font-black uppercase text-blue-800 tracking-widest mb-3 border-b border-blue-200 pb-1">
-              Hábitos y Físico (RCV)
-            </h4>
-            <InfoItem label="IMC / Cintura" value={paciente.imc ? `${paciente.imc} / ${paciente.cintura || '--'} cm` : null} />
-            <InfoItem label="Fumador" value={paciente.fumador} />
-            <InfoItem label="ExFumador" value={paciente.exfumador} />
-            <InfoItem label="Sedentarismo" value={paciente.sedentarismo} />
-            <InfoItem label="Sueño" value={paciente.sueño} />
-            <InfoItem label="Alergias" value={paciente.alergias} />
-            <InfoItem label="Tiroides" value={paciente.tiroides} />
-            <InfoItem label="Aspirina" value={paciente.aspirina} />
-            <InfoItem label="TFG (Form)" value={paciente.tfg ? `${String(paciente.tfg).substring(0, 5)} ml/min` : null} />
-            
-            {paciente.genero === 'F' && (
-              <div className="mt-2 pt-2 border-t border-blue-200/50">
-                <InfoItem label="Gestas / FUM" value={paciente.numeroGestas ? `${paciente.numeroGestas} / ${paciente.fum || '--'}` : null} />
-                <InfoItem label="Anticonceptivo" value={paciente.metodoAnticonceptivo} />
-                <InfoItem label="Trast. Hipertensivos" value={paciente.trastornosHipertensivos} />
-                <InfoItem label="Diabetes Gestac." value={paciente.diabetesGestacional} />
-                <InfoItem label="SOP" value={paciente.sop} />
-              </div>
-            )}
-          </div>
+              const DataField = ({ label, value, highlight = false }) => {
+                if (value === null || value === undefined || value === '' || value === 'N/A') return null;
+                return (
+                  <div className={`p-3 rounded-lg ${highlight ? 'bg-indigo-50 border border-indigo-100' : 'bg-gray-50 border border-gray-100'}`}>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase leading-none mb-1">{label}</p>
+                    <p className={`text-sm font-semibold ${highlight ? 'text-indigo-700' : 'text-slate-700'}`}>
+                      {typeof value === 'boolean' ? (value ? 'SÍ' : 'NO') : value}
+                    </p>
+                  </div>
+                );
+              };
 
-          {/* Antecedentes Personales Combinados */}
-          <div className="bg-red-50 p-4 rounded-xl border border-red-100 shadow-sm">
-            <h4 className="text-[11px] font-black uppercase text-red-800 tracking-widest mb-3 border-b border-red-200 pb-1">
-              Antecedentes Personales
-            </h4>
-            <div className="grid grid-cols-2 gap-x-3">
-              <div className="space-y-1 border-r border-red-200/50 pr-2">
-                <span className="text-[9px] font-bold text-red-400 uppercase">Declarados</span>
-                <InfoItem label="Hipertenso" value={paciente.hipertenso} />
-                <InfoItem label="Diabetes" value={paciente.diabetes} />
-                <InfoItem label="ACV" value={paciente.acv} />
-                <InfoItem label="Infarto" value={paciente.infarto} />
-                <InfoItem label="Renal" value={paciente.renal} />
-                <InfoItem label="Pulmonar" value={paciente.pulmonar} />
-              </div>
-              <div className="space-y-1 pl-1">
-                <span className="text-[9px] font-bold text-red-400 uppercase">Circuito Técnico</span>
-                <InfoItem label="EPOC" value={ap.epoc} />
-                <InfoItem label="ICC" value={ap.icc} />
-                <InfoItem label="Asma" value={ap.asma} />
-                <InfoItem label="Artritis" value={ap.artritis} />
-                <InfoItem label="Angina" value={ap.anginaPecho} />
-                <InfoItem label="Ictus" value={ap.ictus} />
-              </div>
-            </div>
-            {(ap.mamografiaFecha || ap.papSomfFecha || ap.albuminuria) && (
-              <div className="mt-3 pt-2 border-t border-red-200">
-                  <InfoItem label="Estudios Prev." value={`Mamo: ${ap.mamografiaFecha || '--'} | PAP: ${ap.papSomfFecha || '--'} | Alb: ${ap.albuminuria || '--'}`} />
-              </div>
-            )}
-          </div>
+              return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+                  <div className="bg-white w-full max-w-7xl h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
+                    
+                    {/* HEADER: Identificación Rápida */}
+                    <div className="bg-slate-900 p-6 text-white flex justify-between items-center">
+                      <div>
+                        <div className="flex items-center gap-3">
+                          <h2 className="text-2xl font-black">{paciente.nombre || "Ficha del Paciente"}</h2>
+                          <span className="bg-indigo-500 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                            ID: {paciente.id}
+                          </span>
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${paciente.nivelRiesgo === 'Alto' ? 'bg-red-500' : 'bg-green-500'}`}>
+                            Riesgo: {paciente.nivelRiesgo}
+                          </span>
+                        </div>
+                        <p className="text-slate-400 text-sm mt-1 tracking-wide">
+                          DNI: {paciente.cuil} | Edad: {paciente.edad} | Género: {paciente.genero} | Registro: {paciente.fechaRegistro}
+                        </p>
+                      </div>
+                      <button onClick={onClose} className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    </div>
 
-          {/* Conducta Clínica */}
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
-            <h4 className="text-[11px] font-black uppercase text-gray-700 tracking-widest mb-3 border-b border-gray-300 pb-1">
-              Conducta y Evolución
-            </h4>
-            <InfoItem label="Síntomas Alarma" value={paciente.sintomaAlarma} />
-            <InfoItem label="Interconsulta" value={paciente.interconsulta} />
-            <InfoItem label="Solicitud Estudios" value={paciente.solicitarEstudios} />
-            <InfoItem label="Cambio Medicación" value={paciente.cambioMedicacion} />
-            <InfoItem label="Consulta" value={paciente.consulta} />
-            <InfoItem label="Práctica" value={paciente.practica} />
-            <InfoItem label="Doctor" value={paciente.doctor} />
-            <InfoItem label="Origen Turno" value={c.origenTurno} />
-          </div>
+                    {/* CUERPO DEL MODAL (Scrollable) */}
+                    <div className="flex-1 overflow-y-auto p-8 bg-slate-50">
+                      <div className="grid grid-cols-12 gap-8">
+                        
+                        {/* COLUMNA IZQUIERDA: Constantes y RCV */}
+                        <div className="col-span-12 lg:col-span-4 space-y-6">
+                          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <SectionTitle icon="🩺">Datos Clínicos Base</SectionTitle>
+                            <div className="grid grid-cols-2 gap-3">
+                              <DataField label="TA Máx/Mín" value={`${paciente.presionArterial} / ${paciente.taMin}`} highlight />
+                              <DataField label="TFG (Filtro)" value={paciente.tfg} highlight />
+                              <DataField label="IMC" value={paciente.imc} />
+                              <DataField label="Peso/Talla" value={`${paciente.peso}kg / ${paciente.talla}cm`} />
+                              <DataField label="Cintura" value={paciente.cintura} />
+                              <DataField label="Colesterol" value={paciente.colesterol} />
+                            </div>
+                          </section>
 
-        </div>
+                          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <SectionTitle icon="🚬">Hábitos y Estilo de Vida</SectionTitle>
+                            <div className="grid grid-cols-2 gap-3">
+                              <DataField label="Fumador" value={paciente.fumador} />
+                              <DataField label="Ex-Fumador" value={paciente.exfumador} />
+                              <DataField label="Sedentarismo" value={paciente.sedentarismo} />
+                              <DataField label="Sueño" value={paciente.sueño} />
+                              <DataField label="Alergias" value={paciente.alergias} />
+                              <DataField label="Tiroides" value={paciente.tiroides} />
+                            </div>
+                          </section>
 
-        {/* ================= COLUMNA 2: LABORATORIO, ORINA Y FAMILIARES ================= */}
-        <div className="space-y-4">
+                          {paciente.genero === 'F' && (
+                            <section className="bg-pink-50 p-6 rounded-2xl border border-pink-100">
+                              <SectionTitle icon="♀️">Salud Femenina</SectionTitle>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DataField label="Gestas" value={paciente.numeroGestas} />
+                                <DataField label="FUM" value={paciente.fum} />
+                                <DataField label="Anticonceptivo" value={paciente.metodoAnticonceptivo} />
+                                <DataField label="Trast. HTA" value={paciente.trastornosHipertensivos} />
+                              </div>
+                            </section>
+                          )}
+                        </div>
 
-          {/* Laboratorio: Hemograma */}
-          <div className="bg-green-50 p-4 rounded-xl border border-green-100 shadow-sm">
-            <h4 className="text-[11px] font-black uppercase text-green-800 tracking-widest mb-3 border-b border-green-200 pb-1">
-              Laboratorio: Hemograma
-            </h4>
-            <div className="grid grid-cols-2 gap-x-4">
-              <div>
-                <InfoItem label="Eritrocitos" value={lb.eritrocitos} />
-                <InfoItem label="Hemoglobina" value={lb.hemoglobina} />
-                <InfoItem label="Hematocrito" value={lb.hematocrito} />
-                <InfoItem label="VCM / HCM" value={lb.vcm ? `${lb.vcm} / ${lb.hcm || '--'}` : null} />
-                <InfoItem label="CHCM / RDW" value={lb.chcm ? `${lb.chcm} / ${lb.rdw || '--'}` : null} />
-              </div>
-              <div>
-                <InfoItem label="Leucocitos" value={lb.leucocitos} />
-                <InfoItem label="Neutrófilos %" value={lb.neutrofilosSegm} />
-                <InfoItem label="Linfocitos %" value={lb.linfocitos} />
-                <InfoItem label="Eos/Bas/Mon %" value={lb.eosinofilos ? `${lb.eosinofilos}/${lb.basofilos || '--'}/${lb.monocitos || '--'}` : null} />
-                <InfoItem label="Glucemia" value={lb.glucemia ? `${lb.glucemia} mg/dL` : null} />
-              </div>
-            </div>
-          </div>
+                        {/* COLUMNA CENTRAL: Complemento Circuito */}
+                        <div className="col-span-12 lg:col-span-5 space-y-6">
+                          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <SectionTitle icon="🔬">Laboratorio (Circuito)</SectionTitle>
+                            <div className="space-y-4">
+                              <div className="bg-slate-50 p-4 rounded-xl">
+                                <p className="text-[10px] font-black text-slate-400 mb-2 uppercase">Hemograma y Química</p>
+                                <div className="grid grid-cols-3 gap-4">
+                                  <DataField label="Hb" value={lb.hemoglobina} />
+                                  <DataField label="Hto" value={lb.hematocrito} />
+                                  <DataField label="Glucemia" value={lb.glucemia} />
+                                  <DataField label="Creatinina" value={lb.creatinina} />
+                                  <DataField label="HDL" value={lb.hdl} />
+                                  <DataField label="LDL" value={lb.ldl} />
+                                </div>
+                              </div>
+                              <div className="bg-slate-50 p-4 rounded-xl">
+                                <p className="text-[10px] font-black text-slate-400 mb-2 uppercase">Examen de Orina</p>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <DataField label="Prot/Crea" value={or.relacionProteinaCreatinina} />
+                                  <DataField label="Densidad" value={or.densidad} />
+                                  <DataField label="Glucosa" value={or.glucosa} />
+                                  <DataField label="Leucocitos" value={or.leucocitosOrina} />
+                                </div>
+                              </div>
+                            </div>
+                          </section>
 
-          {/* Química y Electrolitos */}
-          <div className="bg-purple-50 p-4 rounded-xl border border-purple-100 shadow-sm">
-            <h4 className="text-[11px] font-black uppercase text-purple-800 tracking-widest mb-3 border-b border-purple-200 pb-1">
-              Química y Lípidos
-            </h4>
-            <div className="grid grid-cols-2 gap-x-4">
-              <div>
-                <InfoItem label="Col. Total" value={paciente.colesterol || lb.colesterolTotal} />
-                <InfoItem label="HDL / LDL" value={lb.hdl ? `${lb.hdl} / ${lb.ldl || '--'}` : null} />
-                <InfoItem label="Triglicéridos" value={lb.trigliceridos} />
-              </div>
-              <div>
-                <InfoItem label="Creatinina" value={lb.creatinina} />
-                <InfoItem label="TFG (Circuito)" value={lb.filtradoGlomerular} />
-                <InfoItem label="Na / K / Cl" value={lb.sodio ? `${lb.sodio} / ${lb.potasio || '--'} / ${lb.cloro || '--'}` : null} />
-              </div>
-            </div>
-          </div>
+                          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <SectionTitle icon="💊">Medicación Actual</SectionTitle>
+                            <div className="grid grid-cols-1 gap-3">
+                              <DataField label="Medic. Hipertensión" value={paciente.medicamentosHipertension} />
+                              <DataField label="Medic. Diabetes" value={paciente.medicamentosDiabetes} />
+                              {c.medicacionActual?.map((m, idx) => (
+                                <div key={idx} className="flex justify-between items-center p-3 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
+                                  <div>
+                                    <p className="text-sm font-bold text-indigo-900">{m.descripcion}</p>
+                                    <p className="text-[10px] text-indigo-600">{m.dosis} - {m.posologia}</p>
+                                  </div>
+                                  <span className="text-[10px] font-black text-indigo-300">CIRCUITO</span>
+                                </div>
+                              ))}
+                            </div>
+                          </section>
+                        </div>
 
-          {/* Orina */}
-          <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 shadow-sm">
-            <h4 className="text-[11px] font-black uppercase text-orange-800 tracking-widest mb-3 border-b border-orange-200 pb-1">
-              Examen de Orina
-            </h4>
-            <div className="grid grid-cols-2 gap-x-4">
-              <div>
-                <InfoItem label="Color/Aspecto" value={or.color ? `${or.color} / ${or.aspecto || '--'}` : null} />
-                <InfoItem label="pH / Dens." value={or.ph ? `${or.ph} / ${or.densidad || '--'}` : null} />
-                <InfoItem label="Proteinuria" value={or.proteinuria} />
-                <InfoItem label="Rel Prot/Crea" value={or.relacionProteinaCreatinina} />
-              </div>
-              <div>
-                <InfoItem label="Glu/Cet/Nitri" value={or.glucosa ? `${or.glucosa} / ${or.cetonas || '--'} / ${or.nitritos || '--'}` : null} />
-                <InfoItem label="Leucos/Hemat" value={or.leucocitosOrina ? `${or.leucocitosOrina} / ${or.hematiesOrina || '--'}` : null} />
-              </div>
-            </div>
-          </div>
+                        {/* COLUMNA DERECHA: Antecedentes y Conducta */}
+                        <div className="col-span-12 lg:col-span-3 space-y-6">
+                          <section className="bg-red-50 p-6 rounded-2xl border border-red-100">
+                            <SectionTitle icon="⚠️">Antecedentes</SectionTitle>
+                            <div className="space-y-2">
+                              <div className="flex flex-wrap gap-2">
+                                {[
+                                  { l: 'HTA', v: paciente.hipertenso }, { l: 'DBT', v: paciente.diabetes },
+                                  { l: 'ACV', v: paciente.acv }, { l: 'INFARTO', v: paciente.infarto },
+                                  { l: 'ICC', v: ap.icc }, { l: 'EPOC', v: ap.epoc }
+                                ].map(ant => ant.v && (
+                                  <span key={ant.l} className="px-2 py-1 bg-red-600 text-white text-[10px] font-black rounded shadow-sm">
+                                    {ant.l}
+                                  </span>
+                                ))}
+                              </div>
+                              <div className="mt-4">
+                                <DataField label="AF Diabetes" value={af.afDiabetes} />
+                                <DataField label="AF HTA" value={af.afHipertension} />
+                              </div>
+                            </div>
+                          </section>
 
-          {/* Antecedentes Familiares */}
-          <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 shadow-sm">
-            <h4 className="text-[11px] font-black uppercase text-yellow-800 tracking-widest mb-3 border-b border-yellow-300 pb-1">
-              Ant. Familiares (Circuito)
-            </h4>
-            <div className="grid grid-cols-2 gap-x-4">
-               <InfoItem label="Diabetes" value={af.afDiabetes} />
-               <InfoItem label="HTA" value={af.afHipertension} />
-               <InfoItem label="Cardiopatía" value={af.afCardiopatia} />
-               <InfoItem label="ACV" value={af.afAcv} />
-               <InfoItem label="Códigos AF" value={af.afCodigos} />
-               <InfoItem label="FAT/RES/DEA" value={af.fatResDeaPdp} />
-            </div>
-          </div>
+                          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <SectionTitle icon="📝">Conducta Clínica</SectionTitle>
+                            <div className="space-y-3">
+                              <DataField label="Síntomas Alarma" value={paciente.sintomaAlarma} />
+                              <DataField label="Interconsulta" value={paciente.interconsulta} />
+                              <DataField label="Cambio Medicación" value={paciente.cambioMedicacion} />
+                              <DataField label="Solicitud Estudios" value={paciente.solicitarEstudios} />
+                            </div>
+                          </section>
 
-        </div>
+                          <div className="bg-slate-900 p-6 rounded-2xl text-white">
+                            <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Alertas de Circuito</p>
+                            <p className="text-xs italic leading-relaxed text-slate-200">
+                              {c.evaluacion?.alertasClinicas || "No se registran alertas clínicas de urgencia en el sistema."}
+                            </p>
+                          </div>
+                        </div>
 
-        {/* ================= FILA INFERIOR: MEDICACIÓN Y ALERTAS ================= */}
-        <div className="lg:col-span-2 space-y-4">
-          
-          {/* Medicación Integrada */}
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-indigo-100">
-            <h4 className="text-[11px] font-black uppercase text-indigo-800 tracking-widest mb-3 border-b border-gray-100 pb-1">
-              Consolidado de Medicación
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <span className="text-[10px] font-bold text-indigo-400 uppercase mb-2 block">Declarada en Formulario</span>
-                <InfoItem label="Hipertensión" value={paciente.medicamentosHipertension} />
-                <InfoItem label="Diabetes" value={paciente.medicamentosDiabetes} />
-                <InfoItem label="Colesterol" value={paciente.medicamentosColesterol} />
-                <InfoItem label="Prescripción" value={paciente.medicacionPrescripcion} />
-                <InfoItem label="Dispensa" value={paciente.medicacionDispensa} />
-              </div>
-              <div className="bg-indigo-50/50 p-3 rounded-lg">
-                  <span className="text-[10px] font-bold text-indigo-400 uppercase mb-2 block">Activa en Circuito</span>
-                  {c.medicacionActual?.length > 0 ? (
-                    <ul className="space-y-1.5">
-                      {c.medicacionActual.map((m, i) => (
-                        <li key={i} className="text-xs text-gray-700 bg-white p-2 rounded shadow-sm border-l-4 border-indigo-500">
-                          <strong className="text-indigo-900">{m.descripcion}</strong><br/>
-                          <span className="opacity-80">{m.dosis} ({m.posologia})</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-xs text-gray-400 italic">No registra en circuito.</p>
-                  )}
-              </div>
-            </div>
-          </div>
+                      </div>
+                    </div>
 
-          {/* Alertas */}
-          {c.evaluacion?.alertasClinicas && (
-            <div className="bg-red-600 text-white p-4 rounded-xl shadow-md flex items-center gap-4">
-              <span className="text-3xl">⚠️</span>
-              <div>
-                <h4 className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-80">Alertas Clínicas Severas</h4>
-                <p className="text-sm font-bold">{c.evaluacion.alertasClinicas}</p>
-              </div>
-            </div>
-          )}
+                    {/* FOOTER: Acciones rápidas */}
+                    <div className="bg-white border-t border-slate-200 p-6 flex justify-end gap-4">
+                      <button onClick={onClose} className="px-6 py-2 rounded-xl border border-slate-300 font-bold text-slate-600 hover:bg-slate-50 transition-all">
+                        Cerrar Ficha
+                      </button>
+                      <button 
+                        onClick={() => window.print()} 
+                        className="px-6 py-2 rounded-xl bg-slate-800 text-white font-bold hover:bg-black transition-all flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                        Imprimir Reporte
+                      </button>
+                    </div>
 
-        </div>
-      </div>
-    </div>
-  );
-})()}
+                  </div>
+                </div>
+              );
+            };
+                      })()}
 
           {/* Botón "Mostrar más" o "Mostrar menos" */}
           <button onClick={() => toggleDetalles(paciente.id)} className="text-indigo-600 hover:text-indigo-900 mt-2">
