@@ -129,16 +129,6 @@ function Estadisticas() {
       </span>
     </div>
   );
-  const nivelRiesgoTexto = (() => {
-      switch (paciente.nivelRiesgo) {
-          case '<10% Bajo': return 'Bajo';
-          case '>10% <20% Moderado': return 'Moderado';
-          case '>20% <30% Alto': return 'Alto';
-          case '>30% <40% Muy Alto': return 'Muy Alto';
-          case '>40% Crítico': return 'Crítico';
-          default: return 'Desconocido';
-      }
-  })();
 
   // Función para manejar cambios en los filtros
   const manejarCambio = (e) => {
