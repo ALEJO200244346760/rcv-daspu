@@ -48,6 +48,16 @@ function Estadisticas() {
   const [mostrarDetalles, setMostrarDetalles] = useState({}); // Estado para mostrar detalles de cada paciente
   const [mostrarGraficos, setMostrarGraficos] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  // --- NUEVOS ESTADOS PARA EL MODAL GIGANTE ---
+  const [datosCircuitoTotales, setDatosCircuitoTotales] = useState([]);
+  const [pacienteModal, setPacienteModal] = useState(null);
+
+  // --- OBTENER DATOS DE CIRCUITO EN SEGUNDO PLANO ---
+  useEffect(() => {
+    axios.get(`${apiBaseURL}/api/circuito/listar`)
+      .then(res => setDatosCircuitoTotales(res.data))
+      .catch(err => console.error('Error al obtener circuito:', err));
+  }, []);
 
   const toggleFiltros = () => {
     setMostrarFiltros(!mostrarFiltros);
@@ -103,6 +113,22 @@ function Estadisticas() {
       }));
     }
   };
+  const abrirModal = (paciente) => {
+    // Buscamos si el paciente tiene datos en el circuito comparando el DNI/CUIL
+    const circuitoAsociado = datosCircuitoTotales.find(c => c.patientInfo?.dni === paciente.cuil) || null;
+    setPacienteModal({ form: paciente, circuito: circuitoAsociado });
+  };
+
+  const cerrarModal = () => setPacienteModal(null);
+
+  const InfoRow = ({ label, value, unit = "" }) => (
+    <div className="flex justify-between border-b border-gray-100 py-1">
+      <span className="text-gray-500 text-xs">{label}:</span>
+      <span className="font-bold text-gray-800 text-xs text-right">
+        {value !== null && value !== undefined && value !== '' && value !== 'N/A' ? `${value} ${unit}` : '--'}
+      </span>
+    </div>
+  );
 
   // Función para manejar cambios en los filtros
   const manejarCambio = (e) => {

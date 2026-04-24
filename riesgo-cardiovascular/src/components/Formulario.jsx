@@ -390,10 +390,9 @@ const Formulario = () => {
             infarto,
             acv,
             renal,
-            pulmonar
         } = datosPaciente;
     
-        if (!edad || !genero || !cuil || !diabetes || !fumador || !exfumador || !presionArterial || !infarto || !acv || !renal || !pulmonar) {
+        if (!edad || !genero || !cuil || !diabetes || !fumador || !exfumador || !presionArterial || !infarto || !acv || !renal) {
             setError('Por favor, complete todos los campos obligatorios.');
             return false;
         }
