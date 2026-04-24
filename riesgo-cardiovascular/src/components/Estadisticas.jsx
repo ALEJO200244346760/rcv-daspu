@@ -894,64 +894,244 @@ ${paciente.laboratorio ? `LABORATORIO: ${paciente.laboratorio}` : ""}
             </div>
           </div>
 
-          {/* Mostrar detalles adicionales solo si están activados */}
-          {mostrarDetalles[paciente.id] && (
-            <div className="mt-0">
-              {[
-                { label: "FUMA", value: paciente.fumador },
-                { label: "EXFUMADOR", value: paciente.exfumador },
-                { label: "COLESTEROL", value: paciente.colesterol },
-                { label: "Medicamentos Colesterol", value: paciente.medicamentosColesterol },
-                { label: "IMC", value: paciente.imc },
-                { label: "Peso", value: paciente.peso },
-                { label: "Talla", value: paciente.talla },
-                { label: "Fecha de Registro", value: paciente.fechaRegistro },
-                { label: "Hipertenso", value: paciente.hipertenso },
-                { label: "Medicamentos Hipertensión", value: paciente.medicamentosHipertension },
-                { label: "Diabetes", value: paciente.diabetes },
-                { label: "Medicamentos Diabetes", value: paciente.medicamentosDiabetes },
-                { label: "Aspirina", value: paciente.aspirina },
-                { label: "TFG", value: paciente.tfg },
-                { label: "Enfermedad", value: paciente.enfermedad },
-                { label: "ACV", value: paciente.acv },
-                { label: "Cintura", value: paciente.cintura },
-                { label: "RENAL", value: paciente.renal },
-                { label: "Infarto", value: paciente.infarto },
-                { label: "Pulmonar", value: paciente.pulmonar },
-                { label: "Alergias", value: paciente.alergias },
-                { label: "Tiroides", value: paciente.tiroides },
-                { label: "Sedentarismo", value: paciente.sedentarismo },
-                { label: "Sueño", value: paciente.sueño },
-                { label: "Número de Gestas", value: paciente.numeroGestas },
-                { label: "FUM", value: paciente.fum },
-                { label: "Método Anticonceptivo", value: paciente.metodoAnticonceptivo },
-                { label: "Trastornos Hipertensivos", value: paciente.trastornosHipertensivos },
-                { label: "Diabetes Gestacional", value: paciente.diabetesGestacional },
-                { label: "SOP", value: paciente.sop },
-                // Las siguientes listas se eliminarán si ya no las usas en el backend/frontend
-                // Si aún las envías como cadenas de texto, el filter y map actual las mostrará
-                // pero si ya no existen en tu modelo, simplemente no se mostrarán aquí.
-                // { label: "Notificación de Riesgo", value: paciente.notificacionRiesgo },
-                // { label: "Consulta", value: paciente.consulta },
-                // { label: "Práctica", value: paciente.practica },
-                // { label: "Medicaciones Dispensa", value: paciente.medicacionDispensa },
-                // { label: "Medicaciones Prescripción", value: paciente.medicacionPrescripcion },
-                // { label: "Tabaquismo", value: paciente.tabaquismo },
-                // { label: "Laboratorio", value: paciente.laboratorio },
-                { label: "Doctor", value: paciente.doctor },
-              ]
-                // FILTRA valores vacíos o nulos
-                .filter(({ value }) => value !== null && value !== undefined && value !== '' && value !== 'N/A')
-                .map(({ label, value }) => (
-                  <div className="flex justify-between mb-2" key={label}>
-                    <div className="w-2/5 text-sm font-medium text-gray-900">{label}:</div>
-                    <div className="w-2/5 text-sm text-gray-500 text-right">
-                      {label === "TFG" && value ? `${value} ml/min/1.73m²` : value}
-                    </div>
-                  </div>
-                ))}
+          {/* Mostrar detalles adicionales super completos (Formulario + Circuito) */}
+{mostrarDetalles[paciente.id] && (() => {
+  // NOTA: Para que los datos del circuito se vean aquí, debes tenerlos vinculados al paciente en tu estado.
+  // Si los trajiste en el useEffect general, asumo que están en paciente.circuito o algo similar.
+  // Si no están, el código no fallará (mostrará lo del form), pero para ver todo usa:
+  const c = paciente.circuito || {}; 
+  const ap = c.antecedentesPersonales || {};
+  const af = c.antecedentesFamiliares || {};
+  const lb = c.laboratorio || {};
+  const or = c.orina || {};
+
+  // Componente reutilizable para las filas. Solo renderiza si hay un valor válido.
+  const InfoItem = ({ label, value }) => {
+    if (value === null || value === undefined || value === '' || value === 'N/A' || value === false) return null;
+    return (
+      <div className="flex justify-between py-1 border-b border-gray-200/50 text-xs hover:bg-black/5 transition-colors px-1 rounded">
+        <span className="font-semibold text-gray-600 w-1/2">{label}:</span>
+        <span className="text-gray-900 font-bold text-right w-1/2 break-words">
+          {typeof value === 'boolean' ? (value ? 'SÍ' : 'NO') : value}
+        </span>
+      </div>
+    );
+  };
+
+  return (
+    <div className="mt-5 pt-5 border-t-2 border-dashed border-gray-200 animate-fade-in">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        {/* ================= COLUMNA 1: FORMULARIO RCV Y CLÍNICA ================= */}
+        <div className="space-y-4">
+          
+          {/* Hábitos y Físico (Formulario) */}
+          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm">
+            <h4 className="text-[11px] font-black uppercase text-blue-800 tracking-widest mb-3 border-b border-blue-200 pb-1">
+              Hábitos y Físico (RCV)
+            </h4>
+            <InfoItem label="IMC / Cintura" value={paciente.imc ? `${paciente.imc} / ${paciente.cintura || '--'} cm` : null} />
+            <InfoItem label="Fumador" value={paciente.fumador} />
+            <InfoItem label="ExFumador" value={paciente.exfumador} />
+            <InfoItem label="Sedentarismo" value={paciente.sedentarismo} />
+            <InfoItem label="Sueño" value={paciente.sueño} />
+            <InfoItem label="Alergias" value={paciente.alergias} />
+            <InfoItem label="Tiroides" value={paciente.tiroides} />
+            <InfoItem label="Aspirina" value={paciente.aspirina} />
+            <InfoItem label="TFG (Form)" value={paciente.tfg ? `${String(paciente.tfg).substring(0, 5)} ml/min` : null} />
+            
+            {paciente.genero === 'F' && (
+              <div className="mt-2 pt-2 border-t border-blue-200/50">
+                <InfoItem label="Gestas / FUM" value={paciente.numeroGestas ? `${paciente.numeroGestas} / ${paciente.fum || '--'}` : null} />
+                <InfoItem label="Anticonceptivo" value={paciente.metodoAnticonceptivo} />
+                <InfoItem label="Trast. Hipertensivos" value={paciente.trastornosHipertensivos} />
+                <InfoItem label="Diabetes Gestac." value={paciente.diabetesGestacional} />
+                <InfoItem label="SOP" value={paciente.sop} />
+              </div>
+            )}
+          </div>
+
+          {/* Antecedentes Personales Combinados */}
+          <div className="bg-red-50 p-4 rounded-xl border border-red-100 shadow-sm">
+            <h4 className="text-[11px] font-black uppercase text-red-800 tracking-widest mb-3 border-b border-red-200 pb-1">
+              Antecedentes Personales
+            </h4>
+            <div className="grid grid-cols-2 gap-x-3">
+              <div className="space-y-1 border-r border-red-200/50 pr-2">
+                <span className="text-[9px] font-bold text-red-400 uppercase">Declarados</span>
+                <InfoItem label="Hipertenso" value={paciente.hipertenso} />
+                <InfoItem label="Diabetes" value={paciente.diabetes} />
+                <InfoItem label="ACV" value={paciente.acv} />
+                <InfoItem label="Infarto" value={paciente.infarto} />
+                <InfoItem label="Renal" value={paciente.renal} />
+                <InfoItem label="Pulmonar" value={paciente.pulmonar} />
+              </div>
+              <div className="space-y-1 pl-1">
+                <span className="text-[9px] font-bold text-red-400 uppercase">Circuito Técnico</span>
+                <InfoItem label="EPOC" value={ap.epoc} />
+                <InfoItem label="ICC" value={ap.icc} />
+                <InfoItem label="Asma" value={ap.asma} />
+                <InfoItem label="Artritis" value={ap.artritis} />
+                <InfoItem label="Angina" value={ap.anginaPecho} />
+                <InfoItem label="Ictus" value={ap.ictus} />
+              </div>
+            </div>
+            {(ap.mamografiaFecha || ap.papSomfFecha || ap.albuminuria) && (
+              <div className="mt-3 pt-2 border-t border-red-200">
+                  <InfoItem label="Estudios Prev." value={`Mamo: ${ap.mamografiaFecha || '--'} | PAP: ${ap.papSomfFecha || '--'} | Alb: ${ap.albuminuria || '--'}`} />
+              </div>
+            )}
+          </div>
+
+          {/* Conducta Clínica */}
+          <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+            <h4 className="text-[11px] font-black uppercase text-gray-700 tracking-widest mb-3 border-b border-gray-300 pb-1">
+              Conducta y Evolución
+            </h4>
+            <InfoItem label="Síntomas Alarma" value={paciente.sintomaAlarma} />
+            <InfoItem label="Interconsulta" value={paciente.interconsulta} />
+            <InfoItem label="Solicitud Estudios" value={paciente.solicitarEstudios} />
+            <InfoItem label="Cambio Medicación" value={paciente.cambioMedicacion} />
+            <InfoItem label="Consulta" value={paciente.consulta} />
+            <InfoItem label="Práctica" value={paciente.practica} />
+            <InfoItem label="Doctor" value={paciente.doctor} />
+            <InfoItem label="Origen Turno" value={c.origenTurno} />
+          </div>
+
+        </div>
+
+        {/* ================= COLUMNA 2: LABORATORIO, ORINA Y FAMILIARES ================= */}
+        <div className="space-y-4">
+
+          {/* Laboratorio: Hemograma */}
+          <div className="bg-green-50 p-4 rounded-xl border border-green-100 shadow-sm">
+            <h4 className="text-[11px] font-black uppercase text-green-800 tracking-widest mb-3 border-b border-green-200 pb-1">
+              Laboratorio: Hemograma
+            </h4>
+            <div className="grid grid-cols-2 gap-x-4">
+              <div>
+                <InfoItem label="Eritrocitos" value={lb.eritrocitos} />
+                <InfoItem label="Hemoglobina" value={lb.hemoglobina} />
+                <InfoItem label="Hematocrito" value={lb.hematocrito} />
+                <InfoItem label="VCM / HCM" value={lb.vcm ? `${lb.vcm} / ${lb.hcm || '--'}` : null} />
+                <InfoItem label="CHCM / RDW" value={lb.chcm ? `${lb.chcm} / ${lb.rdw || '--'}` : null} />
+              </div>
+              <div>
+                <InfoItem label="Leucocitos" value={lb.leucocitos} />
+                <InfoItem label="Neutrófilos %" value={lb.neutrofilosSegm} />
+                <InfoItem label="Linfocitos %" value={lb.linfocitos} />
+                <InfoItem label="Eos/Bas/Mon %" value={lb.eosinofilos ? `${lb.eosinofilos}/${lb.basofilos || '--'}/${lb.monocitos || '--'}` : null} />
+                <InfoItem label="Glucemia" value={lb.glucemia ? `${lb.glucemia} mg/dL` : null} />
+              </div>
+            </div>
+          </div>
+
+          {/* Química y Electrolitos */}
+          <div className="bg-purple-50 p-4 rounded-xl border border-purple-100 shadow-sm">
+            <h4 className="text-[11px] font-black uppercase text-purple-800 tracking-widest mb-3 border-b border-purple-200 pb-1">
+              Química y Lípidos
+            </h4>
+            <div className="grid grid-cols-2 gap-x-4">
+              <div>
+                <InfoItem label="Col. Total" value={paciente.colesterol || lb.colesterolTotal} />
+                <InfoItem label="HDL / LDL" value={lb.hdl ? `${lb.hdl} / ${lb.ldl || '--'}` : null} />
+                <InfoItem label="Triglicéridos" value={lb.trigliceridos} />
+              </div>
+              <div>
+                <InfoItem label="Creatinina" value={lb.creatinina} />
+                <InfoItem label="TFG (Circuito)" value={lb.filtradoGlomerular} />
+                <InfoItem label="Na / K / Cl" value={lb.sodio ? `${lb.sodio} / ${lb.potasio || '--'} / ${lb.cloro || '--'}` : null} />
+              </div>
+            </div>
+          </div>
+
+          {/* Orina */}
+          <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 shadow-sm">
+            <h4 className="text-[11px] font-black uppercase text-orange-800 tracking-widest mb-3 border-b border-orange-200 pb-1">
+              Examen de Orina
+            </h4>
+            <div className="grid grid-cols-2 gap-x-4">
+              <div>
+                <InfoItem label="Color/Aspecto" value={or.color ? `${or.color} / ${or.aspecto || '--'}` : null} />
+                <InfoItem label="pH / Dens." value={or.ph ? `${or.ph} / ${or.densidad || '--'}` : null} />
+                <InfoItem label="Proteinuria" value={or.proteinuria} />
+                <InfoItem label="Rel Prot/Crea" value={or.relacionProteinaCreatinina} />
+              </div>
+              <div>
+                <InfoItem label="Glu/Cet/Nitri" value={or.glucosa ? `${or.glucosa} / ${or.cetonas || '--'} / ${or.nitritos || '--'}` : null} />
+                <InfoItem label="Leucos/Hemat" value={or.leucocitosOrina ? `${or.leucocitosOrina} / ${or.hematiesOrina || '--'}` : null} />
+              </div>
+            </div>
+          </div>
+
+          {/* Antecedentes Familiares */}
+          <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 shadow-sm">
+            <h4 className="text-[11px] font-black uppercase text-yellow-800 tracking-widest mb-3 border-b border-yellow-300 pb-1">
+              Ant. Familiares (Circuito)
+            </h4>
+            <div className="grid grid-cols-2 gap-x-4">
+               <InfoItem label="Diabetes" value={af.afDiabetes} />
+               <InfoItem label="HTA" value={af.afHipertension} />
+               <InfoItem label="Cardiopatía" value={af.afCardiopatia} />
+               <InfoItem label="ACV" value={af.afAcv} />
+               <InfoItem label="Códigos AF" value={af.afCodigos} />
+               <InfoItem label="FAT/RES/DEA" value={af.fatResDeaPdp} />
+            </div>
+          </div>
+
+        </div>
+
+        {/* ================= FILA INFERIOR: MEDICACIÓN Y ALERTAS ================= */}
+        <div className="lg:col-span-2 space-y-4">
+          
+          {/* Medicación Integrada */}
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-indigo-100">
+            <h4 className="text-[11px] font-black uppercase text-indigo-800 tracking-widest mb-3 border-b border-gray-100 pb-1">
+              Consolidado de Medicación
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <span className="text-[10px] font-bold text-indigo-400 uppercase mb-2 block">Declarada en Formulario</span>
+                <InfoItem label="Hipertensión" value={paciente.medicamentosHipertension} />
+                <InfoItem label="Diabetes" value={paciente.medicamentosDiabetes} />
+                <InfoItem label="Colesterol" value={paciente.medicamentosColesterol} />
+                <InfoItem label="Prescripción" value={paciente.medicacionPrescripcion} />
+                <InfoItem label="Dispensa" value={paciente.medicacionDispensa} />
+              </div>
+              <div className="bg-indigo-50/50 p-3 rounded-lg">
+                  <span className="text-[10px] font-bold text-indigo-400 uppercase mb-2 block">Activa en Circuito</span>
+                  {c.medicacionActual?.length > 0 ? (
+                    <ul className="space-y-1.5">
+                      {c.medicacionActual.map((m, i) => (
+                        <li key={i} className="text-xs text-gray-700 bg-white p-2 rounded shadow-sm border-l-4 border-indigo-500">
+                          <strong className="text-indigo-900">{m.descripcion}</strong><br/>
+                          <span className="opacity-80">{m.dosis} ({m.posologia})</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-xs text-gray-400 italic">No registra en circuito.</p>
+                  )}
+              </div>
+            </div>
+          </div>
+
+          {/* Alertas */}
+          {c.evaluacion?.alertasClinicas && (
+            <div className="bg-red-600 text-white p-4 rounded-xl shadow-md flex items-center gap-4">
+              <span className="text-3xl">⚠️</span>
+              <div>
+                <h4 className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-80">Alertas Clínicas Severas</h4>
+                <p className="text-sm font-bold">{c.evaluacion.alertasClinicas}</p>
+              </div>
             </div>
           )}
+
+        </div>
+      </div>
+    </div>
+  );
+})()}
 
           {/* Botón "Mostrar más" o "Mostrar menos" */}
           <button onClick={() => toggleDetalles(paciente.id)} className="text-indigo-600 hover:text-indigo-900 mt-2">
