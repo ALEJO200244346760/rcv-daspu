@@ -51,6 +51,7 @@ function Estadisticas() {
   // --- NUEVOS ESTADOS PARA EL MODAL GIGANTE ---
   const [datosCircuitoTotales, setDatosCircuitoTotales] = useState([]);
   const [pacienteModal, setPacienteModal] = useState(null);
+  const [busquedaCuil, setBusquedaCuil] = useState('');
 
   // --- OBTENER DATOS DE CIRCUITO EN SEGUNDO PLANO ---
   useEffect(() => {
@@ -411,6 +412,16 @@ ${paciente.laboratorio ? `LABORATORIO: ${paciente.laboratorio}` : ""}
   return (
     <div className="max-w-6xl mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Estadísticas de Pacientes</h1>
+      <div className="mb-4 flex items-center gap-2 bg-white border rounded-lg px-3 py-2 shadow-sm">
+        <span className="text-gray-400">🔍</span>
+        <input
+          type="text"
+          placeholder="Buscar por CUIL..."
+          value={busquedaCuil}
+          onChange={(e) => setBusquedaCuil(e.target.value)}
+          className="w-full outline-none text-sm"
+        />
+      </div>
       
       <div className="mb-6">
       {/* Botón Mostrar/Ocultar */}
