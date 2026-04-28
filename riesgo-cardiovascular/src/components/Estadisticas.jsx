@@ -101,7 +101,7 @@ function Estadisticas() {
   // Hook useEffect para aplicar filtros cada vez que cambian
   useEffect(() => {
     aplicarFiltros(); // Aplica filtros cada vez que cambian
-  }, [filtros, nivelColesterolConocido]);
+  }, [filtros, nivelColesterolConocido, busquedaCuil]);
 
   // Función para manejar el cambio en el filtro de colesterol
   const manejarSeleccionColesterol = (e) => {
