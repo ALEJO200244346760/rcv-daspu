@@ -157,8 +157,9 @@ function Estadisticas() {
       const presionArterialFiltro = filtros.presionArterial === '' ? null : filtros.presionArterial;
       const nivelColesterolFiltro = filtros.nivelColesterol === '' ? null : Number(filtros.nivelColesterol);
       const coincideCuil =
-        busquedaCuil === '' ||
-        (paciente.cuil && paciente.cuil.toString().includes(busquedaCuil));
+        busquedaCuil.trim() === '' ||
+        (paciente.cuil &&
+          String(paciente.cuil).includes(busquedaCuil.trim()));
 
       const nivelColesterolPaciente = paciente.colesterol ? obtenerNivelColesterol(Number(paciente.colesterol)) : null;
 
