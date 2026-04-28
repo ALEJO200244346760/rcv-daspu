@@ -156,6 +156,9 @@ function Estadisticas() {
       const cinturaFiltro = filtros.cintura === '' ? null : filtros.cintura;
       const presionArterialFiltro = filtros.presionArterial === '' ? null : filtros.presionArterial;
       const nivelColesterolFiltro = filtros.nivelColesterol === '' ? null : Number(filtros.nivelColesterol);
+      const coincideCuil =
+        busquedaCuil === '' ||
+        (paciente.cuil && paciente.cuil.toString().includes(busquedaCuil));
 
       const nivelColesterolPaciente = paciente.colesterol ? obtenerNivelColesterol(Number(paciente.colesterol)) : null;
 
@@ -194,6 +197,7 @@ function Estadisticas() {
         return (
           edadValida &&
           cinturaValida &&
+          coincideCuil &&
           (filtros.genero === '' || (paciente.genero && paciente.genero.toLowerCase() === filtros.genero.toLowerCase())) &&
           (filtros.doctor === '' || (paciente.doctor && paciente.doctor.toLowerCase() === filtros.doctor.toLowerCase())) &&
           (filtros.diabetes === '' || (paciente.diabetes && paciente.diabetes.toLowerCase() === filtros.diabetes.toLowerCase())) &&
