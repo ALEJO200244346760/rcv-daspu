@@ -301,23 +301,28 @@ const copiarDatos = async (paciente) => {
   const datos = `
 CIRCUITO CARDIOVASCULAR DASPU MAS VOS
 ID: ${paciente.id} FECHA: ${paciente.fechaRegistro} DNI: ${paciente.cuil} TELÉFONO: ${paciente.telefono} Edad: ${paciente.edad} Género: ${paciente.genero}
+
+
 FACTORES DE RIESGO CARDIOVASCULARES
-HIPERTENSO: ${paciente.hipertenso}
+
+HIPERTENSIÓN: ${paciente.hipertenso}
 Medicamentos Hipertensión: ${paciente.medicamentosHipertension || 'N/A'}
-Diabetes: ${paciente.diabetes}
+DIABETES: ${paciente.diabetes}
 Medicamentos Diabetes: ${paciente.medicamentosDiabetes || 'N/A'}
 Fumador: ${paciente.fumador}
 ExFumador: ${paciente.exfumador}
 SEDENTARISMO: ${paciente.sedentarismo || 'N/A'}
 SUEÑO: ${paciente.sueño || 'N/A'}
 
+
 ENFERMEDAD CARDIOVASCULAR ESTABLECIDA
-CARDIOPATIA ISQUEMICA: ${paciente.infarto}
-INSUFICIENCIA CARDIACA
-ARRITMIAS
-VALVULOPATIAS
-ENFERMEDAD VASCULAR PERIFERICA
-ACV: ${paciente.acv}
+
+CARDIOPATIA ISQUEMICA -
+INSUFICIENCIA CARDIACA -
+ARRITMIAS - 
+VALVULOPATIAS -
+ENFERMEDAD VASCULAR PERIFERICA -
+ACV -
 
 
 OTROS ANTECEDENTES PATOLOGICOS
@@ -326,12 +331,12 @@ RENAL: ${paciente.renal}
 PULMONAR: ${paciente.pulmonar}
 ALERGIAS: ${paciente.alergias || 'N/A'}
 TIROIDES: ${paciente.tiroides || 'N/A'}
-A. PERSONALES EXTRA:
 EPOC: ${ap.epoc ? 'SÍ' : 'NO'} | ICC: ${ap.icc ? 'SÍ' : 'NO'} | ASMA: ${ap.asma ? 'SÍ' : 'NO'}
 ARTRITIS: ${ap.artritis ? 'SÍ' : 'NO'} | ANGINA: ${ap.anginaPecho ? 'SÍ' : 'NO'} | ICTUS: ${ap.ictus ? 'SÍ' : 'NO'}
 MAMOGRAFÍA: ${ap.mamografiaFecha || '--'} | PAP/SOMF: ${ap.papSomfFecha || '--'} | ALBUMINURIA: ${ap.albuminuria || '--'}
 
 A. FAMILIARES:
+
 AF Diabetes: ${af.afDiabetes ? 'SÍ' : 'NO'} | AF HTA: ${af.afHipertension ? 'SÍ' : 'NO'}
 AF Cardiopatía: ${af.afCardiopatia ? 'SÍ' : 'NO'} | AF ACV: ${af.afAcv ? 'SÍ' : 'NO'}
 CÓDIGOS: ${af.afCodigos || '--'} | FAT/RES/DEA: ${af.fatResDeaPdp || '--'}
@@ -352,44 +357,34 @@ CINTURA: ${paciente.cintura}
 ELECTROCARDIOGRAMA:
 Ritmo sinusal, frecuencia cardíaca y eje normal, sin trastornos agudos del segmento ST y T, sin alteraciones en el sistema de conducción, sin arritmias, intervalo QT dentro de lo normal.
 
-No refiere angor, disnea, palpitaciones, mareos ni edemas.
-
-Nivel de Riesgo: ${nivelRiesgoTexto}
-Aspirina: ${paciente.aspirina || 'N/A'}
-TFG: ${paciente.tfg ? String(paciente.tfg).substring(0, 5) : 'N/A'} ml/min/1.73m²
-
-${paciente.numeroGestas ? `Número de Gestas: ${paciente.numeroGestas}` : ""}
-${paciente.fum ? `FUM: ${paciente.fum}` : ""}
-
-
-${paciente.metodoAnticonceptivo ? `Método Anticonceptivo: ${paciente.metodoAnticonceptivo}` : ""}
-${paciente.trastornosHipertensivos ? `Trastornos Hipertensivos: ${paciente.trastornosHipertensivos}` : ""}
-${paciente.diabetesGestacional ? `Diabetes Gestacional: ${paciente.diabetesGestacional}` : ""}
-${paciente.sop ? `SOP: ${paciente.sop}` : ""}
-
---- COMPLEMENTO CIRCUITO (DATOS TÉCNICOS ADICIONALES) ---
-
-ORIGEN TURNO: ${c.origenTurno || '--'} | ASISTIÓ: ${c.asistio ? 'SÍ' : 'NO'}
-ÚLT. CONSULTA: ${c.ultimaConsulta || '--'}
+NIVEL DE RIESGO CARDIOVASCULAR(OMS): ${nivelRiesgoTexto}
 
 
 LABORATORIO HEMOGRAMA:
+
 ERITROCITOS: ${lb.eritrocitos || '--'} | HEMOGLOBINA: ${lb.hemoglobina || '--'} | HEMATOCRITO: ${lb.hematocrito || '--'}
 VCM: ${lb.vcm || '--'} | HCM: ${lb.hcm || '--'} | CHCM: ${lb.chcm || '--'} | RDW: ${lb.rdw || '--'}
 LEUCOCITOS: ${lb.leucocitos || '--'} | NEUTRÓFILOS SEGM: ${lb.neutrofilosSegm || '--'}%
 EOSINÓFILOS: ${lb.eosinofilos || '--'}% | BASÓFILOS: ${lb.basofilos || '--'}% | LINFOCITOS: ${lb.linfocitos || '--'}% GLUCEMIA: ${lb.glucemia || '--'} mg/dL | MONOCITOS: ${lb.monocitos || '--'}%
 NEUTRÓFILOS ABS: ${lb.neutrofilosAbsoluto || '--'} | LINFOCITOS ABS: ${lb.linfocitosAbsoluto || '--'}
 
+
 QUÍMICA Y ELECTROLITOS:
+
 CREATININA: ${lb.creatinina || '--'} | TFG (CIRCUITO): ${lb.filtradoGlomerular || '--'}
 SODIO: ${lb.sodio || '--'} | POTASIO: ${lb.potasio || '--'} | CLORO: ${lb.cloro || '--'}
 HDL: ${lb.hdl || '--'} | LDL: ${lb.ldl || '--'} | TRIGLICÉRIDOS: ${lb.trigliceridos || '--'}
 
+
 EXAMEN DE ORINA TÉCNICO:
+
 COLOR: ${or.color || '--'} | ASPECTO: ${or.aspecto || '--'} | PH: ${or.ph || '--'} | DENSIDAD: ${or.densidad || '--'}
 PROTEINURIA: ${or.proteinuria || '--'} | CREATININURIA: ${or.creatininuira || '--'} | REL. PROT/CREA: ${or.relacionProteinaCreatinina || '--'}
 GLUCOSA: ${or.glucosa || '--'} | CETONAS: ${or.cetonas || '--'} | NITRITOS: ${or.nitritos || '--'}
 LEUCOCITOS ORINA: ${or.leucocitosOrina || '--'} | HEMATÍES ORINA: ${or.hematiesOrina || '--'}
+
+SINTOMAS 
+No refiere angor, disnea, palpitaciones, mareos ni edemas.
 
 -------- RE-ESTRATIFICACION DEL RIESGO CARDIOVASCULAR --------
 
@@ -402,7 +397,6 @@ ${paciente.sintomaAlarma ? `SÍNTOMAS DE ALARMA: ${paciente.sintomaAlarma}` : ""
 ${paciente.interconsulta ? `INTERCONSULTA: ${paciente.interconsulta}` : ""}
 ${paciente.solicitarEstudios ? `SOLICITUD DE ESTUDIOS: ${paciente.solicitarEstudios}` : ""}
 ${paciente.cambioMedicacion ? `CAMBIO DE MEDICACIÓN: ${paciente.cambioMedicacion}` : ""}
-
 
 RECOMENDACIONES:
 ${recomendaciones}
