@@ -299,35 +299,60 @@ const copiarDatos = async (paciente) => {
 
   // 2. Generamos el bloque de texto (Tus datos de Formulario + Los nuevos de Circuito)
   const datos = `
-Circuito Cardiovascular Daspu más vos
-ID: ${paciente.id} FECHA DE REGISTRO: ${paciente.fechaRegistro} DNI: ${paciente.cuil} TELÉFONO: ${paciente.telefono} Edad: ${paciente.edad} Género: ${paciente.genero}
+CIRCUITO CARDIOVASCULAR DASPU MAS VOS
+ID: ${paciente.id} FECHA: ${paciente.fechaRegistro} DNI: ${paciente.cuil} TELÉFONO: ${paciente.telefono} Edad: ${paciente.edad} Género: ${paciente.genero}
+FACTORES DE RIESGO CARDIOVASCULARES
 HIPERTENSO: ${paciente.hipertenso}
 Medicamentos Hipertensión: ${paciente.medicamentosHipertension || 'N/A'}
 Diabetes: ${paciente.diabetes}
 Medicamentos Diabetes: ${paciente.medicamentosDiabetes || 'N/A'}
 Fumador: ${paciente.fumador}
 ExFumador: ${paciente.exfumador}
+SEDENTARISMO: ${paciente.sedentarismo || 'N/A'}
+SUEÑO: ${paciente.sueño || 'N/A'}
+
+ENFERMEDAD CARDIOVASCULAR ESTABLECIDA
+CARDIOPATIA ISQUEMICA: ${paciente.infarto}
+INSUFICIENCIA CARDIACA
+ARRITMIAS
+VALVULOPATIAS
+ENFERMEDAD VASCULAR PERIFERICA
+ACV: ${paciente.acv}
+
+
+OTROS ANTECEDENTES PATOLOGICOS
+
+RENAL: ${paciente.renal}
+PULMONAR: ${paciente.pulmonar}
+ALERGIAS: ${paciente.alergias || 'N/A'}
+TIROIDES: ${paciente.tiroides || 'N/A'}
+A. PERSONALES EXTRA:
+EPOC: ${ap.epoc ? 'SÍ' : 'NO'} | ICC: ${ap.icc ? 'SÍ' : 'NO'} | ASMA: ${ap.asma ? 'SÍ' : 'NO'}
+ARTRITIS: ${ap.artritis ? 'SÍ' : 'NO'} | ANGINA: ${ap.anginaPecho ? 'SÍ' : 'NO'} | ICTUS: ${ap.ictus ? 'SÍ' : 'NO'}
+MAMOGRAFÍA: ${ap.mamografiaFecha || '--'} | PAP/SOMF: ${ap.papSomfFecha || '--'} | ALBUMINURIA: ${ap.albuminuria || '--'}
+
+A. FAMILIARES:
+AF Diabetes: ${af.afDiabetes ? 'SÍ' : 'NO'} | AF HTA: ${af.afHipertension ? 'SÍ' : 'NO'}
+AF Cardiopatía: ${af.afCardiopatia ? 'SÍ' : 'NO'} | AF ACV: ${af.afAcv ? 'SÍ' : 'NO'}
+CÓDIGOS: ${af.afCodigos || '--'} | FAT/RES/DEA: ${af.fatResDeaPdp || '--'}
+
+MEDICACION: ${paciente.medicamentosColesterol || 'N/A'}
+
+SIGNOS VITALES Y MEDIDAS ANTROPOMETRICAS
 
 TA Máx.: ${paciente.presionArterial}
 TA Mín.: ${paciente.taMin}
 Colesterol: ${paciente.colesterol}
-
-Medicamentos Colesterol: ${paciente.medicamentosColesterol || 'N/A'}
 
 IMC: ${paciente.imc}
 PESO: ${paciente.peso}
 TALLA: ${paciente.talla}
 CINTURA: ${paciente.cintura}
 
-ACV: ${paciente.acv}
-RENAL: ${paciente.renal}
-PULMONAR: ${paciente.pulmonar}
+ELECTROCARDIOGRAMA:
+Ritmo sinusal, frecuencia cardíaca y eje normal, sin trastornos agudos del segmento ST y T, sin alteraciones en el sistema de conducción, sin arritmias, intervalo QT dentro de lo normal.
 
-ALERGIAS: ${paciente.alergias || 'N/A'}
-TIROIDES: ${paciente.tiroides || 'N/A'}
-SEDENTARISMO: ${paciente.sedentarismo || 'N/A'}
-SUEÑO: ${paciente.sueño || 'N/A'}
-INFARTO: ${paciente.infarto}
+No refiere angor, disnea, palpitaciones, mareos ni edemas.
 
 Nivel de Riesgo: ${nivelRiesgoTexto}
 Aspirina: ${paciente.aspirina || 'N/A'}
@@ -336,10 +361,6 @@ TFG: ${paciente.tfg ? String(paciente.tfg).substring(0, 5) : 'N/A'} ml/min/1.73m
 ${paciente.numeroGestas ? `Número de Gestas: ${paciente.numeroGestas}` : ""}
 ${paciente.fum ? `FUM: ${paciente.fum}` : ""}
 
-ELECTROCARDIOGRAMA:
-Ritmo sinusal, frecuencia cardíaca y eje normal, sin trastornos agudos del segmento ST y T, sin alteraciones en el sistema de conducción, sin arritmias, intervalo QT dentro de lo normal.
-
-No refiere angor, disnea, palpitaciones, mareos ni edemas.
 
 ${paciente.metodoAnticonceptivo ? `Método Anticonceptivo: ${paciente.metodoAnticonceptivo}` : ""}
 ${paciente.trastornosHipertensivos ? `Trastornos Hipertensivos: ${paciente.trastornosHipertensivos}` : ""}
@@ -351,15 +372,6 @@ ${paciente.sop ? `SOP: ${paciente.sop}` : ""}
 ORIGEN TURNO: ${c.origenTurno || '--'} | ASISTIÓ: ${c.asistio ? 'SÍ' : 'NO'}
 ÚLT. CONSULTA: ${c.ultimaConsulta || '--'}
 
-A. PERSONALES EXTRA:
-EPOC: ${ap.epoc ? 'SÍ' : 'NO'} | ICC: ${ap.icc ? 'SÍ' : 'NO'} | ASMA: ${ap.asma ? 'SÍ' : 'NO'}
-ARTRITIS: ${ap.artritis ? 'SÍ' : 'NO'} | ANGINA: ${ap.anginaPecho ? 'SÍ' : 'NO'} | ICTUS: ${ap.ictus ? 'SÍ' : 'NO'}
-MAMOGRAFÍA: ${ap.mamografiaFecha || '--'} | PAP/SOMF: ${ap.papSomfFecha || '--'} | ALBUMINURIA: ${ap.albuminuria || '--'}
-
-A. FAMILIARES:
-AF Diabetes: ${af.afDiabetes ? 'SÍ' : 'NO'} | AF HTA: ${af.afHipertension ? 'SÍ' : 'NO'}
-AF Cardiopatía: ${af.afCardiopatia ? 'SÍ' : 'NO'} | AF ACV: ${af.afAcv ? 'SÍ' : 'NO'}
-CÓDIGOS: ${af.afCodigos || '--'} | FAT/RES/DEA: ${af.fatResDeaPdp || '--'}
 
 LABORATORIO HEMOGRAMA:
 ERITROCITOS: ${lb.eritrocitos || '--'} | HEMOGLOBINA: ${lb.hemoglobina || '--'} | HEMATOCRITO: ${lb.hematocrito || '--'}
@@ -379,21 +391,22 @@ PROTEINURIA: ${or.proteinuria || '--'} | CREATININURIA: ${or.creatininuira || '-
 GLUCOSA: ${or.glucosa || '--'} | CETONAS: ${or.cetonas || '--'} | NITRITOS: ${or.nitritos || '--'}
 LEUCOCITOS ORINA: ${or.leucocitosOrina || '--'} | HEMATÍES ORINA: ${or.hematiesOrina || '--'}
 
-MEDICACIÓN CIRCUITO:
-${c.medicacionActual?.length > 0 
-  ? c.medicacionActual.map(m => `- ${m.descripcion}: ${m.dosis} (${m.posologia})`).join('\n')
-  : 'No hay medicación cargada en el circuito.'}
+-------- RE-ESTRATIFICACION DEL RIESGO CARDIOVASCULAR --------
 
-ALERTAS CLÍNICAS CIRCUITO: ${c.evaluacion?.alertasClinicas || 'Ninguna'}
 
-RECOMENDACIONES:
-${recomendaciones}
 --- CONDUCTA CLÍNICA ---
+--- SOLICITUD DE ESTUDIOS SUGERIDOS ---
+--- INTERCONSULTAS SUGERIDAS ---
 
 ${paciente.sintomaAlarma ? `SÍNTOMAS DE ALARMA: ${paciente.sintomaAlarma}` : ""}
 ${paciente.interconsulta ? `INTERCONSULTA: ${paciente.interconsulta}` : ""}
 ${paciente.solicitarEstudios ? `SOLICITUD DE ESTUDIOS: ${paciente.solicitarEstudios}` : ""}
 ${paciente.cambioMedicacion ? `CAMBIO DE MEDICACIÓN: ${paciente.cambioMedicacion}` : ""}
+
+
+RECOMENDACIONES:
+${recomendaciones}
+
 
 --- OTROS ---
 
@@ -404,6 +417,7 @@ ${paciente.medicacionPrescripcion ? `MEDICACIÓN PRESCRIPCIÓN: ${paciente.medic
 ${paciente.medicacionDispensa ? `MEDICACIÓN DISPENSA: ${paciente.medicacionDispensa}` : ""}
 ${paciente.tabaquismo ? `TABAQUISMO: ${paciente.tabaquismo}` : ""}
 ${paciente.laboratorio ? `LABORATORIO: ${paciente.laboratorio}` : ""}
+
   `;
 
   // 3. Copiar al portapapeles
