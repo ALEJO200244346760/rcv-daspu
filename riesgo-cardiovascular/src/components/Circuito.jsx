@@ -19,7 +19,7 @@ function Circuito() {
     setLoading(true);
     axios.get(`${apiBaseURL}/api/circuito/listar`)
       .then(res => {
-        setPacientes(res.data);
+        setPacientes(res.data.reverse());
         setLoading(false);
       })
       .catch(err => {
