@@ -365,7 +365,7 @@ LABORATORIO HEMOGRAMA:
 ERITROCITOS: ${lb.eritrocitos || '--'} | HEMOGLOBINA: ${lb.hemoglobina || '--'} | HEMATOCRITO: ${lb.hematocrito || '--'}
 VCM: ${lb.vcm || '--'} | HCM: ${lb.hcm || '--'} | CHCM: ${lb.chcm || '--'} | RDW: ${lb.rdw || '--'}
 LEUCOCITOS: ${lb.leucocitos || '--'} | NEUTRÓFILOS SEGM: ${lb.neutrofilosSegm || '--'}%
-EOSINÓFILOS: ${lb.eosinofilos || '--'}% | BASÓFILOS: ${lb.basofilos || '--'}% | LINFOCITOS: ${lb.linfocitos || '--'}% GLUCEMIA: ${lb.glucemia || '--'} mg/dL | MONOCITOS: ${lb.monocitos || '--'}%
+EOSINÓFILOS: ${lb.eosinofilos || '--'}% | BASÓFILOS: ${lb.basofilos || '--'}% | LINFOCITOS: ${lb.linfocitos || '--'}% | MONOCITOS: ${lb.monocitos || '--'}%
 NEUTRÓFILOS ABS: ${lb.neutrofilosAbsoluto || '--'} | LINFOCITOS ABS: ${lb.linfocitosAbsoluto || '--'}
 
 
@@ -374,6 +374,7 @@ QUÍMICA Y ELECTROLITOS:
 CREATININA: ${lb.creatinina || '--'} | TFG (CIRCUITO): ${lb.filtradoGlomerular || '--'}
 SODIO: ${lb.sodio || '--'} | POTASIO: ${lb.potasio || '--'} | CLORO: ${lb.cloro || '--'}
 HDL: ${lb.hdl || '--'} | LDL: ${lb.ldl || '--'} | TRIGLICÉRIDOS: ${lb.trigliceridos || '--'}
+GLUCEMIA: ${lb.glucemia || '--'} mg/dL
 
 
 EXAMEN DE ORINA TÉCNICO:
