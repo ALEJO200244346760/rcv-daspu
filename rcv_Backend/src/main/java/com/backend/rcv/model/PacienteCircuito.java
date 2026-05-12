@@ -122,7 +122,7 @@ public class PacienteCircuito {
         private Double linfocitosAbsoluto;
         private Double glucemia;
         private Double creatinina;
-        private Double filtradoGlomerular;
+        private String filtradoGlomerular;
         private Double sodio;
         private Double potasio;
         private Double cloro;
