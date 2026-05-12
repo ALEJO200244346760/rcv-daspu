@@ -1,11 +1,12 @@
 package com.backend.rcv.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,9 +19,15 @@ public class PacienteCircuito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 100)
     private String origenTurno;
+
     private Boolean asistio = false;
+
+    @Column(length = 50)
     private String fechaConsulta;
+
+    @Column(length = 50)
     private String ultimaConsulta;
 
     @Embedded
@@ -44,20 +51,51 @@ public class PacienteCircuito {
     @Embedded
     private EvaluacionClinica evaluacion = new EvaluacionClinica();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "paciente_medicaciones",
+            joinColumns = @JoinColumn(name = "paciente_id")
+    )
     private List<Medication> medicacionActual = new ArrayList<>();
 
-    @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
+
+    // =========================
+    // PATIENT INFO
+    // =========================
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PatientInfo {
+
+        @Column(length = 255)
         private String nombreApellido;
+
+        @Column(length = 50)
         private String fechaNacimiento;
+
+        @Column(length = 50)
         private String dni;
+
+        @Column(length = 50)
         private String telefono;
+
+        @Column(length = 10)
         private String sexo;
     }
 
-    @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
+
+    // =========================
+    // ANTECEDENTES PERSONALES
+    // =========================
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class AntecedentesPersonales {
+
         private Boolean diabetes = false;
         private Boolean hipertension = false;
         private Boolean dislipidemia = false;
@@ -71,40 +109,92 @@ public class PacienteCircuito {
         private Boolean anginaPecho = false;
         private Boolean ictus = false;
         private Boolean cancer = false;
+
+        @Column(columnDefinition = "TEXT")
         private String cancerTipoAnio;
+
+        @Column(columnDefinition = "TEXT")
         private String mamografiaFecha;
+
+        @Column(columnDefinition = "TEXT")
         private String papSomfFecha;
+
+        @Column(columnDefinition = "TEXT")
         private String albuminuria;
     }
 
-    @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
+
+    // =========================
+    // ANTECEDENTES FAMILIARES
+    // =========================
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class AntecedentesFamiliares {
+
         private Boolean afDiabetes = false;
         private Boolean afHipertension = false;
         private Boolean afCardiopatia = false;
         private Boolean afAcv = false;
         private Boolean afCancer = false;
+
+        @Column(columnDefinition = "TEXT")
         private String afCancerTipoAnio;
+
+        @Column(columnDefinition = "TEXT")
         private String afCodigos;
+
+        @Column(columnDefinition = "TEXT")
         private String cdtCodigos;
+
+        @Column(columnDefinition = "TEXT")
         private String cdaCodigos;
+
+        @Column(columnDefinition = "TEXT")
         private String alCodigos;
+
+        @Column(columnDefinition = "TEXT")
         private String taCodigos;
+
+        @Column(columnDefinition = "TEXT")
         private String fatResDeaPdp;
     }
 
-    @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
+
+    // =========================
+    // EXAMEN FISICO
+    // =========================
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ExamenFisico {
+
         private Double peso;
         private Double talla;
         private Double contornoAbdominal;
         private Double imc;
+
+        @Column(length = 50)
         private String tensionArterial;
-        private Integer frecuenciaCardiaca;
+
+        private Double frecuenciaCardiaca;
     }
 
-    @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
+
+    // =========================
+    // LABORATORIO
+    // =========================
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class LaboratorioDetallado {
+
         private Double eritrocitos;
         private Double hemoglobina;
         private Double hematocrito;
@@ -119,10 +209,17 @@ public class PacienteCircuito {
         private Double linfocitos;
         private Double monocitos;
         private Double neutrofilosAbsoluto;
+        private Double eosinofilosAbsoluto;
+        private Double basofilosAbsoluto;
         private Double linfocitosAbsoluto;
+        private Double monocitosAbsoluto;
+
         private Double glucemia;
         private Double creatinina;
+
+        @Column(length = 100)
         private String filtradoGlomerular;
+
         private Double sodio;
         private Double potasio;
         private Double cloro;
@@ -132,37 +229,97 @@ public class PacienteCircuito {
         private Double trigliceridos;
     }
 
-    @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
+
+    // =========================
+    // ORINA
+    // =========================
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ExamenOrina {
+
         private Double proteinuria;
         private Double creatininuira;
         private Double relacionProteinaCreatinina;
+
+        @Column(columnDefinition = "TEXT")
         private String color;
+
+        @Column(columnDefinition = "TEXT")
         private String aspecto;
+
         private Double ph;
         private Double densidad;
+
+        @Column(columnDefinition = "TEXT")
         private String proteinas;
+
+        @Column(columnDefinition = "TEXT")
         private String glucosa;
+
+        @Column(columnDefinition = "TEXT")
         private String cetonas;
+
+        @Column(columnDefinition = "TEXT")
         private String bilirrubina;
+
+        @Column(columnDefinition = "TEXT")
         private String hemoglobina2;
+
+        @Column(columnDefinition = "TEXT")
         private String urobilinogeno;
+
+        @Column(columnDefinition = "TEXT")
         private String nitritos;
+
+        @Column(columnDefinition = "TEXT")
         private String celulasEpitPlanas;
+
+        @Column(columnDefinition = "TEXT")
         private String leucocitosOrina;
+
+        @Column(columnDefinition = "TEXT")
         private String hematiesOrina;
     }
 
-    @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
+
+    // =========================
+    // EVALUACION
+    // =========================
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class EvaluacionClinica {
+
+        @Column(length = 100)
         private String rcvNivel;
+
+        @Column(columnDefinition = "TEXT")
         private String alertasClinicas;
     }
 
-    @Embeddable @Data @NoArgsConstructor @AllArgsConstructor
+
+    // =========================
+    // MEDICACION
+    // =========================
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Medication {
+
+        @Column(columnDefinition = "TEXT")
         private String descripcion;
+
+        @Column(length = 100)
         private String dosis;
+
+        @Column(columnDefinition = "TEXT")
         private String posologia;
     }
 }
