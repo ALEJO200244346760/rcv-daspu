@@ -23,9 +23,9 @@ public class PacienteCircuitoController {
     private ImportacionService importacionService;
 
     @PostMapping("/recibir")
-    public ResponseEntity<?> recibirDatos(@RequestBody PacienteCircuito datos) {
+    public ResponseEntity<?> recibirDatos(@RequestBody List<PacienteCircuito> datos) {
         try {
-            return ResponseEntity.ok(repository.save(datos));
+            return ResponseEntity.ok(repository.saveAll(datos));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al guardar: " + e.getMessage());
