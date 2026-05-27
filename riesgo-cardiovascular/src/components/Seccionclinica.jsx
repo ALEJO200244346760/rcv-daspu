@@ -12,7 +12,7 @@ const listaSintomaAlarma = [
 
 const listaInterconsulta = [
   "Clínica médica", "Endocrinología", "Ginecología", "Urología",
-  "Psiquiatría", "Nutrición", "Neumonología", "Hematología", "Oftalmología", "Otro "
+  "Psiquiatría", "Nutrición", "Neumonología", "Hematología", "Oftalmología", "Otro"
 ];
 
 const listaSolicitarEstudios = [
