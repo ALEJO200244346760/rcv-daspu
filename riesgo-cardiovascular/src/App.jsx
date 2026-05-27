@@ -13,7 +13,9 @@ import Register from './components/Register';
 import AdminPanel from './components/AdminPanel';
 import RoleProtectedRoute from './components/RoleProtectedRoute';
 import Circuito from './components/Circuito';
+import Enfermeria from './components/FormularioEnfermera';
 import { useAuth } from './context/AuthContext';
+
 
 
 function App() {
@@ -34,6 +36,8 @@ function App() {
         <Route path="/tomarPresion" element={<TomarPresion />} />
 
         <Route path="/circuito" element={<Circuito />} />
+
+        <Route path="/enfermeria" element={<Enfermeria />} />
 
         <Route 
           path="/estadisticas" 

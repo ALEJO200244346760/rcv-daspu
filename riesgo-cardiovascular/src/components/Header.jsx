@@ -51,6 +51,7 @@ const Header = () => {
       <nav className={`lg:flex lg:space-x-4 ${isMenuOpen ? 'block' : 'hidden'} lg:block`}>
         <Link to="/tomarPresion" className="block lg:inline-block hover:text-gray-300">Diagnóstico</Link>
         <Link to="/formulario" className="block lg:inline-block hover:text-gray-300">RCV</Link>
+        <Link to="/enfermeria" className="block lg:inline-block hover:text-gray-300">Enfermeria</Link>
 
         {/* NUEVO LINK AGREGADO */}
         <Link to="/circuito" className="block lg:inline-block hover:text-gray-300">
