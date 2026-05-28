@@ -6,7 +6,7 @@ import { getLocations } from '../services/userService';
 import axiosInstance from '../axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import FormularioPaciente from './Formulario_Paciente';
-import SeccionClinica from './SeccionClinica';
+import SeccionClinica from './SeccionClinica.jsx';
 
 const Formulario = () => {
     const location = useLocation();
