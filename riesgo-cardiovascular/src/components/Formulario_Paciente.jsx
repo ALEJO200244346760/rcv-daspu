@@ -45,7 +45,7 @@ const MedicamentoCheckboxList = ({ lista, seleccionados, onChange, idPrefix }) =
   </div>
 );
 
-const FormularioPaciente = ({
+const Formulario_Paciente = ({
   datosPaciente,
   manejarCambio,
   setDatosPaciente,
