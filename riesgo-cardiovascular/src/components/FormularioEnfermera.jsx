@@ -99,27 +99,50 @@ const FormularioEnfermera = () => {
                     />
                 </div>
 
+                {/* Guía ImgBB */}
+                <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 space-y-3">
+                    <p className="text-sm font-bold text-yellow-800 text-base">📋 ¿Cómo subir la foto del estudio?</p>
+                    <ol className="text-sm text-yellow-900 space-y-1 list-decimal list-inside">
+                        <li>Hacé clic en el botón azul <strong>"Abrir ImgBB para subir foto"</strong></li>
+                        <li>En la página que se abre, hacé clic en <strong>"Start uploading"</strong></li>
+                        <li>Elegí la foto del estudio desde la computadora o el celular</li>
+                        <li>Una vez subida, copiá el link que aparece abajo de la imagen</li>
+                        <li>Volvé a esta página y pegá el link en el campo correspondiente</li>
+                    </ol>
+                    <button
+                        type="button"
+                        onClick={() => window.open('https://imgbb.com/upload', '_blank', 'noopener,noreferrer')}
+                        className="mt-2 w-full py-3 bg-blue-600 text-white font-bold text-base rounded-lg hover:bg-blue-700 transition-colors shadow"
+                    >
+                        📤 Abrir ImgBB para subir foto
+                    </button>
+                </div>
+
                 <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1">Link — Electrocardiograma</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                        Link — Electrocardiograma <span className="text-gray-400">(pegá acá el link copiado de ImgBB)</span>
+                    </label>
                     <input
                         type="url"
                         name="linkElectrocardiograma"
                         value={carga.linkElectrocardiograma}
                         onChange={handleCargaChange}
                         placeholder="https://ibb.co/..."
-                        className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-base"
                     />
                 </div>
 
                 <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1">Link — Ecocardiograma</label>
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                        Link — Ecocardiograma <span className="text-gray-400">(pegá acá el link copiado de ImgBB)</span>
+                    </label>
                     <input
                         type="url"
                         name="linkEcocardiograma"
                         value={carga.linkEcocardiograma}
                         onChange={handleCargaChange}
                         placeholder="https://ibb.co/..."
-                        className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-base"
                     />
                 </div>
 
