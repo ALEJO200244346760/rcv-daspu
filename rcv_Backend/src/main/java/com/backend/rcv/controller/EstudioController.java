@@ -1,7 +1,7 @@
 package com.backend.rcv.controller;
 
 import com.backend.rcv.model.Estudio;
-import com.tuapp.service.EstudioService;
+import com.backend.rcv.service.EstudioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
