@@ -1,14 +1,16 @@
 package com.backend.rcv.controller;
 
 import com.backend.rcv.model.Estudio;
-import com.backend.rcv.service.EstudioService;
+import com.tuapp.service.EstudioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/estudios")
-@CrossOrigin(origins = "*") // Ajustá al origen de tu frontend en producción
+@CrossOrigin(origins = "*")
 public class EstudioController {
 
     private final EstudioService service;
@@ -17,26 +19,51 @@ public class EstudioController {
         this.service = service;
     }
 
-    // POST /api/estudios — guarda un nuevo estudio
+    // POST /api/estudios — guarda un nuevo registro
     @PostMapping
     public ResponseEntity<Estudio> guardar(@RequestBody Estudio estudio) {
         if (estudio.getDni() == null || estudio.getDni().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        if ((estudio.getLinkElectrocardiograma() == null || estudio.getLinkElectrocardiograma().isBlank()) &&
-                (estudio.getLinkEcocardiograma() == null || estudio.getLinkEcocardiograma().isBlank())) {
-            return ResponseEntity.badRequest().build();
-        }
-        Estudio guardado = service.guardar(estudio);
-        return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(estudio));
     }
 
-    // GET /api/estudios/{dni} — devuelve el estudio más reciente del paciente
-    @GetMapping("/{dni}")
-    public ResponseEntity<Estudio> buscarPorDni(@PathVariable String dni) {
+    // PUT /api/estudios/{id} — actualiza links de un registro existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Estudio> actualizar(@PathVariable Long id, @RequestBody Estudio datos) {
         try {
-            Estudio estudio = service.buscarPorDni(dni);
-            return ResponseEntity.ok(estudio);
+            return ResponseEntity.ok(service.actualizar(id, datos));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // DELETE /api/estudios/{id} — elimina un registro
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        try {
+            service.eliminar(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // GET /api/estudios/todos/{dni} — devuelve TODOS los registros del DNI
+    @GetMapping("/todos/{dni}")
+    public ResponseEntity<List<Estudio>> buscarTodos(@PathVariable String dni) {
+        try {
+            return ResponseEntity.ok(service.buscarTodosPorDni(dni));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // GET /api/estudios/{dni} — devuelve solo el más reciente (compatibilidad)
+    @GetMapping("/{dni}")
+    public ResponseEntity<Estudio> buscarMasReciente(@PathVariable String dni) {
+        try {
+            return ResponseEntity.ok(service.buscarMasRecientePorDni(dni));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
