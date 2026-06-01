@@ -9,10 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface EstudioRepository extends JpaRepository<Estudio, Long> {
-
-    // Todos los registros de un DNI, del más reciente al más antiguo
+    List<Estudio> findAllByOrderByFechaCargaDesc();
     List<Estudio> findByDniOrderByFechaCargaDesc(String dni);
-
-    // El más reciente (para compatibilidad con el endpoint original)
     Optional<Estudio> findTopByDniOrderByFechaCargaDesc(String dni);
 }

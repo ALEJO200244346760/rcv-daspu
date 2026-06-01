@@ -19,16 +19,15 @@ public class EstudioController {
         this.service = service;
     }
 
-    // POST /api/estudios — guarda un nuevo registro
+    // POST — guarda un nuevo registro
     @PostMapping
     public ResponseEntity<Estudio> guardar(@RequestBody Estudio estudio) {
-        if (estudio.getDni() == null || estudio.getDni().isBlank()) {
+        if (estudio.getDni() == null || estudio.getDni().isBlank())
             return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(estudio));
     }
 
-    // PUT /api/estudios/{id} — actualiza links de un registro existente
+    // PUT — actualiza links de un registro
     @PutMapping("/{id}")
     public ResponseEntity<Estudio> actualizar(@PathVariable Long id, @RequestBody Estudio datos) {
         try {
@@ -38,7 +37,7 @@ public class EstudioController {
         }
     }
 
-    // DELETE /api/estudios/{id} — elimina un registro
+    // DELETE — elimina un registro
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         try {
@@ -49,7 +48,13 @@ public class EstudioController {
         }
     }
 
-    // GET /api/estudios/todos/{dni} — devuelve TODOS los registros del DNI
+    // GET /api/estudios/todos — todos los registros (para listar al cargar la página)
+    @GetMapping("/todos")
+    public ResponseEntity<List<Estudio>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
+    }
+
+    // GET /api/estudios/todos/{dni} — todos los registros de un DNI
     @GetMapping("/todos/{dni}")
     public ResponseEntity<List<Estudio>> buscarTodos(@PathVariable String dni) {
         try {
@@ -59,7 +64,7 @@ public class EstudioController {
         }
     }
 
-    // GET /api/estudios/{dni} — devuelve solo el más reciente (compatibilidad)
+    // GET /api/estudios/{dni} — el más reciente (compatibilidad)
     @GetMapping("/{dni}")
     public ResponseEntity<Estudio> buscarMasReciente(@PathVariable String dni) {
         try {

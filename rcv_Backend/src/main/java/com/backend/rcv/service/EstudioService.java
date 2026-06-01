@@ -22,7 +22,6 @@ public class EstudioService {
     public Estudio actualizar(Long id, Estudio datos) {
         Estudio existente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estudio no encontrado: " + id));
-        // Actualizamos solo los links y nombre (lo que permite el modal de edición)
         existente.setLinkElectrocardiograma(datos.getLinkElectrocardiograma());
         existente.setLinkEcocardiograma(datos.getLinkEcocardiograma());
         existente.setLinkLaboratorio(datos.getLinkLaboratorio());
@@ -33,6 +32,11 @@ public class EstudioService {
 
     public void eliminar(Long id) {
         repository.deleteById(id);
+    }
+
+    // Todos los registros, del más reciente al más antiguo
+    public List<Estudio> listarTodos() {
+        return repository.findAllByOrderByFechaCargaDesc();
     }
 
     public List<Estudio> buscarTodosPorDni(String dni) {
