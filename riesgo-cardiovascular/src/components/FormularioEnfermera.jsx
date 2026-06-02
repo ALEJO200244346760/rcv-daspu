@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../axiosConfig';
 import { calcularRiesgoCardiovascular } from './Calculadora';
-import { ESTADO_INICIAL } from './enfermera/Enfermeraconstantes';
+import { ESTADO_INICIAL } from './enfermera/EnfermeraConstantes';
 import { calcularIMC } from './enfermera/EnfermeraUtils';
 import {
   SeccionFiliatorios, SeccionEventoCV, SeccionFactoresRiesgo,

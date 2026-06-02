@@ -3,8 +3,8 @@ import { SiNo, CheckList, CheckboxList, SeccionHeader } from './Enfermeraui';
 import {
   COMPLICACIONES_EMBARAZO, EVENTOS_CV, SINTOMAS,
   MEDS_HIPERTENSION, MEDS_DIABETES, MEDS_COLESTEROL
-} from './Enfermeraconstantes';
-import { calcularIMC, obtenerColorRiesgo } from './Enfermerautils';
+} from './EnfermeraConstantes';
+import { calcularIMC, obtenerColorRiesgo } from './EnfermeraUtils';
 
 // ─────────────────────────────────────────────────────────────
 // LAS 7 SECCIONES DEL FORMULARIO — cada una recibe form, set, toggle

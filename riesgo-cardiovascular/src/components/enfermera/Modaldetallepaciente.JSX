@@ -1,5 +1,5 @@
 import React from 'react';
-import { obtenerColorRiesgo } from './Enfermerautils';
+import { obtenerColorRiesgo } from './EnfermeraUtils';
 import { Fila, EstudioImagen } from './Enfermeraui';
 
 // ─────────────────────────────────────────────────────────────
