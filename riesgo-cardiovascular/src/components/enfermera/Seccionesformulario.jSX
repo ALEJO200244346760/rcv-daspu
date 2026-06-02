@@ -1,10 +1,10 @@
 import React from 'react';
-import { SiNo, CheckList, CheckboxList, SeccionHeader } from './EnfermeraUI';
+import { SiNo, CheckList, CheckboxList, SeccionHeader } from './Enfermeraui';
 import {
   COMPLICACIONES_EMBARAZO, EVENTOS_CV, SINTOMAS,
   MEDS_HIPERTENSION, MEDS_DIABETES, MEDS_COLESTEROL
-} from './enfermeraConstantes';
-import { calcularIMC, obtenerColorRiesgo } from './enfermeraUtils';
+} from './Enfermeraconstantes';
+import { calcularIMC, obtenerColorRiesgo } from './Enfermerautils';
 
 // ─────────────────────────────────────────────────────────────
 // LAS 7 SECCIONES DEL FORMULARIO — cada una recibe form, set, toggle

@@ -1,5 +1,5 @@
 import React from 'react';
-import { obtenerColorRiesgo } from './enfermeraUtils';
+import { obtenerColorRiesgo } from './Enfermerautils';
 
 // ─────────────────────────────────────────────────────────────
 // TARJETA RESUMEN DE UN PACIENTE EN EL LISTADO

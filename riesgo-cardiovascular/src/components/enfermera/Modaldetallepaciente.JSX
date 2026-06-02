@@ -1,6 +1,6 @@
 import React from 'react';
-import { obtenerColorRiesgo } from './enfermeraUtils';
-import { Fila, EstudioImagen } from './EnfermeraUI';
+import { obtenerColorRiesgo } from './Enfermerautils';
+import { Fila, EstudioImagen } from './Enfermeraui';
 
 // ─────────────────────────────────────────────────────────────
 // MODAL DETALLE COMPLETO DEL PACIENTE
