@@ -14,7 +14,7 @@ export const copiarDatosEnfermeria = (est) => {
     .join(', ') || 'Ninguno';
 
   const datos = `
-REGISTRO DE ENFERMERÍA — CIRCUITO CARDIOVASCULAR DASPU MAS VOS
+REGISTRO DE ENFERMERÍA — CIRCUITO CARDIOVASCULAR DASPU
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ━━━ 1. DATOS FILIATORIOS ━━━
