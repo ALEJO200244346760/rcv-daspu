@@ -1,5 +1,6 @@
 import React from 'react';
-import { obtenerColorRiesgo } from './EnfermeraUtils';
+import { obtenerColorRiesgo } from './enfermeraUtils';
+import { copiarDatosEnfermeria } from './copiarDatosEnfermeria';
 
 // ─────────────────────────────────────────────────────────────
 // TARJETA RESUMEN DE UN PACIENTE EN EL LISTADO
@@ -51,6 +52,10 @@ const TarjetaEstudio = ({ est, onVerDetalle, onEditar, onEliminar }) => {
           <button type="button" onClick={() => onEliminar(est.id)}
             className="px-3 py-1.5 text-sm bg-red-100 text-red-700 border border-red-300 rounded-lg hover:bg-red-200 font-semibold transition-colors">
             🗑️
+          </button>
+          <button type="button" onClick={() => copiarDatosEnfermeria(est)}
+            className="px-3 py-1.5 text-sm bg-teal-100 text-teal-800 border border-teal-300 rounded-lg hover:bg-teal-200 font-semibold transition-colors">
+            📋 Copiar
           </button>
         </div>
       </div>

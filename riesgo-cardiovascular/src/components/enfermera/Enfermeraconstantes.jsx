@@ -34,7 +34,7 @@ export const COMPLICACIONES_EMBARAZO = [
 export const EVENTOS_CV = [
   "Infarto","Trombosis arterial","Accidente cerebrovascular",
   "Stent","Bypass","Valvulopatía","Arritmias","Enfermedad renal crónica",
-  "Insuficiencia cardíaca"
+  "Insuficiencia cardíaca", "Ninguno"
 ];
 
 export const SINTOMAS = [
