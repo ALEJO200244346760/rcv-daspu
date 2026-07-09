@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   MEDS_HIPERTENSION, MEDS_DIABETES, MEDS_COLESTEROL,
   COMPLICACIONES_EMBARAZO, EVENTOS_CV, SINTOMAS
-} from './enfermeraConstantes';
+} from './EnfermeraConstantes';
 
 // ─────────────────────────────────────────────────────────────
 // HELPERS INTERNOS
