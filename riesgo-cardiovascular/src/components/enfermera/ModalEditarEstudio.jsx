@@ -125,7 +125,8 @@ const ModalEditarEstudio = ({ estudio, guardando, onChange, onGuardar, onCerrar 
           {/* ── 1. Datos filiatorios ── */}
           <Seccion titulo="1. Datos Filiatorios" color="indigo">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Field label="Nombre y Apellido" name="nombreApellido" value={estudio.nombreApellido} onChange={handle} placeholder="Juan Pérez" />
+              <Field label="Nombre" name="nombre" value={estudio.nombre} onChange={handle} placeholder="Juan" />
+              <Field label="Apellido" name="apellido" value={estudio.apellido} onChange={handle} placeholder="Pérez" />
               <Field label="DNI" name="dni" value={estudio.dni} onChange={handle} readOnly />
               <Field label="Fecha de nacimiento" name="fechaNacimiento" type="date" value={estudio.fechaNacimiento} onChange={handle} />
               <Field label="Edad" name="edad" value={estudio.edad} onChange={handle} readOnly />
