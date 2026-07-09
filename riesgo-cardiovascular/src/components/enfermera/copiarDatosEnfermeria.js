@@ -7,7 +7,7 @@ export const copiarDatosEnfermeria = (est) => {
   let eventosCv = {};
   try { eventosCv = JSON.parse(est.eventosCv || '{}'); } catch {}
   const eventosActivos = Object.entries(eventosCv)
-    .filter(([, v]) => v).map(([k]) => k).join(', ') || 'Ninguno';
+    .filter(([, v]) => v).map(([k]) => k).join(', ') || 'No refiere';
 
   // IMC elevado
   const imcNum = parseFloat(est.imc);
@@ -52,7 +52,7 @@ export const copiarDatosEnfermeria = (est) => {
   const fechaCarga = est.fechaCarga ? new Date(est.fechaCarga).toLocaleDateString('es-AR') : '--';
 
   const datos = `
-CIRCUITO CARDIOVASCULAR DASPU MAS VOS
+CIRCUITO CARDIOVASCULAR DASPU COFICO
 Fecha: ${fechaCarga}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

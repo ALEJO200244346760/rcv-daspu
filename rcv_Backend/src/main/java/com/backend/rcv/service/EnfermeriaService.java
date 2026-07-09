@@ -1,42 +1,99 @@
 package com.backend.rcv.service;
 
-import com.backend.rcv.model.Enfermeria;
-import com.backend.rcv.repository.EnfermeriaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.backend.rcv.model.Estudio;
+import com.backend.rcv.repository.EstudioRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class EnfermeriaService {
+public class EstudioService {
 
-    @Autowired
-    private EnfermeriaRepository enfermeriaRepository;
+    private final EstudioRepository repository;
 
-    // Método para crear los datos de enfermería para un nuevo paciente
-    public Enfermeria crearDatosEnfermeria(Enfermeria datosEnfermeria) {
-        // Aquí no se requiere el DNI, ya que se supone que el paciente es nuevo
-        return enfermeriaRepository.save(datosEnfermeria);
+    public EstudioService(EstudioRepository repository) {
+        this.repository = repository;
     }
 
-    // Método para crear o actualizar los datos de enfermería usando el DNI
-    public Enfermeria crearOActualizarEnfermeria(String dni, Enfermeria datosEnfermeria) {
-        // Verifica si ya existen datos de enfermería para el paciente usando el DNI
-        Enfermeria enfermeriaExistente = enfermeriaRepository.findByDni(dni);
-
-        if (enfermeriaExistente != null) {
-            // Si existe, actualizamos los datos
-            enfermeriaExistente.setPeso(datosEnfermeria.getPeso());
-            enfermeriaExistente.setTalla(datosEnfermeria.getTalla());
-            enfermeriaExistente.setTensionArterial(datosEnfermeria.getTensionArterial());
-            return enfermeriaRepository.save(enfermeriaExistente);
-        } else {
-            // Si no existe, creamos un nuevo registro con el DNI
-            datosEnfermeria.setDni(dni);
-            return enfermeriaRepository.save(datosEnfermeria);
-        }
+    public Estudio guardar(Estudio estudio) {
+        return repository.save(estudio);
     }
 
-    // Método para obtener los datos de enfermería por DNI
-    public Enfermeria obtenerDatosEnfermeriaPorDni(String dni) {
-        return enfermeriaRepository.findByDni(dni);
+    public Estudio actualizar(Long id, Estudio datos) {
+        Estudio e = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estudio no encontrado: " + id));
+
+        // Sección 1
+        e.setNombreApellido(datos.getNombreApellido());
+        e.setFechaNacimiento(datos.getFechaNacimiento());
+        e.setTelefono(datos.getTelefono());
+        e.setGenero(datos.getGenero());
+        e.setTuvoHijos(datos.getTuvoHijos());
+        e.setComplicacionesEmbarazo(datos.getComplicacionesEmbarazo());
+
+        // Sección 2
+        e.setEventosCv(datos.getEventosCv());
+
+        // Sección 3
+        e.setTomaMedicacion(datos.getTomaMedicacion());
+        e.setHipertension(datos.getHipertension());
+        e.setMedsHipertension(datos.getMedsHipertension());
+        e.setOtroMedHipertension(datos.getOtroMedHipertension());
+        e.setDiabetes(datos.getDiabetes());
+        e.setMedsDiabetes(datos.getMedsDiabetes());
+        e.setOtroMedDiabetes(datos.getOtroMedDiabetes());
+        e.setColesterol(datos.getColesterol());
+        e.setMedsColesterol(datos.getMedsColesterol());
+        e.setOtroMedColesterol(datos.getOtroMedColesterol());
+        e.setEstresAnsiedad(datos.getEstresAnsiedad());
+        e.setEstresDetalle(datos.getEstresDetalle());
+        e.setOtrasPatologias(datos.getOtrasPatologias());
+        e.setOtrasPatologiasDetalle(datos.getOtrasPatologiasDetalle());
+
+        // Sección 4
+        e.setFuma(datos.getFuma());
+        e.setFumoPorMucho(datos.getFumoPorMucho());
+        e.setConsumeAlcohol(datos.getConsumeAlcohol());
+        e.setDuerme68(datos.getDuerme68());
+        e.setActividadFisica(datos.getActividadFisica());
+
+        // Sección 5
+        e.setSintomas(datos.getSintomas());
+        e.setSintomaOtro(datos.getSintomaOtro());
+
+        // Sección 6
+        e.setPeso(datos.getPeso());
+        e.setTalla(datos.getTalla());
+        e.setCintura(datos.getCintura());
+        e.setTensionSistolica(datos.getTensionSistolica());
+        e.setTensionDiastolica(datos.getTensionDiastolica());
+
+        // Sección 7
+        e.setLinkElectrocardiograma(datos.getLinkElectrocardiograma());
+        e.setLinkEcocardiograma(datos.getLinkEcocardiograma());
+        e.setLinkLaboratorio(datos.getLinkLaboratorio());
+        e.setNombreOtroEstudio(datos.getNombreOtroEstudio());
+        e.setLinkOtroEstudio(datos.getLinkOtroEstudio());
+
+        return repository.save(e);
+    }
+
+    public void eliminar(Long id) {
+        repository.deleteById(id);
+    }
+
+    public List<Estudio> listarTodos() {
+        return repository.findAllByOrderByFechaCargaDesc();
+    }
+
+    public List<Estudio> buscarTodosPorDni(String dni) {
+        List<Estudio> lista = repository.findByDniOrderByFechaCargaDesc(dni);
+        if (lista.isEmpty()) throw new RuntimeException("No se encontraron estudios para el DNI: " + dni);
+        return lista;
+    }
+
+    public Estudio buscarMasRecientePorDni(String dni) {
+        return repository.findTopByDniOrderByFechaCargaDesc(dni)
+                .orElseThrow(() -> new RuntimeException("No se encontraron estudios para el DNI: " + dni));
     }
 }

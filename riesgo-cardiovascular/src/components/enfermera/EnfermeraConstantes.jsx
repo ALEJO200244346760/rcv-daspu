@@ -45,7 +45,7 @@ export const SINTOMAS = [
 ];
 
 export const ESTADO_INICIAL = {
-  dni: '', fechaNacimiento: '', edad: '', telefono: '', genero: '',
+  nombre: '', apellido: '', dni: '', fechaNacimiento: '', edad: '', telefono: '', genero: '',
   tuvoHijos: '', complicacionesEmbarazo: [],
   eventosCv: {},
   tomaMedicacion: '',

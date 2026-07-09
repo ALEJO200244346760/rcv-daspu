@@ -16,6 +16,31 @@ export const SeccionFiliatorios = ({ form, set, handle, setSiNo, toggleArray }) 
     <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-5">
       <SeccionHeader num="1" titulo="Datos Filiatorios" color="indigo" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        {/* Nombre */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">Nombre</label>
+          <input 
+            name="nombre" 
+            value={form.nombre} 
+            onChange={handle}
+            placeholder="Ej: Juan"
+            className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
+          />
+        </div>
+
+        {/* Apellido */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">Apellido</label>
+          <input 
+            name="apellido" 
+            value={form.apellido} 
+            onChange={handle}
+            placeholder="Ej: Pérez"
+            className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" 
+          />
+        </div>
+
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-700 mb-1">DNI *</label>
           <input name="dni" value={form.dni} onChange={handle} placeholder="Ej: 30123456"
@@ -177,12 +202,27 @@ export const SeccionHabitos = ({ form, setSiNo }) => (
 export const SeccionSintomas = ({ form, set, toggleArray }) => (
   <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
     <SeccionHeader num="5" titulo="Síntomas de Alarma" color="red" />
-    <CheckList items={SINTOMAS} selected={form.sintomas}
-      onChange={(item) => toggleArray('sintomas', item)} color="red" />
+    <p className="text-sm text-gray-500">Tildá los síntomas que presenta el paciente:</p>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      {SINTOMAS.map(sintoma => (
+        <label key={sintoma} className="flex items-center gap-3 cursor-pointer p-2.5 rounded-lg hover:bg-red-50 border border-transparent hover:border-red-200 transition-all">
+          <input
+            type="checkbox"
+            checked={form.sintomas.includes(sintoma)}
+            onChange={() => toggleArray('sintomas', sintoma)}
+            className="h-5 w-5 rounded border-gray-300 text-red-500 focus:ring-red-400"
+          />
+          <span className="text-sm font-medium text-gray-700">{sintoma}</span>
+        </label>
+      ))}
+    </div>
     {form.sintomas.includes('Otro') && (
-      <input placeholder="Especifique el síntoma..."
-        value={form.sintomaOtro} onChange={e => set('sintomaOtro', e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md text-sm mt-1" />
+      <input
+        placeholder="Especifique el síntoma..."
+        value={form.sintomaOtro}
+        onChange={e => set('sintomaOtro', e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded-md text-sm mt-1 focus:ring-red-400 focus:border-red-400 outline-none"
+      />
     )}
   </div>
 );

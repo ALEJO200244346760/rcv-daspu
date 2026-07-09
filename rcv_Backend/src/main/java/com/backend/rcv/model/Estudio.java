@@ -12,6 +12,10 @@ public class Estudio {
     private Long id;
 
     // ── Sección 1: Datos filiatorios ──────────────────────────────────────────
+    @Column(length = 255)
+    private String nombre;
+    @Column(length = 255)
+    private String apellido;
     @Column(nullable = false)
     private String dni;
     private String fechaNacimiento;
