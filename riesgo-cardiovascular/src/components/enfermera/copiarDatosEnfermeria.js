@@ -59,6 +59,8 @@ Fecha: ${fechaCarga}
 
 ━━━ 1. DATOS FILIATORIOS ━━━
 
+Nombre: ${val(est.nombre)}
+Apellido: ${val(est.apellido)}
 DNI: ${val(est.dni)}
 Fecha de nacimiento: ${val(est.fechaNacimiento)}
 Edad: ${val(est.edad)} años
