@@ -103,39 +103,40 @@ const FormularioEnfermera = () => {
   useEffect(() => { cargarTodos(); }, [cargarTodos]);
 
   // ── Búsqueda local ───────────────────────────────────────
-  const buscar = () => {
-    setErrorBusqueda('');
+  const buscar = useCallback(() => {
+  setErrorBusqueda('');
 
-    const q = dniBusqueda.trim().toLowerCase();
+  const q = dniBusqueda.trim().toLowerCase();
 
-    if (!q) {
-      setEstudiosFiltrados(todosEstudios);
-      return;
-    }
+  if (!q) {
+    setEstudiosFiltrados(todosEstudios);
+    return;
+  }
 
-    const filtrados = todosEstudios.filter(e => {
-      const dni = (e.dni || '').toString();
-      const nombre = (e.nombre || '').toLowerCase();
-      const apellido = (e.apellido || '').toLowerCase();
+  const filtrados = todosEstudios.filter(e => {
+    const dni = (e.dni || '').toString();
+    const nombre = (e.nombre || '').toLowerCase();
+    const apellido = (e.apellido || '').toLowerCase();
 
-      const nombreCompleto = `${nombre} ${apellido}`;
-      const apellidoNombre = `${apellido} ${nombre}`;
+    return (
+      dni.includes(q) ||
+      nombre.includes(q) ||
+      apellido.includes(q) ||
+      `${nombre} ${apellido}`.includes(q) ||
+      `${apellido} ${nombre}`.includes(q)
+    );
+  });
 
-      return (
-        dni.includes(q) ||
-        nombre.includes(q) ||
-        apellido.includes(q) ||
-        nombreCompleto.includes(q) ||
-        apellidoNombre.includes(q)
-      );
-    });
+  setEstudiosFiltrados(filtrados);
 
-    if (filtrados.length === 0) {
-      setErrorBusqueda('No se encontraron registros.');
-    }
+  if (filtrados.length === 0) {
+    setErrorBusqueda('No se encontraron registros.');
+  }
+  }, [dniBusqueda, todosEstudios]);
 
-    setEstudiosFiltrados(filtrados);
-  };
+  useEffect(() => {
+    buscar();
+  }, [buscar]);
 
   const limpiarBusqueda = () => {
     setDniBusqueda('');
@@ -229,10 +230,12 @@ const FormularioEnfermera = () => {
             Registros{estudiosFiltrados.length > 0 ? ` (${estudiosFiltrados.length})` : ''}
           </h2>
           <div className="flex gap-2">
-            <input value={dniBusqueda} onChange={e => setDniBusqueda(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && buscar()}
-              placeholder="Buscar por DNI, nombre o apellido"
-              className="p-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500 w-44" />
+            <input
+              value={dniBusqueda}
+              onChange={e => setDniBusqueda(e.target.value)}
+              placeholder="Buscar por DNI, nombre o apellido..."
+              className="p-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500 w-64"
+            />
             <button type="button" onClick={buscar}
               className="px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm font-semibold">
               🔍
