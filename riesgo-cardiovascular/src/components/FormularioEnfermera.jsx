@@ -178,13 +178,15 @@ const FormularioEnfermera = () => {
 
   // ── Eliminar ─────────────────────────────────────────────
   const eliminarEstudio = async (id) => {
-    if (!window.confirm('¿Seguro que querés eliminar este registro?')) return;
-    try {
-      await axiosInstance.delete(`/api/estudios/${id}`);
-      const nuevos = todosEstudios.filter(e => e.id !== id);
-      setTodosEstudios(nuevos);
-      setEstudiosFiltrados(nuevos.filter(e => !dniBusqueda.trim() || e.dni?.includes(dniBusqueda.trim())));
-    } catch { alert('Error al eliminar.'); }
+  if (!window.confirm('¿Seguro que querés eliminar este registro?')) return;
+
+  try {
+    await axiosInstance.delete(`/api/estudios/${id}`);
+    const nuevos = todosEstudios.filter(e => e.id !== id);
+    setTodosEstudios(nuevos);
+  } catch {
+    alert('Error al eliminar.');
+  }
   };
 
   // ── Editar ───────────────────────────────────────────────
