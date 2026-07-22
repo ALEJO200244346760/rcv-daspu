@@ -54,10 +54,9 @@ export const copiarDatosEnfermeria = (est) => {
   const datos = `
 CIRCUITO CARDIOVASCULAR DASPU COFICO
 Fecha: ${fechaCarga}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-━━━ 1. DATOS FILIATORIOS ━━━
+1. DATOS FILIATORIOS
 
 Nombre: ${val(est.nombre)}
 Apellido: ${val(est.apellido)}
@@ -68,12 +67,12 @@ Teléfono: ${val(est.telefono)}
 Género: ${val(est.genero)}
 
 
-━━━ 2. EVENTOS CARDIOVASCULARES ━━━
+2. EVENTOS CARDIOVASCULARES
 
 ${eventosActivos}
 
 
-━━━ 3. FACTORES DE RIESGO / MEDICACIÓN ━━━
+3. FACTORES DE RIESGO / MEDICACIÓN
 
 ${detalleMedicacion()}
 ${cinturaAumentada ? `\nCINTURA AUMENTADA: ${val(est.cintura)} cm ${esHombre ? '(>102 cm en hombre)' : '(>88 cm en mujer)'}` : ''}
@@ -81,7 +80,7 @@ ${imcElevado ? `\nIMC ELEVADO: ${val(est.imc)} — ${imcTexto}` : ''}
 ${est.genero === 'femenino' ? `\nTuvo hijos: ${val(est.tuvoHijos)}${est.complicacionesEmbarazo ? `\nComplicaciones en embarazo: ${est.complicacionesEmbarazo}` : ''}` : ''}
 
 
-━━━ 4. HÁBITOS ━━━
+4. HÁBITOS
 
 Fuma actualmente: ${val(est.fuma)}
 Fumó en el pasado: ${val(est.fumoPorMucho)}
@@ -90,12 +89,12 @@ Duerme 6-8 horas diarias: ${val(est.duerme68)}
 Realiza actividad física (150 min/semana): ${val(est.actividadFisica)}
 
 
-━━━ 5. SÍNTOMAS DE ALARMA ━━━
+5. SÍNTOMAS DE ALARMA
 
 ${val(est.sintomas)}${est.sintomaOtro ? `\nOtro: ${est.sintomaOtro}` : ''}
 
 
-━━━ 6. DATOS ANTROPOMÉTRICOS ━━━
+6. DATOS ANTROPOMÉTRICOS
 
 Peso: ${val(est.peso)} kg
 Talla: ${val(est.talla)} cm
@@ -105,7 +104,7 @@ TA Mínima: ${val(est.tensionDiastolica)} mmHg
 IMC: ${val(est.imc)}${est.imcClasificacion ? ` (${est.imcClasificacion})` : ''}
 
 
-━━━ 7. ESTUDIOS COMPLEMENTARIOS ━━━
+7. ESTUDIOS COMPLEMENTARIOS
 
 Electrocardiograma: ${val(est.linkElectrocardiograma)}
 ELECTROCARDIOGRAMA:
@@ -116,16 +115,15 @@ Laboratorio: ${val(est.linkLaboratorio)}
 ${est.linkOtroEstudio ? `${val(est.nombreOtroEstudio) || 'Otro estudio'}: ${val(est.linkOtroEstudio)}` : ''}
 
 
-━━━ NIVEL DE RIESGO CARDIOVASCULAR (OMS) ━━━
+NIVEL DE RIESGO CARDIOVASCULAR (OMS)
 
 ${val(est.nivelRiesgo)}
 
 
-━━━ RECOMENDACIONES ━━━
+RECOMENDACIONES
 
 ${recomendaciones}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `.trim();
 
   navigator.clipboard.writeText(datos)
