@@ -54,6 +54,7 @@ public class Estudio {
     private String otrasPatologiasDetalle;
 
     private String antecedentesFamiliaresCardiopatia;  // NUEVO
+    private String ronquidosApneas;                     // NUEVO
 
     // ── Sección 4: Hábitos ───────────────────────────────────
     private String fuma;
@@ -177,6 +178,9 @@ public class Estudio {
 
     public String getAntecedentesFamiliaresCardiopatia() { return antecedentesFamiliaresCardiopatia; }
     public void setAntecedentesFamiliaresCardiopatia(String antecedentesFamiliaresCardiopatia) { this.antecedentesFamiliaresCardiopatia = antecedentesFamiliaresCardiopatia; }
+
+    public String getRonquidosApneas() { return ronquidosApneas; }
+    public void setRonquidosApneas(String ronquidosApneas) { this.ronquidosApneas = ronquidosApneas; }
 
     public String getFuma() { return fuma; }
     public void setFuma(String fuma) { this.fuma = fuma; }

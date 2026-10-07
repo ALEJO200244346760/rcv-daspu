@@ -178,6 +178,7 @@ const estadoInicial = {
   otrasPatologias: '', otrasPatologiasDetalle: '',
   // NUEVO: antecedentes familiares
   antecedentesFamiliaresCardiopatia: '',
+  ronquidosApneas: '',
   fuma: '', fumoPorMucho: '',
   consumeAlcohol: '', duerme68: '', actividadFisica: '',
   sintomas: [], sintomaOtro: '',
@@ -278,6 +279,7 @@ const ModalDetalle = ({ est, onClose }) => {
             <Fila label="Detalle patologías" value={est.otrasPatologiasDetalle} />
             {/* NUEVO */}
             <Fila label="Antec. familiares cardiopatía" value={est.antecedentesFamiliaresCardiopatia} />
+            <Fila label="Ronquidos / apneas del sueño" value={est.ronquidosApneas} />
           </div>
 
           {/* Sección 4 */}
@@ -495,6 +497,7 @@ const FormularioEnfermera = () => {
         ictCategoria: ict?.categoria || '',
         nombreApellido: form.nombreApellido,
         antecedentesFamiliaresCardiopatia: form.antecedentesFamiliaresCardiopatia,
+        ronquidosApneas: form.ronquidosApneas,
       };
       await axiosInstance.post('/api/estudios', payload);
       setMensajeGuardado('¡Guardado con éxito!');
@@ -542,9 +545,9 @@ const FormularioEnfermera = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* NUEVO: Nombre y Apellido (ocupa 2 columnas) */}
           <div className="flex flex-col md:col-span-2">
-            <label className="text-sm font-medium text-gray-700 mb-1">Nombre y Apellido</label>
+            <label className="text-sm font-medium text-gray-700 mb-1">Apellido y Nombre</label>
             <input name="nombreApellido" value={form.nombreApellido} onChange={handle}
-              placeholder="Ej: María González"
+              placeholder="Ej: González María"
               className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
           </div>
           <div className="flex flex-col">
@@ -619,6 +622,12 @@ const FormularioEnfermera = () => {
           label="¿Tiene antecedentes familiares de cardiopatía?"
           name="antecedentesFamiliaresCardiopatia"
           value={form.antecedentesFamiliaresCardiopatia}
+          onChange={setSiNo}
+        />
+        <SiNo
+          label="¿Tiene ronquidos / apneas del sueño?"
+          name="ronquidosApneas"
+          value={form.ronquidosApneas}
           onChange={setSiNo}
         />
         {form.tomaMedicacion === 'Sí' && (

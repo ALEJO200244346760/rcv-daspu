@@ -76,6 +76,7 @@ public class EstudioService {
             e.setOtrasPatologias(datos.getOtrasPatologias());
             e.setOtrasPatologiasDetalle(datos.getOtrasPatologiasDetalle());
             e.setAntecedentesFamiliaresCardiopatia(datos.getAntecedentesFamiliaresCardiopatia()); // NUEVO
+            e.setRonquidosApneas(datos.getRonquidosApneas()); // NUEVO
 
             // Sección 4
             e.setFuma(datos.getFuma());
