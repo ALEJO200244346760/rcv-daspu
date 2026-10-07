@@ -1,7 +1,7 @@
 package com.backend.rcv.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "estudios")
@@ -11,12 +11,8 @@ public class Estudio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ── Sección 1: Datos filiatorios ──────────────────────────────────────────
-    @Column(length = 255)
-    private String nombre;
-    @Column(length = 255)
-    private String apellido;
-    @Column(nullable = false)
+    // ── Datos filiatorios ──────────────────────────────────────
+    private String nombreApellido;          // NUEVO
     private String dni;
     private String fechaNacimiento;
     private String edad;
@@ -25,93 +21,93 @@ public class Estudio {
 
     // Ginecológico
     private String tuvoHijos;
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String complicacionesEmbarazo;
 
-    // ── Sección 2: Eventos cardiovasculares ───────────────────────────────────
-    @Column(length = 1000)
+    // ── Sección 2: Eventos CV ─────────────────────────────────
+    @Column(columnDefinition = "TEXT")
     private String eventosCv;
 
-    // ── Sección 3: Factores de riesgo ─────────────────────────────────────────
+    // ── Sección 3: Factores de riesgo ────────────────────────
     private String tomaMedicacion;
     private String hipertension;
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String medsHipertension;
     private String otroMedHipertension;
+
     private String diabetes;
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String medsDiabetes;
     private String otroMedDiabetes;
+
     private String colesterol;
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String medsColesterol;
     private String otroMedColesterol;
+
     private String estresAnsiedad;
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String estresDetalle;
+
     private String otrasPatologias;
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String otrasPatologiasDetalle;
 
-    // ── Sección 4: Hábitos ────────────────────────────────────────────────────
+    private String antecedentesFamiliaresCardiopatia;  // NUEVO
+
+    // ── Sección 4: Hábitos ───────────────────────────────────
     private String fuma;
     private String fumoPorMucho;
-    private String tuvoCvAntes;
-    private String enfermedadRenal;
     private String consumeAlcohol;
     private String duerme68;
     private String actividadFisica;
 
-    // ── Sección 5: Síntomas ───────────────────────────────────────────────────
-    @Column(length = 1000)
+    // ── Sección 5: Síntomas ──────────────────────────────────
+    @Column(columnDefinition = "TEXT")
     private String sintomas;
     private String sintomaOtro;
 
-    // ── Sección 6: Datos antropométricos ─────────────────────────────────────
+    // ── Sección 6: Antropométricos ───────────────────────────
     private String peso;
     private String talla;
     private String cintura;
     private String tensionSistolica;
     private String tensionDiastolica;
+
+    // Índices calculados
     private String imc;
     private String imcClasificacion;
-    private String nivelRiesgo;
+    private String ict;                   // NUEVO
+    private String ictCategoria;          // NUEVO
 
-    // ── Sección 7: Estudios complementarios ──────────────────────────────────
-    @Column(name = "link_electrocardiograma", length = 1000)
+    // ── Sección 7: Estudios ──────────────────────────────────
     private String linkElectrocardiograma;
-
-    @Column(name = "link_ecocardiograma", length = 1000)
     private String linkEcocardiograma;
-
-    @Column(name = "link_laboratorio", length = 1000)
     private String linkLaboratorio;
-
     private String tieneOtroEstudio;
+    private String linkOtroEstudio;
     private String nombreOtroEstudio;
 
-    @Column(name = "link_otro_estudio", length = 1000)
-    private String linkOtroEstudio;
+    // ── Resultado ────────────────────────────────────────────
+    private String nivelRiesgo;
 
-    // ── Auditoría ─────────────────────────────────────────────────────────────
-    @Column(name = "fecha_carga")
-    private LocalDateTime fechaCarga;
+    // ── Auditoría ────────────────────────────────────────────
+    private LocalDate fechaCarga;
 
     @PrePersist
-    public void prePersist() {
-        this.fechaCarga = LocalDateTime.now();
+    protected void prePersist() {
+        if (this.fechaCarga == null) {
+            this.fechaCarga = LocalDate.now();
+        }
     }
 
-    // ── Getters y Setters ─────────────────────────────────────────────────────
+    // ── Getters y Setters ────────────────────────────────────
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getNombreApellido() { return nombreApellido; }
+    public void setNombreApellido(String nombreApellido) { this.nombreApellido = nombreApellido; }
 
     public String getDni() { return dni; }
     public void setDni(String dni) { this.dni = dni; }
@@ -179,17 +175,14 @@ public class Estudio {
     public String getOtrasPatologiasDetalle() { return otrasPatologiasDetalle; }
     public void setOtrasPatologiasDetalle(String otrasPatologiasDetalle) { this.otrasPatologiasDetalle = otrasPatologiasDetalle; }
 
+    public String getAntecedentesFamiliaresCardiopatia() { return antecedentesFamiliaresCardiopatia; }
+    public void setAntecedentesFamiliaresCardiopatia(String antecedentesFamiliaresCardiopatia) { this.antecedentesFamiliaresCardiopatia = antecedentesFamiliaresCardiopatia; }
+
     public String getFuma() { return fuma; }
     public void setFuma(String fuma) { this.fuma = fuma; }
 
     public String getFumoPorMucho() { return fumoPorMucho; }
     public void setFumoPorMucho(String fumoPorMucho) { this.fumoPorMucho = fumoPorMucho; }
-
-    public String getTuvoCvAntes() { return tuvoCvAntes; }
-    public void setTuvoCvAntes(String tuvoCvAntes) { this.tuvoCvAntes = tuvoCvAntes; }
-
-    public String getEnfermedadRenal() { return enfermedadRenal; }
-    public void setEnfermedadRenal(String enfermedadRenal) { this.enfermedadRenal = enfermedadRenal; }
 
     public String getConsumeAlcohol() { return consumeAlcohol; }
     public void setConsumeAlcohol(String consumeAlcohol) { this.consumeAlcohol = consumeAlcohol; }
@@ -227,8 +220,11 @@ public class Estudio {
     public String getImcClasificacion() { return imcClasificacion; }
     public void setImcClasificacion(String imcClasificacion) { this.imcClasificacion = imcClasificacion; }
 
-    public String getNivelRiesgo() { return nivelRiesgo; }
-    public void setNivelRiesgo(String nivelRiesgo) { this.nivelRiesgo = nivelRiesgo; }
+    public String getIct() { return ict; }
+    public void setIct(String ict) { this.ict = ict; }
+
+    public String getIctCategoria() { return ictCategoria; }
+    public void setIctCategoria(String ictCategoria) { this.ictCategoria = ictCategoria; }
 
     public String getLinkElectrocardiograma() { return linkElectrocardiograma; }
     public void setLinkElectrocardiograma(String linkElectrocardiograma) { this.linkElectrocardiograma = linkElectrocardiograma; }
@@ -242,12 +238,15 @@ public class Estudio {
     public String getTieneOtroEstudio() { return tieneOtroEstudio; }
     public void setTieneOtroEstudio(String tieneOtroEstudio) { this.tieneOtroEstudio = tieneOtroEstudio; }
 
-    public String getNombreOtroEstudio() { return nombreOtroEstudio; }
-    public void setNombreOtroEstudio(String nombreOtroEstudio) { this.nombreOtroEstudio = nombreOtroEstudio; }
-
     public String getLinkOtroEstudio() { return linkOtroEstudio; }
     public void setLinkOtroEstudio(String linkOtroEstudio) { this.linkOtroEstudio = linkOtroEstudio; }
 
-    public LocalDateTime getFechaCarga() { return fechaCarga; }
-    public void setFechaCarga(LocalDateTime fechaCarga) { this.fechaCarga = fechaCarga; }
+    public String getNombreOtroEstudio() { return nombreOtroEstudio; }
+    public void setNombreOtroEstudio(String nombreOtroEstudio) { this.nombreOtroEstudio = nombreOtroEstudio; }
+
+    public String getNivelRiesgo() { return nivelRiesgo; }
+    public void setNivelRiesgo(String nivelRiesgo) { this.nivelRiesgo = nivelRiesgo; }
+
+    public LocalDate getFechaCarga() { return fechaCarga; }
+    public void setFechaCarga(LocalDate fechaCarga) { this.fechaCarga = fechaCarga; }
 }
