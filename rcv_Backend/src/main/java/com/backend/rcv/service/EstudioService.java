@@ -18,6 +18,21 @@ public class EstudioService {
         return repository.findAll();
     }
 
+    public List<Estudio> listarTodos() {
+        return repository.findAllByOrderByFechaCargaDesc();
+    }
+
+    public List<Estudio> buscarTodosPorDni(String dni) {
+        List<Estudio> lista = repository.findByDniOrderByFechaCargaDesc(dni);
+        if (lista.isEmpty()) throw new RuntimeException("No se encontraron estudios para el DNI: " + dni);
+        return lista;
+    }
+
+    public Estudio buscarMasRecientePorDni(String dni) {
+        return repository.findTopByDniOrderByFechaCargaDesc(dni)
+                .orElseThrow(() -> new RuntimeException("No se encontró estudio para el DNI: " + dni));
+    }
+
     public Estudio guardar(Estudio estudio) {
         return repository.save(estudio);
     }
