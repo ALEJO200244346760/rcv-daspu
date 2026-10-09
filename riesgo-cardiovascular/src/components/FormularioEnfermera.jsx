@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../axiosConfig';
 import { calcularRiesgoCardiovascular } from './Calculadora';
+import { copiarDatosEnfermeria } from './enfermera/copiarDatosEnfermeria';
 
 // ─────────────────────────────────────────────────────────────
 // CONSTANTES
@@ -165,8 +166,8 @@ const Fila = ({ label, value }) => {
 };
 
 const estadoInicial = {
-  // NUEVO: nombre y apellido
-  nombreApellido: '',
+  apellido: '',
+  nombre: '',
   dni: '', fechaNacimiento: '', edad: '', telefono: '', genero: '',
   tuvoHijos: '', complicacionesEmbarazo: [],
   eventosCv: {},
@@ -202,8 +203,8 @@ const ModalDetalle = ({ est, onClose }) => {
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
           <div>
             <h3 className="text-xl font-bold text-gray-900">Ficha del paciente</h3>
-            {est.nombreApellido && (
-              <p className="text-base font-semibold text-gray-700">{est.nombreApellido}</p>
+            {(est.apellido || est.nombre) && (
+              <p className="text-base font-semibold text-gray-700">{est.apellido} {est.nombre}</p>
             )}
             <p className="text-sm text-gray-500">DNI: {est.dni} — {est.genero} — {est.edad ? `${est.edad} años` : '—'}</p>
           </div>
@@ -239,7 +240,8 @@ const ModalDetalle = ({ est, onClose }) => {
           {/* Sección 1 */}
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-2">Datos filiatorios</p>
-            <Fila label="Nombre y Apellido" value={est.nombreApellido} />
+            <Fila label="Apellido" value={est.apellido} />
+            <Fila label="Nombre" value={est.nombre} />
             <Fila label="Fecha de nacimiento" value={est.fechaNacimiento} />
             <Fila label="Teléfono" value={est.telefono} />
             {est.genero === 'femenino' && <>
@@ -495,7 +497,8 @@ const FormularioEnfermera = () => {
         // NUEVOS campos
         ict: ict?.valor || '',
         ictCategoria: ict?.categoria || '',
-        nombreApellido: form.nombreApellido,
+        apellido: form.apellido,
+        nombre: form.nombre,
         antecedentesFamiliaresCardiopatia: form.antecedentesFamiliaresCardiopatia,
         ronquidosApneas: form.ronquidosApneas,
       };
@@ -543,11 +546,16 @@ const FormularioEnfermera = () => {
       <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-5">
         <SeccionHeader num="1" titulo="Datos Filiatorios" color="indigo" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* NUEVO: Nombre y Apellido (ocupa 2 columnas) */}
-          <div className="flex flex-col md:col-span-2">
-            <label className="text-sm font-medium text-gray-700 mb-1">Apellido y Nombre</label>
-            <input name="nombreApellido" value={form.nombreApellido} onChange={handle}
-              placeholder="Ej: González María"
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">Apellido</label>
+            <input name="apellido" value={form.apellido} onChange={handle}
+              placeholder="Ej: González"
+              className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">Nombre</label>
+            <input name="nombre" value={form.nombre} onChange={handle}
+              placeholder="Ej: María"
               className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
           </div>
           <div className="flex flex-col">
@@ -894,9 +902,8 @@ const FormularioEnfermera = () => {
             {/* Encabezado tarjeta */}
             <div className="flex justify-between items-start flex-wrap gap-2">
               <div>
-                {/* NUEVO: Nombre y apellido en la tarjeta */}
-                {est.nombreApellido && (
-                  <p className="text-base font-bold text-gray-900">{est.nombreApellido}</p>
+                {(est.apellido || est.nombre) && (
+                  <p className="text-base font-bold text-gray-900">{est.apellido} {est.nombre}</p>
                 )}
                 <p className="text-lg font-bold text-gray-800">DNI: {est.dni}</p>
                 {est.edad && <p className="text-sm text-gray-500">{est.edad} años — {est.genero}</p>}
@@ -926,6 +933,10 @@ const FormularioEnfermera = () => {
                 <button type="button" onClick={() => setDetalleEstudio(est)}
                   className="px-3 py-1.5 text-sm bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-lg hover:bg-indigo-200 font-semibold transition-colors">
                   👁 Ver detalle
+                </button>
+                <button type="button" onClick={() => copiarDatosEnfermeria(est)}
+                  className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 font-semibold transition-colors">
+                  📋 Copiar
                 </button>
                 <button type="button" onClick={() => setEstudiosEdit({ ...est })}
                   className="px-3 py-1.5 text-sm bg-amber-100 text-amber-800 border border-amber-300 rounded-lg hover:bg-amber-200 font-semibold transition-colors">

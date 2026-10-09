@@ -48,7 +48,8 @@ public class EstudioService {
     public Estudio actualizar(Long id, Estudio datos) {
         return repository.findById(id).map(e -> {
             // Sección 1
-            e.setNombreApellido(datos.getNombreApellido());
+            e.setApellido(datos.getApellido());
+            e.setNombre(datos.getNombre());
             e.setDni(datos.getDni());
             e.setFechaNacimiento(datos.getFechaNacimiento());
             e.setEdad(datos.getEdad());
