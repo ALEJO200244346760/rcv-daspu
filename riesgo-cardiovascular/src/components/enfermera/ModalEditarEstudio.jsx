@@ -167,6 +167,7 @@ const ModalEditarEstudio = ({ estudio, guardando, onChange, onGuardar, onCerrar 
             <SiNoEdit label="¿Toma medicación a diario?" name="tomaMedicacion" value={estudio.tomaMedicacion} onChange={handle} />
             <SiNoEdit label="¿Tiene antecedentes familiares de cardiopatía?" name="antecedentesFamiliaresCardiopatia" value={estudio.antecedentesFamiliaresCardiopatia} onChange={handle} />
             <SiNoEdit label="¿Tiene ronquidos / apneas del sueño?" name="ronquidosApneas" value={estudio.ronquidosApneas} onChange={handle} />
+            <SiNoEdit label="¿Tiene vacunación completa?" name="vacunacionCompleta" value={estudio.vacunacionCompleta} onChange={handle} />
             {estudio.tomaMedicacion === 'Sí' && (
               <div className="space-y-3">
                 <SiNoEdit label="Hipertensión" name="hipertension" value={estudio.hipertension} onChange={handle} />
@@ -217,7 +218,6 @@ const ModalEditarEstudio = ({ estudio, guardando, onChange, onGuardar, onCerrar 
             <SiNoEdit label="¿Consume alcohol habitualmente?" name="consumeAlcohol" value={estudio.consumeAlcohol} onChange={handle} />
             <SiNoEdit label="¿Duerme 6-8 horas diarias?" name="duerme68" value={estudio.duerme68} onChange={handle} />
             <SiNoEdit label="¿Realiza actividad física 150 min/semana?" name="actividadFisica" value={estudio.actividadFisica} onChange={handle} />
-            <SiNoEdit label="¿Tiene vacunación completa?" name="vacunacionCompleta" value={estudio.vacunacionCompleta} onChange={handle} />
           </Seccion>
 
           {/* ── 5. Síntomas ── */}

@@ -25,7 +25,7 @@ function App() {
       <Header />
       <Routes>
 
-        <Route path="/" element={<Circuito />} />
+        <Route path="/" element={<Navigate to="/enfermeria" />} />
         <Route path="/formulario" element={<Formulario />} />
 
         <Route path="/formulario-paciente" element={<FormularioPaciente />} />

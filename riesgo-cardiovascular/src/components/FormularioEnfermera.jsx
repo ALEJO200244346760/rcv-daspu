@@ -641,6 +641,7 @@ const FormularioEnfermera = () => {
           value={form.ronquidosApneas}
           onChange={setSiNo}
         />
+        <SiNo label="¿Tiene vacunación completa?" name="vacunacionCompleta" value={form.vacunacionCompleta} onChange={setSiNo} />
         {form.tomaMedicacion === 'Sí' && (
           <div className="space-y-5 pt-2">
             <div className="space-y-2">
@@ -719,7 +720,6 @@ const FormularioEnfermera = () => {
         <SiNo label="¿Consume bebidas alcohólicas de manera habitual?" name="consumeAlcohol" value={form.consumeAlcohol} onChange={setSiNo} />
         <SiNo label="¿Duerme entre 6 y 8 horas diarias?" name="duerme68" value={form.duerme68} onChange={setSiNo} />
         <SiNo label="¿Realiza actividad física 150 minutos semanales?" name="actividadFisica" value={form.actividadFisica} onChange={setSiNo} />
-        <SiNo label="¿Tiene vacunación completa?" name="vacunacionCompleta" value={form.vacunacionCompleta} onChange={setSiNo} />
       </div>
 
       {/* ══ SECCIÓN 5 ══ */}
