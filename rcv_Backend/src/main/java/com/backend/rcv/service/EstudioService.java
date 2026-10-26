@@ -85,6 +85,7 @@ public class EstudioService {
             e.setConsumeAlcohol(datos.getConsumeAlcohol());
             e.setDuerme68(datos.getDuerme68());
             e.setActividadFisica(datos.getActividadFisica());
+            e.setVacunacionCompleta(datos.getVacunacionCompleta()); // NUEVO
 
             // Sección 5
             e.setSintomas(datos.getSintomas());
@@ -103,8 +104,11 @@ public class EstudioService {
 
             // Sección 7
             e.setLinkElectrocardiograma(datos.getLinkElectrocardiograma());
+            e.setInstruccionesElectrocardiograma(datos.getInstruccionesElectrocardiograma()); // NUEVO
             e.setLinkEcocardiograma(datos.getLinkEcocardiograma());
+            e.setInstruccionesEcocardiograma(datos.getInstruccionesEcocardiograma());         // NUEVO
             e.setLinkLaboratorio(datos.getLinkLaboratorio());
+            e.setInstruccionesLaboratorio(datos.getInstruccionesLaboratorio());               // NUEVO
             e.setTieneOtroEstudio(datos.getTieneOtroEstudio());
             e.setLinkOtroEstudio(datos.getLinkOtroEstudio());
             e.setNombreOtroEstudio(datos.getNombreOtroEstudio());

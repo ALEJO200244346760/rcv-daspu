@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../axiosConfig';
 import { calcularRiesgoCardiovascular } from './Calculadora';
 import { copiarDatosEnfermeria } from './enfermera/copiarDatosEnfermeria';
+import ModalEditarEstudio from './enfermera/ModalEditarEstudio';
 
 // ─────────────────────────────────────────────────────────────
 // CONSTANTES
@@ -181,10 +182,12 @@ const estadoInicial = {
   antecedentesFamiliaresCardiopatia: '',
   ronquidosApneas: '',
   fuma: '', fumoPorMucho: '',
-  consumeAlcohol: '', duerme68: '', actividadFisica: '',
+  consumeAlcohol: '', duerme68: '', actividadFisica: '', vacunacionCompleta: '',
   sintomas: [], sintomaOtro: '',
   peso: '', talla: '', cintura: '', tensionSistolica: '', tensionDiastolica: '',
-  linkElectrocardiograma: '', linkEcocardiograma: '', linkLaboratorio: '',
+  linkElectrocardiograma: '', instruccionesElectrocardiograma: '',
+  linkEcocardiograma: '',     instruccionesEcocardiograma: '',
+  linkLaboratorio: '',        instruccionesLaboratorio: '',
   tieneOtroEstudio: '', linkOtroEstudio: '', nombreOtroEstudio: '',
 };
 
@@ -716,6 +719,7 @@ const FormularioEnfermera = () => {
         <SiNo label="¿Consume bebidas alcohólicas de manera habitual?" name="consumeAlcohol" value={form.consumeAlcohol} onChange={setSiNo} />
         <SiNo label="¿Duerme entre 6 y 8 horas diarias?" name="duerme68" value={form.duerme68} onChange={setSiNo} />
         <SiNo label="¿Realiza actividad física 150 minutos semanales?" name="actividadFisica" value={form.actividadFisica} onChange={setSiNo} />
+        <SiNo label="¿Tiene vacunación completa?" name="vacunacionCompleta" value={form.vacunacionCompleta} onChange={setSiNo} />
       </div>
 
       {/* ══ SECCIÓN 5 ══ */}
@@ -825,16 +829,26 @@ const FormularioEnfermera = () => {
           </button>
         </div>
         {[
-          { label: 'Electrocardiograma', name: 'linkElectrocardiograma' },
-          { label: 'Ecocardiograma', name: 'linkEcocardiograma' },
-          { label: 'Laboratorio', name: 'linkLaboratorio' },
-        ].map(({ label, name }) => (
-          <div key={name} className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 mb-1">
-              Link — {label} <span className="text-gray-400 font-normal">(pegá acá el link de ImgBB)</span>
-            </label>
-            <input type="url" name={name} value={form[name]} onChange={handle} placeholder="https://ibb.co/..."
-              className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+          { label: 'Electrocardiograma', name: 'linkElectrocardiograma', instrName: 'instruccionesElectrocardiograma' },
+          { label: 'Ecocardiograma',     name: 'linkEcocardiograma',     instrName: 'instruccionesEcocardiograma'     },
+          { label: 'Laboratorio',        name: 'linkLaboratorio',        instrName: 'instruccionesLaboratorio'        },
+        ].map(({ label, name, instrName }) => (
+          <div key={name} className="space-y-2">
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Link — {label} <span className="text-gray-400 font-normal">(pegá acá el link de ImgBB)</span>
+              </label>
+              <input type="url" name={name} value={form[name]} onChange={handle} placeholder="https://ibb.co/..."
+                className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-500 mb-1">
+                Instrucciones — {label} <span className="text-gray-400 font-normal">(opcional)</span>
+              </label>
+              <textarea rows={2} name={instrName} value={form[instrName] || ''} onChange={handle}
+                placeholder={`Ej: Ritmo sinusal, sin alteraciones...`}
+                className="p-2 border border-gray-300 rounded-md text-sm resize-none focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
           </div>
         ))}
         <SiNo label="¿Tiene otro estudio para cargar?" name="tieneOtroEstudio" value={form.tieneOtroEstudio} onChange={setSiNo} />
@@ -990,35 +1004,13 @@ const FormularioEnfermera = () => {
 
       {/* ══ MODAL EDITAR ══ */}
       {estudiosEdit && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-bold text-gray-800">✏️ Editar estudios — DNI {estudiosEdit.dni}</h3>
-            {[
-              { label: 'Link Electrocardiograma', key: 'linkElectrocardiograma' },
-              { label: 'Link Ecocardiograma',     key: 'linkEcocardiograma'     },
-              { label: 'Link Laboratorio',         key: 'linkLaboratorio'        },
-              { label: 'Nombre otro estudio',      key: 'nombreOtroEstudio'      },
-              { label: 'Link otro estudio',        key: 'linkOtroEstudio'        },
-            ].map(({ label, key }) => (
-              <div key={key} className="flex flex-col">
-                <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-                <input value={estudiosEdit[key] || ''}
-                  onChange={e => setEstudiosEdit(prev => ({ ...prev, [key]: e.target.value }))}
-                  className="p-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" />
-              </div>
-            ))}
-            <div className="flex gap-3 pt-2">
-              <button type="button" onClick={guardarEdicion} disabled={guardandoEdit}
-                className="flex-1 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors">
-                {guardandoEdit ? 'Guardando...' : 'Guardar cambios'}
-              </button>
-              <button type="button" onClick={() => setEstudiosEdit(null)}
-                className="flex-1 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition-colors">
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
+        <ModalEditarEstudio
+          estudio={estudiosEdit}
+          guardando={guardandoEdit}
+          onChange={(name, value) => setEstudiosEdit(prev => ({ ...prev, [name]: value }))}
+          onGuardar={guardarEdicion}
+          onCerrar={() => setEstudiosEdit(null)}
+        />
       )}
     </div>
   );

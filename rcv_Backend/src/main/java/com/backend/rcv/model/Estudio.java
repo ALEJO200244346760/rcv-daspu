@@ -63,6 +63,7 @@ public class Estudio {
     private String consumeAlcohol;
     private String duerme68;
     private String actividadFisica;
+    private String vacunacionCompleta;      // NUEVO
 
     // ── Sección 5: Síntomas ──────────────────────────────────
     @Column(columnDefinition = "TEXT")
@@ -84,8 +85,14 @@ public class Estudio {
 
     // ── Sección 7: Estudios ──────────────────────────────────
     private String linkElectrocardiograma;
+    @Column(columnDefinition = "TEXT")
+    private String instruccionesElectrocardiograma; // NUEVO
     private String linkEcocardiograma;
+    @Column(columnDefinition = "TEXT")
+    private String instruccionesEcocardiograma;     // NUEVO
     private String linkLaboratorio;
+    @Column(columnDefinition = "TEXT")
+    private String instruccionesLaboratorio;        // NUEVO
     private String tieneOtroEstudio;
     private String linkOtroEstudio;
     private String nombreOtroEstudio;
@@ -201,6 +208,9 @@ public class Estudio {
     public String getActividadFisica() { return actividadFisica; }
     public void setActividadFisica(String actividadFisica) { this.actividadFisica = actividadFisica; }
 
+    public String getVacunacionCompleta() { return vacunacionCompleta; }
+    public void setVacunacionCompleta(String vacunacionCompleta) { this.vacunacionCompleta = vacunacionCompleta; }
+
     public String getSintomas() { return sintomas; }
     public void setSintomas(String sintomas) { this.sintomas = sintomas; }
 
@@ -237,11 +247,20 @@ public class Estudio {
     public String getLinkElectrocardiograma() { return linkElectrocardiograma; }
     public void setLinkElectrocardiograma(String linkElectrocardiograma) { this.linkElectrocardiograma = linkElectrocardiograma; }
 
+    public String getInstruccionesElectrocardiograma() { return instruccionesElectrocardiograma; }
+    public void setInstruccionesElectrocardiograma(String instruccionesElectrocardiograma) { this.instruccionesElectrocardiograma = instruccionesElectrocardiograma; }
+
     public String getLinkEcocardiograma() { return linkEcocardiograma; }
     public void setLinkEcocardiograma(String linkEcocardiograma) { this.linkEcocardiograma = linkEcocardiograma; }
 
+    public String getInstruccionesEcocardiograma() { return instruccionesEcocardiograma; }
+    public void setInstruccionesEcocardiograma(String instruccionesEcocardiograma) { this.instruccionesEcocardiograma = instruccionesEcocardiograma; }
+
     public String getLinkLaboratorio() { return linkLaboratorio; }
     public void setLinkLaboratorio(String linkLaboratorio) { this.linkLaboratorio = linkLaboratorio; }
+
+    public String getInstruccionesLaboratorio() { return instruccionesLaboratorio; }
+    public void setInstruccionesLaboratorio(String instruccionesLaboratorio) { this.instruccionesLaboratorio = instruccionesLaboratorio; }
 
     public String getTieneOtroEstudio() { return tieneOtroEstudio; }
     public void setTieneOtroEstudio(String tieneOtroEstudio) { this.tieneOtroEstudio = tieneOtroEstudio; }

@@ -25,7 +25,8 @@ function App() {
       <Header />
       <Routes>
 
-        <Route path="/" element={<Formulario />} />
+        <Route path="/" element={<Circuito />} />
+        <Route path="/formulario" element={<Formulario />} />
 
         <Route path="/formulario-paciente" element={<FormularioPaciente />} />
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/tomarPresion" element={<TomarPresion />} />
 
         <Route path="/circuito" element={<Circuito />} />
+        {/* La ruta raíz ahora apunta a Circuito */}
 
         <Route path="/enfermeria" element={<Enfermeria />} />
 

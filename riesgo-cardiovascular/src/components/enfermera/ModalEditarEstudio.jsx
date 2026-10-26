@@ -165,6 +165,8 @@ const ModalEditarEstudio = ({ estudio, guardando, onChange, onGuardar, onCerrar 
           {/* ── 3. Factores de riesgo ── */}
           <Seccion titulo="3. Factores de Riesgo / Medicación" color="orange">
             <SiNoEdit label="¿Toma medicación a diario?" name="tomaMedicacion" value={estudio.tomaMedicacion} onChange={handle} />
+            <SiNoEdit label="¿Tiene antecedentes familiares de cardiopatía?" name="antecedentesFamiliaresCardiopatia" value={estudio.antecedentesFamiliaresCardiopatia} onChange={handle} />
+            <SiNoEdit label="¿Tiene ronquidos / apneas del sueño?" name="ronquidosApneas" value={estudio.ronquidosApneas} onChange={handle} />
             {estudio.tomaMedicacion === 'Sí' && (
               <div className="space-y-3">
                 <SiNoEdit label="Hipertensión" name="hipertension" value={estudio.hipertension} onChange={handle} />
@@ -194,7 +196,7 @@ const ModalEditarEstudio = ({ estudio, guardando, onChange, onGuardar, onCerrar 
                     <Field label="Otro medicamento colesterol" name="otroMedColesterol" value={estudio.otroMedColesterol} onChange={handle} />
                   </>
                 )}
-                <SiNoEdit label="Estrés / Ansiedad / Depresión" name="estresAnsiedad" value={estudio.estresAnsiedad} onChange={handle} />
+                <SiNoEdit label="Estrés / Angustia / Ansiedad / Depresión / Insomnio / Alteraciones del sueño" name="estresAnsiedad" value={estudio.estresAnsiedad} onChange={handle} />
                 {estudio.estresAnsiedad === 'Sí' && (
                   <Field label="Detalle estrés" name="estresDetalle" value={estudio.estresDetalle} onChange={handle} />
                 )}
@@ -215,6 +217,7 @@ const ModalEditarEstudio = ({ estudio, guardando, onChange, onGuardar, onCerrar 
             <SiNoEdit label="¿Consume alcohol habitualmente?" name="consumeAlcohol" value={estudio.consumeAlcohol} onChange={handle} />
             <SiNoEdit label="¿Duerme 6-8 horas diarias?" name="duerme68" value={estudio.duerme68} onChange={handle} />
             <SiNoEdit label="¿Realiza actividad física 150 min/semana?" name="actividadFisica" value={estudio.actividadFisica} onChange={handle} />
+            <SiNoEdit label="¿Tiene vacunación completa?" name="vacunacionCompleta" value={estudio.vacunacionCompleta} onChange={handle} />
           </Seccion>
 
           {/* ── 5. Síntomas ── */}
@@ -241,8 +244,26 @@ const ModalEditarEstudio = ({ estudio, guardando, onChange, onGuardar, onCerrar 
           {/* ── 7. Estudios ── */}
           <Seccion titulo="7. Estudios Complementarios" color="indigo">
             <Field label="Link Electrocardiograma" name="linkElectrocardiograma" value={estudio.linkElectrocardiograma} onChange={handle} placeholder="https://i.ibb.co/..." />
+            <div className="flex flex-col gap-0.5">
+              <label className="text-xs font-semibold text-gray-500">Instrucciones Electrocardiograma</label>
+              <textarea name="instruccionesElectrocardiograma" value={estudio.instruccionesElectrocardiograma || ''} onChange={handle} rows={2}
+                placeholder="Ej: Ritmo sinusal, frecuencia cardíaca normal..."
+                className="p-2 border border-gray-300 rounded-md text-sm resize-none focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
             <Field label="Link Ecocardiograma" name="linkEcocardiograma" value={estudio.linkEcocardiograma} onChange={handle} placeholder="https://i.ibb.co/..." />
+            <div className="flex flex-col gap-0.5">
+              <label className="text-xs font-semibold text-gray-500">Instrucciones Ecocardiograma</label>
+              <textarea name="instruccionesEcocardiograma" value={estudio.instruccionesEcocardiograma || ''} onChange={handle} rows={2}
+                placeholder="Ej: Función sistólica conservada..."
+                className="p-2 border border-gray-300 rounded-md text-sm resize-none focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
             <Field label="Link Laboratorio" name="linkLaboratorio" value={estudio.linkLaboratorio} onChange={handle} placeholder="https://i.ibb.co/..." />
+            <div className="flex flex-col gap-0.5">
+              <label className="text-xs font-semibold text-gray-500">Instrucciones Laboratorio</label>
+              <textarea name="instruccionesLaboratorio" value={estudio.instruccionesLaboratorio || ''} onChange={handle} rows={2}
+                placeholder="Ej: Glucemia en ayunas normal..."
+                className="p-2 border border-gray-300 rounded-md text-sm resize-none focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
             <Field label="Nombre otro estudio" name="nombreOtroEstudio" value={estudio.nombreOtroEstudio} onChange={handle} placeholder="Ej: Holter" />
             <Field label="Link otro estudio" name="linkOtroEstudio" value={estudio.linkOtroEstudio} onChange={handle} placeholder="https://i.ibb.co/..." />
           </Seccion>
