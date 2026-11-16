@@ -1,5 +1,6 @@
 // src/axiosConfig.js
 import axios from 'axios';
+import { API_URL } from './config';
 
 const getToken = () => {
     return localStorage.getItem('token');
@@ -7,7 +8,7 @@ const getToken = () => {
 
 // Crear una instancia de Axios con la configuración base
 const instance = axios.create({
-  baseURL: 'https://rcv-daspu-production.up.railway.app', // URL base del backend de Spring Boot
+  baseURL: API_URL,
 });
 
 // Agregar un interceptor para las solicitudes

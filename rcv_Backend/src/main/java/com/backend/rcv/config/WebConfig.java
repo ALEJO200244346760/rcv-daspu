@@ -2,6 +2,7 @@ package com.backend.rcv.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -11,15 +12,20 @@ public class WebConfig implements WebMvcConfigurer {
 
     private static final Logger logger = LoggerFactory.getLogger(WebConfig.class);
 
+    // Lista separada por comas, ej: https://rcv-daspu.pages.dev,https://rcv.midominio.com
+    // "*" acepta cualquier origen (solo para desarrollo).
+    @Value("${app.cors.allowed-origins:*}")
+    private String allowedOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Log para saber que la configuración cargó
-        logger.info("Cargando configuración de CORS - MODO DEBUG");
+        String[] origins = allowedOrigins.split("\\s*,\\s*");
+        logger.info("CORS orígenes permitidos: {}", String.join(", ", origins));
 
         registry.addMapping("/**")
-                .allowedOrigins("*") // Acepta cualquier origen
+                .allowedOriginPatterns(origins)
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(false); // IMPORTANTE: Al ser false, ya no hay error 500
+                .allowCredentials(false);
     }
 }

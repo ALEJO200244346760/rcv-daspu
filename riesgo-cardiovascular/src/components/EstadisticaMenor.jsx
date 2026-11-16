@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 // Componente de tarjeta para mostrar los detalles de cada paciente
 const TarjetaPaciente = ({ paciente, onEdit, onDelete, onCopy }) => {
@@ -61,7 +62,7 @@ const EstadisticaMenor = () => {
       },
     };
 
-    const apiBaseURL = 'https://rcvcba-production.up.railway.app';
+    const apiBaseURL = API_URL;
 
     axios.get(`${apiBaseURL}/api/pacientemenor`, config)
       .then(response => {

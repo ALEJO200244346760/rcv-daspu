@@ -1,6 +1,7 @@
 import { Advertencia } from '../ConstFormulario';
 
-export const apiBaseURL = 'https://rcv-daspu-production.up.railway.app';
+import { API_URL } from '../../config';
+export const apiBaseURL = API_URL;
 
 export const obtenerColorRiesgo = (nivel) => {
   switch (nivel) {

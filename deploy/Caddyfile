@@ -1,0 +1,5 @@
+# Caddy saca el certificado HTTPS gratis (Let's Encrypt) automáticamente.
+{$API_DOMAIN} {
+	encode gzip
+	reverse_proxy backend:8080
+}

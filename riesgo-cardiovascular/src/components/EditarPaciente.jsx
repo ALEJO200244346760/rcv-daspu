@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { calcularRiesgoCardiovascular } from './Calculadora'; // Ensure this is correctly imported
+import { API_URL } from '../config';
 
 // Updated DatosPacienteInicial based on the provided ConstFormulario.jsx
 const DatosPacienteInicial = {
@@ -139,7 +140,7 @@ function EditarPaciente() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`https://rcvpresent-production.up.railway.app/api/pacientes/${id}`)
+    axios.get(`${API_URL}/api/pacientes/${id}`)
       .then(response => {
         const pacienteData = response.data;
 
@@ -187,7 +188,7 @@ function EditarPaciente() {
     };
 
     try {
-      await axios.put(`https://rcvpresent-production.up.railway.app/api/pacientes/${id}`, pacienteFormatted, {
+      await axios.put(`${API_URL}/api/pacientes/${id}`, pacienteFormatted, {
         headers: { 'Content-Type': 'application/json' },
       });
       navigate('/estadisticas');

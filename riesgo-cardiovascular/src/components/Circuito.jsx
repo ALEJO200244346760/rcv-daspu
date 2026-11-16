@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 function Circuito() {
   const [pacientes, setPacientes] = useState([]);
@@ -9,7 +10,7 @@ function Circuito() {
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
 
   const navigate = useNavigate();
-  const apiBaseURL = 'https://rcv-daspu-production.up.railway.app';
+  const apiBaseURL = API_URL;
 
   useEffect(() => {
     fetchPacientes();
